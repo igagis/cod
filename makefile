@@ -1,6 +1,6 @@
 include prorab.mk
 
-this_name := sintezator
+this_name := plusses
 
 this_srcs += $(call prorab-src-dir,src)
 

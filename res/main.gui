@@ -1,0 +1,25 @@
+Row{
+	Pile{
+		layout{
+			weight{1}
+			dy{min}
+		}
+
+		Margins{
+			defs{w{0.08}}
+			layout{dx{fill} dy{fill}}
+			weightLeft{@{w}}
+			weightRight{@{w}}
+			weightTop{@{w}}
+			weightBottom{@{w}}
+
+
+		}
+	}
+	VScrollBar{
+		name{gauge_slider}
+		layout{
+			dy{max}
+		}
+	}
+}
