@@ -4,6 +4,8 @@
     <df root="res" name="1">
     </df>
     <df root="src" name="0">
+      <in>CodeEdit.cpp</in>
+      <in>CodeEdit.hpp</in>
       <in>main.cpp</in>
     </df>
     <logicalFolder name="ExternalFiles"
@@ -49,6 +51,10 @@
           <preBuildCommand></preBuildCommand>
         </preBuild>
       </makefileType>
+      <item path="src/CodeEdit.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/CodeEdit.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
