@@ -1,29 +1,27 @@
-#include <mordavokne/AppFactory.hpp>
+#include <mordavokne/application.hpp>
 
-
-class Application : public mordavokne::App{
+class Application : public mordavokne::application{
 public:
 	Application() :
-			App([](){
-					return mordavokne::App::WindowParams(kolme::Vec2ui(320, 480));
-				}())
+			application(
+					"cod",
+					[](){
+						return mordavokne::window_params(r4::vector2<unsigned>(320, 480));
+					}()
+				)
 	{
-		morda::inst().initStandardWidgets(*this->getResFile());
+		this->gui.initStandardWidgets(*this->get_res_file());
 		
 //		morda::inst().resMan.mountResPack(*this->getResFile("res/"));
 		
-		auto c = morda::Morda::inst().inflater.inflate(
-				*this->getResFile("res/main.gui")
+		auto c = this->gui.context->inflater.inflate(
+				*this->get_res_file("res/main.gui")
 			);
 		
-		morda::Morda::inst().setRootWidget(
-				std::move(c)
-			);
+		this->gui.set_root(std::move(c));
 	}
 };
 
-
-
-std::unique_ptr<mordavokne::App> mordavokne::createApp(int argc, const char** argv, const utki::Buf<std::uint8_t> savedState){
-	return utki::makeUnique<Application>();
+std::unique_ptr<mordavokne::application> mordavokne::create_application(int argc, const char** argv){
+	return std::make_unique<::Application>();
 }
