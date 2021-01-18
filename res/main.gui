@@ -12,6 +12,13 @@
 			weightRight{@{w}}
 			weightTop{@{w}}
 			weightBottom{@{w}}
+
+			@code_edit{
+				id{code_edit}
+				layout{
+					dx{fill} dy{fill}
+				}
+			}
 		}
 	}
 	/*

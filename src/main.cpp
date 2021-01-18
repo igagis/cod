@@ -1,4 +1,5 @@
 #include <mordavokne/application.hpp>
+#include "code_edit.hpp"
 
 class Application : public mordavokne::application{
 public:
@@ -12,11 +13,15 @@ public:
 	{
 		this->gui.initStandardWidgets(*this->get_res_file());
 		
+		this->gui.context->inflater.register_widget<code_edit>("code_edit");
+
 //		morda::inst().resMan.mountResPack(*this->getResFile("res/"));
 		
 		auto c = this->gui.context->inflater.inflate(
 				*this->get_res_file("res/main.gui")
 			);
+
+		c->get_widget_as<morda::text_widget>("code_edit").set_text("Hello world!\nsecond line\n\tthird line");
 		
 		this->gui.set_root(std::move(c));
 	}
