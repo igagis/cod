@@ -4,11 +4,20 @@
 
 #include <morda/widgets/character_input_widget.hpp>
 #include <morda/widgets/base/text_widget.hpp>
+
 class code_edit :
 		public morda::character_input_widget,
 		public morda::text_widget
 {
-	std::vector<std::u32string> lines;
+	struct attributes{
+
+	};
+	struct line{
+		std::u32string str;
+		std::vector<std::pair<std::u32string_view, attributes>> spans;
+	};
+
+	std::vector<line> lines;
 
 public:
 	code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc);
