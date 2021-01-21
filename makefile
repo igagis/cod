@@ -13,3 +13,9 @@ endif
 this_ldlibs += -lmordavokne-opengl2 -lGLEW -lGL -lstdc++ -lmorda -lpuu -lutki -rdynamic -lm
 
 $(eval $(prorab-build-app))
+
+define this_rules
+run: $(prorab_this_name)
+$(.RECIPEPREFIX)$(a)$(prorab_this_name)
+endef
+$(eval $(this_rules))
