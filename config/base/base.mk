@@ -6,6 +6,8 @@ this_cxxflags += -fstrict-aliasing # in order to comply with the c++ standard mo
 this_cxxflags += -std=c++17
 this_cxxflags += -g
 
+this_ldlibs += -lstdc++
+
 ifeq ($(gprof), true)
     this_cxxflags += -pg
     this_ldflags += -pg
