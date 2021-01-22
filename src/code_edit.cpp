@@ -18,12 +18,7 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 }
 
 void code_edit::set_text(std::u32string&& text){
-	this->lines = utki::select(
-			utki::split(text, U'\n'),
-			[](auto&& s){
-				return line{std::move(s)};
-			}
-		);
+	this->lines = utki::linq(utki::split(text, U'\n')).select([](auto&& s){return line{std::move(s)};}).get();
 }
 
 std::u32string code_edit::get_text()const{
