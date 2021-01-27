@@ -13,22 +13,25 @@ class code_edit :
 		private morda::pile
 {
 	struct{
-		std::shared_ptr<morda::res::font> regular;
-		std::shared_ptr<morda::res::font> bold;
-		std::shared_ptr<morda::res::font> italic;
-		std::shared_ptr<morda::res::font> bold_italic;
-	} font;
+		morda::real advance;
+		morda::real baseline;
+	} font_info;
+
+	void on_font_change()override{
+		const auto& font = this->get_font().get();
+		this->font_info.advance = font.get_advance(' ');
+		this->font_info.baseline = round((font.get_height() + font.get_ascender() - font.get_descender()) / 2);
+	}
 
 	struct{
 		unsigned tab_size = 4;
 	} settings;
 
 	struct attributes{
-		bool bold;
-		bool italic;
-		bool underlined;
-		bool stroked;
-		uint32_t color;
+		morda::res::font::style style = morda::res::font::style::normal;
+		bool underlined = false;
+		bool stroked = false;
+		uint32_t color = 0xffffffff;
 	};
 	struct line{
 		std::u32string str;
@@ -37,9 +40,19 @@ class code_edit :
 
 	std::vector<line> lines;
 
-	class line_widget : virtual public morda::widget{
-		std::weak_ptr<code_edit> ce;
+	class line_widget : public morda::widget{
+		code_edit& owner;
+		size_t line_num;
 	public:
+		line_widget(std::shared_ptr<morda::context> c, code_edit& owner, size_t line_num) :
+				widget(std::move(c), puu::forest()),
+				owner(owner),
+				line_num(line_num)
+		{}
+
+		void render(const morda::matrix4& matrix)const override;
+
+		morda::vector2 measure(const morda::vector2& quotum)const noexcept override;
 	};
 
 	struct provider : public morda::list_widget::provider{
