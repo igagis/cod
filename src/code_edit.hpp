@@ -4,13 +4,31 @@
 
 #include <morda/widgets/character_input_widget.hpp>
 #include <morda/widgets/base/text_widget.hpp>
+#include <morda/widgets/group/list.hpp>
+#include <morda/widgets/group/pile.hpp>
 
 class code_edit :
 		public morda::character_input_widget,
-		public morda::text_widget
+		public morda::text_widget,
+		private morda::pile
 {
-	struct attributes{
+	struct{
+		std::shared_ptr<morda::res::font> regular;
+		std::shared_ptr<morda::res::font> bold;
+		std::shared_ptr<morda::res::font> italic;
+		std::shared_ptr<morda::res::font> bold_italic;
+	} font;
 
+	struct{
+		unsigned tab_size = 4;
+	} settings;
+
+	struct attributes{
+		bool bold;
+		bool italic;
+		bool underlined;
+		bool stroked;
+		uint32_t color;
 	};
 	struct line{
 		std::u32string str;
@@ -18,6 +36,20 @@ class code_edit :
 	};
 
 	std::vector<line> lines;
+
+	struct provider : public morda::list_widget::provider{
+		code_edit& owner;
+
+		provider(code_edit& owner) : owner(owner){}
+
+		size_t count()const noexcept override{
+			return this->owner.lines.size();
+		}
+
+		std::shared_ptr<morda::widget> get_widget(size_t index)override;
+	};
+
+	std::shared_ptr<provider> lines_provider;
 
 public:
 	code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc);
@@ -32,5 +64,4 @@ public:
 	void set_text(std::u32string&& text)override;
 	std::u32string get_text()const override;
 private:
-
 };

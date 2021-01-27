@@ -15,7 +15,7 @@ public:
 		
 		this->gui.context->inflater.register_widget<code_edit>("code_edit");
 
-//		morda::inst().resMan.mountResPack(*this->getResFile("res/"));
+		this->gui.context->loader.mount_res_pack(*this->get_res_file("res/"));
 		
 		auto c = this->gui.context->inflater.inflate(
 				*this->get_res_file("res/main.gui")
