@@ -37,6 +37,11 @@ class code_edit :
 
 	std::vector<line> lines;
 
+	class line_widget : virtual public morda::widget{
+		std::weak_ptr<code_edit> ce;
+	public:
+	};
+
 	struct provider : public morda::list_widget::provider{
 		code_edit& owner;
 

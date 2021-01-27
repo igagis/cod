@@ -34,12 +34,11 @@
 		}	
 	}
 
-	/*
-	VScrollBar{
-		name{gauge_slider}
+	@vertical_scroll_bar{
+		id{scroll_code_edit}
+
 		layout{
-			dy{max}
+			dx{min} dy{max}
 		}
 	}
-	*/
 }
