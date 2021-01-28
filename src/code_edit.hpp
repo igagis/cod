@@ -33,9 +33,14 @@ class code_edit :
 		bool stroked = false;
 		uint32_t color = 0xffffffff;
 	};
+
+	struct line_span{
+		unsigned length;
+		attributes attrs;
+	};
 	struct line{
 		std::u32string str;
-		std::vector<std::pair<unsigned, attributes>> spans;
+		std::vector<line_span> spans;
 	};
 
 	std::vector<line> lines;
