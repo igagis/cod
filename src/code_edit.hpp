@@ -35,7 +35,7 @@ class code_edit :
 	};
 	struct line{
 		std::u32string str;
-		std::vector<std::pair<std::u32string_view, attributes>> spans;
+		std::vector<std::pair<unsigned, attributes>> spans;
 	};
 
 	std::vector<line> lines;

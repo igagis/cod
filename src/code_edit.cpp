@@ -35,8 +35,8 @@ void code_edit::set_text(std::u32string&& text){
 	this->lines = utki::linq(utki::split(text, U'\n')).select([](auto&& s){
 			size_t front_size = s.size() / 2;
 			decltype(line::spans) spans = {{
-				std::make_pair(std::u32string_view(s.c_str(), front_size), attributes{color: 0xff00ff00}),
-				std::make_pair(std::u32string_view(s.c_str() + front_size, s.size() - front_size), attributes{style: morda::res::font::style::italic, color: 0xff0000ff})
+				std::make_pair(front_size, attributes{color: 0xff00ff00}),
+				std::make_pair(s.size() - front_size, attributes{style: morda::res::font::style::italic, color: 0xff0000ff})
 			}};
 			return line{
 					str: std::move(s),
@@ -63,6 +63,8 @@ std::shared_ptr<morda::widget> code_edit::provider::get_widget(size_t index){
 void code_edit::line_widget::render(const morda::matrix4& matrix)const{	
 	using std::round;
 
+	const auto& str = this->owner.lines[this->line_num].str;
+
 	unsigned cur_char_pos = 0;
 	for(const auto& s : this->owner.lines[this->line_num].spans){
 		const auto& font = this->owner.get_font().get(s.second.style);
@@ -72,8 +74,12 @@ void code_edit::line_widget::render(const morda::matrix4& matrix)const{
 				cur_char_pos * this->owner.font_info.advance,
 				this->owner.font_info.baseline
 			);
-		font.render(matr, morda::color_to_vec4f(s.second.color), s.first);
-		cur_char_pos += s.first.size();
+		font.render(
+				matr,
+				morda::color_to_vec4f(s.second.color),
+				std::u32string_view(str.c_str() + cur_char_pos, s.first)
+			);
+		cur_char_pos += s.first;
 	}
 }
 
