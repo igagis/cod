@@ -7,19 +7,23 @@
 #include <morda/widgets/group/list.hpp>
 #include <morda/widgets/group/pile.hpp>
 
+#include <morda/updateable.hpp>
+
 class code_edit :
 		public morda::character_input_widget,
 		public morda::text_widget,
-		private morda::pile
+		private morda::pile,
+		private morda::updateable
 {
 	struct{
-		morda::real advance;
+		morda::vector2 glyph_dims;
 		morda::real baseline;
 	} font_info;
 
 	void on_font_change()override{
 		const auto& font = this->get_font().get();
-		this->font_info.advance = font.get_advance(' ');
+
+		this->font_info.glyph_dims.set(font.get_advance(' '), font.get_height());
 		this->font_info.baseline = round((font.get_height() + font.get_ascender() - font.get_descender()) / 2);
 	}
 
@@ -73,6 +77,19 @@ class code_edit :
 	};
 
 	std::shared_ptr<provider> lines_provider;
+
+	r4::vector2<unsigned> cursor_pos{0, 0};
+	bool cursor_blink_visible = true;
+
+	void update(uint32_t dt)override;
+	void on_focus_change()override;
+	void start_cursor_blinking();
+
+	bool on_mouse_button(const morda::mouse_button_event& event)override;
+
+	void render(const morda::matrix4& matrix)const override;
+
+	void render_cursor(const morda::matrix4& matrix)const;
 
 public:
 	code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc);

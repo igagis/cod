@@ -7,6 +7,11 @@
 
 #include <morda/widgets/label/text.hpp>
 
+namespace{
+uint16_t cursor_blink_period_ms = 500;
+morda::real cursor_thickness_dp = 1.0f;
+}
+
 code_edit::code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc) :
 		widget(std::move(c), desc),
 		character_input_widget(this->context),
@@ -71,7 +76,7 @@ void code_edit::line_widget::render(const morda::matrix4& matrix)const{
 
 		morda::matrix4 matr(matrix);
 		matr.translate(
-				cur_char_pos * this->owner.font_info.advance,
+				cur_char_pos * this->owner.font_info.glyph_dims.x(),
 				this->owner.font_info.baseline
 			);
 		font.render(
@@ -84,8 +89,8 @@ void code_edit::line_widget::render(const morda::matrix4& matrix)const{
 }
 
 morda::vector2 code_edit::line_widget::measure(const morda::vector2& quotum)const noexcept{
-	const auto& font = this->owner.get_font().get();
-	morda::vector2 ret(this->owner.font_info.advance, font.get_height());
+	morda::vector2 ret = this->owner.font_info.glyph_dims;
+	ret.x() *= this->owner.lines[this->line_num].str.size();
 
 	for(unsigned i = 0; i != ret.size(); ++i){
 		if(quotum[i] >= 0){
@@ -94,4 +99,60 @@ morda::vector2 code_edit::line_widget::measure(const morda::vector2& quotum)cons
 	}
 
 	return ret;
+}
+
+void code_edit::update(uint32_t dt){
+	this->cursor_blink_visible = !this->cursor_blink_visible;
+}
+
+void code_edit::on_focus_change(){
+	if(this->is_focused()){
+		this->start_cursor_blinking();
+	}else{
+		this->context->updater->stop(*this);
+	}
+}
+
+void code_edit::start_cursor_blinking(){
+	this->context->updater->stop(*this);
+	this->cursor_blink_visible = true;
+	this->context->updater->start(
+			utki::make_shared_from(*static_cast<updateable*>(this)),
+			cursor_blink_period_ms
+		);
+}
+
+void code_edit::render(const morda::matrix4& matrix)const{
+	this->pile::render(matrix);
+
+	this->render_cursor(matrix);
+}
+
+void code_edit::render_cursor(const morda::matrix4& matrix)const{
+	if(!this->is_focused()) return;
+	if(!this->cursor_blink_visible) return;
+
+	morda::matrix4 matr(matrix);
+
+	morda::vector2 pos = this->cursor_pos.to<morda::real>().comp_mul(this->font_info.glyph_dims);
+	matr.translate(pos);
+	matr.scale(morda::vector2(cursor_thickness_dp * this->context->units.dots_per_dp, this->font_info.glyph_dims.y()));
+
+	auto& r = *this->context->renderer;
+	r.shader->color_pos->render(matr, *r.pos_quad_01_vao, 0xffffffff);
+}
+
+bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
+	if(event.button != morda::mouse_button::left){
+		return false;
+	}
+
+	// this->leftMouseButtonDown = e.is_down;
+	
+	if(event.is_down){
+		// this->set_cursor_index(this->posToIndex(e.pos.x()));
+		this->focus();
+	}
+	
+	return true;
 }
