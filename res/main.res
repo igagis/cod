@@ -1,8 +1,8 @@
 fnt_monospace{
-    normal{courier_new.ttf}
-	bold{courier_new_bold.ttf}
-//	italic{}
-//	bold_italic{}
+    normal{DejaVuSansMono.ttf}
+	bold{DejaVuSansMono-Bold.ttf}
+	italic{DejaVuSansMono-Oblique.ttf}
+	bold_italic{DejaVuSansMono-BoldOblique.ttf}
     size(12dp)
     max_cached{100}
 }

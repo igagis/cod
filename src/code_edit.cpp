@@ -36,7 +36,7 @@ void code_edit::set_text(std::u32string&& text){
 			size_t front_size = s.size() / 2;
 			decltype(line::spans) spans = {{
 				std::make_pair(std::u32string_view(s.c_str(), front_size), attributes{color: 0xff00ff00}),
-				std::make_pair(std::u32string_view(s.c_str() + front_size, s.size() - front_size), attributes{style: morda::res::font::style::bold, color: 0xff0000ff})
+				std::make_pair(std::u32string_view(s.c_str() + front_size, s.size() - front_size), attributes{style: morda::res::font::style::italic, color: 0xff0000ff})
 			}};
 			return line{
 					str: std::move(s),
