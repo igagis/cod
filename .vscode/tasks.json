@@ -12,11 +12,28 @@
             "problemMatcher": [
                 "$gcc"
             ]
+		},
+		{
+            "label": "build_dbg",
+            "type": "shell",
+            "command": "make autojobs=true config=dbg",
+            "args": [],
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
         },
         {
             "label": "clean",
             "type": "shell",
             "command": "make clean",
+            "group": "build",
+            "problemMatcher": []
+		},
+		{
+            "label": "clean_dbg",
+            "type": "shell",
+            "command": "make clean config=dbg",
             "group": "build",
             "problemMatcher": []
         },
@@ -26,6 +43,14 @@
             "command": "out/rel/cod",
             "group": "build",
             "dependsOn": "build",
+            "problemMatcher": []
+		},
+		{
+            "label": "run_dbg",
+            "type": "shell",
+            "command": "out/dbg/cod",
+            "group": "build",
+            "dependsOn": "build_dbg",
             "problemMatcher": []
         }
     ]

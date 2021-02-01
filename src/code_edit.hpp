@@ -39,12 +39,14 @@ class code_edit :
 	};
 
 	struct line_span{
-		unsigned length;
-		attributes attrs;
+		size_t length;
+		std::shared_ptr<attributes> attrs;
 	};
 	struct line{
 		std::u32string str;
 		std::vector<line_span> spans;
+
+		void extend_line_span(size_t at_char_index, size_t by_length);
 	};
 
 	std::vector<line> lines;
@@ -97,6 +99,10 @@ class code_edit :
 
 	void set_cursor_pos(r4::vector2<size_t> pos);
 	r4::vector2<size_t> get_cursor_pos()const noexcept;
+
+	std::shared_ptr<attributes> text_style = std::make_shared<attributes>(attributes{color: 0xffb0b0b0});
+
+	void notify_text_change();
 public:
 	code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc);
 	

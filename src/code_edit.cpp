@@ -33,11 +33,11 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc)
 }
 
 void code_edit::set_text(std::u32string&& text){
-	this->lines = utki::linq(utki::split(text, U'\n')).select([](auto&& s){
+	this->lines = utki::linq(utki::split(text, U'\n')).select([this](auto&& s){
 			unsigned front_size = s.size() / 2;
 			decltype(line::spans) spans = {{
-				line_span{length: front_size, attrs: attributes{color: 0xff00ff00}},
-				line_span{length: unsigned(s.size()) - front_size, attrs: attributes{style: morda::res::font::style::italic, color: 0xff0000ff}}
+				line_span{length: front_size, attrs: this->text_style},
+				line_span{length: size_t(s.size()) - front_size, attrs: std::make_shared<attributes>(attributes{style: morda::res::font::style::italic, color: 0xff0000ff})}
 			}};
 			return line{
 					str: std::move(s),
@@ -68,7 +68,7 @@ void code_edit::line_widget::render(const morda::matrix4& matrix)const{
 
 	unsigned cur_char_pos = 0;
 	for(const auto& s : this->owner.lines[this->line_num].spans){
-		const auto& font = this->owner.get_font().get(s.attrs.style);
+		const auto& font = this->owner.get_font().get(s.attrs->style);
 
 		morda::matrix4 matr(matrix);
 		matr.translate(
@@ -77,7 +77,7 @@ void code_edit::line_widget::render(const morda::matrix4& matrix)const{
 			);
 		font.render(
 				matr,
-				morda::color_to_vec4f(s.attrs.color),
+				morda::color_to_vec4f(s.attrs->color),
 				std::u32string_view(str.c_str() + cur_char_pos, s.length)
 			);
 		cur_char_pos += s.length;
@@ -189,6 +189,19 @@ bool code_edit::on_key(bool is_down, morda::key key){
 	return false;
 }
 
+void code_edit::line::extend_line_span(size_t at_char_index, size_t by_length){
+	size_t cur_span_end = 0;
+	for(auto& s : this->spans){
+		cur_span_end += s.length;
+		if(at_char_index < cur_span_end){
+			s.length += by_length;
+			return;
+		}
+	}
+	// extend last span if adding chars to the end of the string
+	this->spans.back().length += by_length;
+}
+
 void code_edit::on_character_input(const std::u32string& unicode, morda::key key){
 	switch(key){
 		case morda::key::enter:
@@ -227,10 +240,22 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 			}
 			break;
 		case morda::key::end:
-			// this->set_cursor_index(this->get_text().size(), this->shiftPressed);
+			{
+				auto cp = this->get_cursor_pos();
+				ASSERT(cp.y() <= this->lines.size())
+				if(cp.y() != this->lines.size()){
+					cp.x() = this->lines[cp.y()].str.size();
+					this->set_cursor_pos(cp);
+				}
+			}
 			break;
 		case morda::key::home:
-			// this->set_cursor_index(0, this->shiftPressed);
+			{
+				auto cp = this->get_cursor_pos();
+				ASSERT(cp.y() <= this->lines.size())
+				cp.x() = 0;
+				this->set_cursor_pos(cp);
+			}
 			break;
 		case morda::key::backspace:
 			// if(this->thereIsSelection()){
@@ -269,19 +294,35 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 			// }
 			// fall through
 		default:
-			// if(unicode.size() != 0){
-			// 	if(this->thereIsSelection()){
-			// 		this->cursorIndex = this->deleteSelection();
-			// 	}
-				
-			// 	auto t = this->get_text();
-			// 	this->clear();
-			// 	t.insert(t.begin() + this->cursorIndex, unicode.begin(), unicode.end());
-			// 	this->set_text(std::move(t));
-				
-			// 	this->set_cursor_index(this->cursorIndex + unicode.size());
-			// }
-			
+			if(!unicode.empty()){
+				auto cp = this->get_cursor_pos();
+				if(cp.y() != this->lines.size()){
+					auto& l = this->lines[cp.y()];
+					l.str.insert(cp.x(), unicode);
+					l.extend_line_span(cp.x(), unicode.size());
+				}else{
+					decltype(line::spans) spans = {{
+						line_span{length: unicode.size(), attrs: this->text_style}
+					}};
+					this->lines.push_back(line{
+						str: unicode,
+						spans: std::move(spans)
+					});
+					ASSERT(!this->lines.back().str.empty())
+					ASSERT(this->lines.back().spans.size() == 1)
+					ASSERT(this->lines.back().spans.front().length == unicode.size())
+					ASSERT(this->lines.back().str == unicode)
+				}
+				cp.x() += unicode.size();
+				this->set_cursor_pos(cp);
+
+				this->notify_text_change();
+			}
 			break;
 	}	
+}
+
+void code_edit::notify_text_change(){
+	this->on_text_change();
+	this->lines_provider->notify_data_set_change();
 }
