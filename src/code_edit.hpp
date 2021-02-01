@@ -78,7 +78,7 @@ class code_edit :
 
 	std::shared_ptr<provider> lines_provider;
 
-	r4::vector2<unsigned> cursor_pos{0, 0};
+	r4::vector2<size_t> cursor_pos{0, 0};
 	bool cursor_blink_visible = true;
 
 	void update(uint32_t dt)override;
@@ -91,17 +91,20 @@ class code_edit :
 
 	void render_cursor(const morda::matrix4& matrix)const;
 
+	bool on_key(bool is_down, morda::key key)override;
+
+	void on_character_input(const std::u32string& unicode, morda::key key)override;
+
+	void set_cursor_pos(r4::vector2<size_t> pos);
+	r4::vector2<size_t> get_cursor_pos()const noexcept;
 public:
 	code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc);
 	
 	code_edit(const code_edit&) = delete;
 	code_edit& operator=(const code_edit&) = delete;
-	
-	void on_character_input(const std::u32string& unicode, morda::key key)override;
 
 	using morda::text_widget::set_text;
 
 	void set_text(std::u32string&& text)override;
 	std::u32string get_text()const override;
-private:
 };

@@ -9,7 +9,7 @@
 
 namespace{
 uint16_t cursor_blink_period_ms = 500;
-morda::real cursor_thickness_dp = 1.0f;
+morda::real cursor_thickness_dp = 2.0f;
 }
 
 code_edit::code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc) :
@@ -30,10 +30,6 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc)
 		)qwertyuiop"));
 
 	this->get_widget_as<morda::list_widget>("lines").set_provider(this->lines_provider);
-}
-
-void code_edit::on_character_input(const std::u32string& unicode, morda::key key){
-	// TODO:
 }
 
 void code_edit::set_text(std::u32string&& text){
@@ -134,7 +130,7 @@ void code_edit::render_cursor(const morda::matrix4& matrix)const{
 
 	morda::matrix4 matr(matrix);
 
-	morda::vector2 pos = this->cursor_pos.to<morda::real>().comp_mul(this->font_info.glyph_dims);
+	morda::vector2 pos = this->get_cursor_pos().to<morda::real>().comp_mul(this->font_info.glyph_dims);
 	matr.translate(pos);
 	matr.scale(morda::vector2(cursor_thickness_dp * this->context->units.dots_per_dp, this->font_info.glyph_dims.y()));
 
@@ -155,4 +151,137 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 	}
 	
 	return true;
+}
+
+void code_edit::set_cursor_pos(r4::vector2<size_t> pos){
+	using std::min;
+
+	this->cursor_pos = pos;
+
+	this->start_cursor_blinking();
+}
+
+r4::vector2<size_t> code_edit::get_cursor_pos()const noexcept{
+	ASSERT(this->cursor_pos.y() <= this->lines.size())
+	if(this->cursor_pos.y() == this->lines.size()){
+		return {0, this->lines.size()};
+	}
+	auto cur_line_size = this->lines[this->cursor_pos.y()].str.size();
+	if(this->cursor_pos.x() > cur_line_size){
+		return {cur_line_size, this->cursor_pos.y()};
+	}
+	return this->cursor_pos;
+}
+
+bool code_edit::on_key(bool is_down, morda::key key){
+	switch(key){
+		case morda::key::left_control:
+		case morda::key::right_control:
+			// this->ctrlPressed = isDown;
+			break;
+		case morda::key::left_shift:
+		case morda::key::right_shift:
+			// this->shiftPressed = isDown;
+			break;
+		default:
+			break;
+	}
+	return false;
+}
+
+void code_edit::on_character_input(const std::u32string& unicode, morda::key key){
+	switch(key){
+		case morda::key::enter:
+			break;
+		case morda::key::right:
+			{
+				auto cp = this->get_cursor_pos();
+				if(cp.y() != this->lines.size()){
+					if(cp.x() != this->lines[cp.y()].str.size()){
+						this->set_cursor_pos(cp + r4::vector2<size_t>{1, 0});
+					}else{
+						this->set_cursor_pos(r4::vector2<size_t>{0, cp.y() + 1});
+					}
+				}
+			}
+			break;
+		case morda::key::left:
+			{
+				auto cp = this->get_cursor_pos();
+				if(cp.x() != 0){
+					this->set_cursor_pos(cp - r4::vector2<size_t>{1, 0});
+				}else if(cp.y() != 0){
+					auto new_y = cp.y() - 1;
+					this->set_cursor_pos(r4::vector2<size_t>{this->lines[new_y].str.size(), new_y});
+				}
+			}
+			break;
+		case morda::key::up:
+			if(this->cursor_pos.y() != 0){
+				this->set_cursor_pos(this->cursor_pos - r4::vector2<size_t>{0, 1});
+			}
+			break;
+		case morda::key::down:
+			if(this->cursor_pos.y() != this->lines.size()){
+				this->set_cursor_pos(this->cursor_pos + r4::vector2<size_t>{0, 1});
+			}
+			break;
+		case morda::key::end:
+			// this->set_cursor_index(this->get_text().size(), this->shiftPressed);
+			break;
+		case morda::key::home:
+			// this->set_cursor_index(0, this->shiftPressed);
+			break;
+		case morda::key::backspace:
+			// if(this->thereIsSelection()){
+			// 	this->set_cursor_index(this->deleteSelection());
+			// }else{
+			// 	if(this->cursorIndex != 0){
+			// 		auto t = this->get_text();
+			// 		this->clear();
+			// 		t.erase(t.begin() + (this->cursorIndex - 1));
+			// 		this->set_text(std::move(t));
+			// 		this->set_cursor_index(this->cursorIndex - 1);
+			// 	}
+			// }
+			break;
+		case morda::key::deletion:
+			// if(this->thereIsSelection()){
+			// 	this->set_cursor_index(this->deleteSelection());
+			// }else{
+			// 	if(this->cursorIndex < this->get_text().size()){
+			// 		auto t = this->get_text();
+			// 		this->clear();
+			// 		t.erase(t.begin() + this->cursorIndex);
+			// 		this->set_text(std::move(t));
+			// 	}
+			// }
+			// this->startCursorBlinking();
+			break;
+		case morda::key::escape:
+			// do nothing
+			break;
+		case morda::key::a:
+			// if(this->ctrlPressed){
+			// 	this->selectionStartIndex = 0;
+			// 	this->set_cursor_index(this->get_text().size(), true);
+			// 	break;
+			// }
+			// fall through
+		default:
+			// if(unicode.size() != 0){
+			// 	if(this->thereIsSelection()){
+			// 		this->cursorIndex = this->deleteSelection();
+			// 	}
+				
+			// 	auto t = this->get_text();
+			// 	this->clear();
+			// 	t.insert(t.begin() + this->cursorIndex, unicode.begin(), unicode.end());
+			// 	this->set_text(std::move(t));
+				
+			// 	this->set_cursor_index(this->cursorIndex + unicode.size());
+			// }
+			
+			break;
+	}	
 }
