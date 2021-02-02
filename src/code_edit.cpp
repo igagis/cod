@@ -140,13 +140,25 @@ void code_edit::insert(cursor& c, const std::u32string& str){
 	if(strs.size() == 1){
 		auto& l = this->lines[cp.y()];
 		l.str.insert(cp.x(), strs.front());
-		l.extend_line_span(cp.x(), strs.front().size());
+		l.extend_span(cp.x(), strs.front().size());
 		c.move_right_by(strs.front().size());
 	}else{
 		// TODO: multiline insert (from clipboard)
 	}
 
+	// TODO: correct cursors
+
 	this->text_changed = true;
+}
+
+void code_edit::erase_forward(cursor& c, size_t num){
+	// auto cp = c.get_effective_pos();
+
+	// TODO:
+}
+
+void code_edit::erase_backward(cursor& c, size_t num){
+	// TODO:
 }
 
 void code_edit::render(const morda::matrix4& matrix)const{
@@ -190,7 +202,7 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 }
 
 r4::vector2<size_t> code_edit::cursor::get_effective_pos()const noexcept{
-	ASSERT(!this->lines.empty())
+	ASSERT(!this->owner.lines.empty())
 	if(this->pos.y() >= this->owner.lines.size()){
 		return 0;
 	}
@@ -217,7 +229,7 @@ bool code_edit::on_key(bool is_down, morda::key key){
 	return false;
 }
 
-void code_edit::line::extend_line_span(size_t at_char_index, size_t by_length){
+void code_edit::line::extend_span(size_t at_char_index, size_t by_length){
 	size_t cur_span_end = 0;
 	for(auto& s : this->spans){
 		cur_span_end += s.length;
@@ -230,12 +242,39 @@ void code_edit::line::extend_line_span(size_t at_char_index, size_t by_length){
 	this->spans.back().length += by_length;
 }
 
+void code_edit::line::erase_spans(size_t at_char_index, size_t by_length){
+	size_t span_end = 0;
+	for(auto i = this->spans.begin(); i != this->spans.end() && by_length != 0;){
+		span_end += i->length;
+		if(at_char_index < span_end){
+			size_t to_end = span_end - at_char_index;
+			ASSERT(to_end <= i->length)
+			if(by_length < to_end){
+				ASSERT(i->length > by_length)
+				i->length -= by_length;
+				return;
+			}else{
+				by_length -= to_end;
+				if(to_end == i->length){
+					// remove span
+					i = this->spans.erase(i);
+					continue;
+				}else{
+					ASSERT(to_end < i->length)
+					i->length -= to_end;
+				}
+			}
+		}
+		++i;
+	}
+}
+
 void code_edit::cursor::move_right_by(size_t dx)noexcept{
 	auto p = this->get_effective_pos();
 	p.x() += dx;
 	auto line_size = this->owner.lines[p.y()].str.size();
 
-	ASSERT(!this->lines.empty())
+	ASSERT(!this->owner.lines.empty())
 	for(; p.x() > line_size;){
 		if(p.y() < this->owner.lines.size() - 1){
 			p.x() -= line_size + 1;
@@ -325,30 +364,14 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 			});
 			break;
 		case morda::key::backspace:
-			// if(this->thereIsSelection()){
-			// 	this->set_cursor_index(this->deleteSelection());
-			// }else{
-			// 	if(this->cursorIndex != 0){
-			// 		auto t = this->get_text();
-			// 		this->clear();
-			// 		t.erase(t.begin() + (this->cursorIndex - 1));
-			// 		this->set_text(std::move(t));
-			// 		this->set_cursor_index(this->cursorIndex - 1);
-			// 	}
-			// }
+			this->for_each_cursor([this](cursor& c){
+				this->erase_backward(c, 1);
+			});
 			break;
 		case morda::key::deletion:
-			// if(this->thereIsSelection()){
-			// 	this->set_cursor_index(this->deleteSelection());
-			// }else{
-			// 	if(this->cursorIndex < this->get_text().size()){
-			// 		auto t = this->get_text();
-			// 		this->clear();
-			// 		t.erase(t.begin() + this->cursorIndex);
-			// 		this->set_text(std::move(t));
-			// 	}
-			// }
-			// this->startCursorBlinking();
+			this->for_each_cursor([this](cursor& c){
+				this->erase_forward(c, 1);
+			});
 			break;
 		case morda::key::escape:
 			// do nothing

@@ -46,7 +46,8 @@ class code_edit :
 		std::u32string str;
 		std::vector<line_span> spans;
 
-		void extend_line_span(size_t at_char_index, size_t by_length);
+		void extend_span(size_t at_char_index, size_t by_length);
+		void erase_spans(size_t at_char_index, size_t by_length);
 	};
 
 	std::vector<line> lines;
@@ -109,6 +110,8 @@ class code_edit :
 	void for_each_cursor(const std::function<void(cursor&)>& func);
 
 	void insert(cursor& c, const std::u32string& str);
+	void erase_forward(cursor& c, size_t num);
+	void erase_backward(cursor& c, size_t num);
 
 	bool text_changed = false;
 
