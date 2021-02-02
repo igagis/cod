@@ -80,8 +80,13 @@ class code_edit :
 
 	std::shared_ptr<provider> lines_provider;
 
-	r4::vector2<size_t> cursor_pos{0, 0};
+	struct cursor{
+		r4::vector2<size_t> pos = 0;
+	};
+
 	bool cursor_blink_visible = true;
+
+	std::vector<cursor> cursors;
 
 	void update(uint32_t dt)override;
 	void on_focus_change()override;
@@ -91,14 +96,14 @@ class code_edit :
 
 	void render(const morda::matrix4& matrix)const override;
 
-	void render_cursor(const morda::matrix4& matrix)const;
+	void render_cursors(const morda::matrix4& matrix)const;
 
 	bool on_key(bool is_down, morda::key key)override;
 
 	void on_character_input(const std::u32string& unicode, morda::key key)override;
 
 	void set_cursor_pos(r4::vector2<size_t> pos);
-	r4::vector2<size_t> get_cursor_pos()const noexcept;
+	r4::vector2<size_t> get_effective_cursor_pos(const cursor& c)const noexcept;
 
 	std::shared_ptr<attributes> text_style = std::make_shared<attributes>(attributes{color: 0xffb0b0b0});
 
