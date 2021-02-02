@@ -262,22 +262,18 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 			}
 			break;
 		case morda::key::end:
-			{
-				auto cp = this->cursors.front().get_effective_pos();
-				ASSERT(cp.y() <= this->lines.size())
-				if(cp.y() != this->lines.size()){
-					cp.x() = this->lines[cp.y()].str.size();
-					this->cursors.front().set_pos(cp);
-				}
-			}
+			this->for_each_cursor([this](cursor& c){
+				auto p = c.get_effective_pos();
+				p.x() = this->lines[p.y()].str.size();
+				c.set_pos(p);
+			});
 			break;
 		case morda::key::home:
-			{
-				auto cp = this->cursors.front().get_effective_pos();
-				ASSERT(cp.y() <= this->lines.size())
-				cp.x() = 0;
-				this->cursors.front().set_pos(cp);
-			}
+			this->for_each_cursor([](cursor& c){
+				auto p = c.get_effective_pos();
+				p.x() = 0;
+				c.set_pos(p);
+			});
 			break;
 		case morda::key::backspace:
 			// if(this->thereIsSelection()){
