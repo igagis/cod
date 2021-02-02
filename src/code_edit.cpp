@@ -170,9 +170,9 @@ void code_edit::set_cursor_pos(r4::vector2<size_t> pos){
 }
 
 r4::vector2<size_t> code_edit::get_effective_cursor_pos(const cursor& c)const noexcept{
-	ASSERT(c.pos.y() <= this->lines.size())
-	if(c.pos.y() == this->lines.size()){
-		return {0, this->lines.size()};
+	ASSERT(!this->lines.empty())
+	if(c.pos.y() >= this->lines.size()){
+		return {0, this->lines.size() - 1};
 	}
 	auto cur_line_size = this->lines[c.pos.y()].str.size();
 	if(c.pos.x() > cur_line_size){
@@ -217,12 +217,10 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 		case morda::key::right:
 			{
 				auto cp = this->get_effective_cursor_pos(this->cursors.front());
-				if(cp.y() != this->lines.size()){
-					if(cp.x() != this->lines[cp.y()].str.size()){
-						this->set_cursor_pos(cp + r4::vector2<size_t>{1, 0});
-					}else{
-						this->set_cursor_pos(r4::vector2<size_t>{0, cp.y() + 1});
-					}
+				if(cp.x() != this->lines[cp.y()].str.size()){
+					this->set_cursor_pos(cp + r4::vector2<size_t>{1, 0});
+				}else if(cp.y() != this->lines.size() - 1){
+					this->set_cursor_pos(r4::vector2<size_t>{0, cp.y() + 1});
 				}
 			}
 			break;
@@ -248,7 +246,7 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 		case morda::key::down:
 			{
 				auto& c = this->cursors.front();
-				if(c.pos.y() != this->lines.size()){
+				if(c.pos.y() != this->lines.size() - 1){
 					this->set_cursor_pos(c.pos + r4::vector2<size_t>{0, 1});
 				}
 			}
@@ -310,23 +308,9 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 		default:
 			if(!unicode.empty()){
 				auto cp = this->get_effective_cursor_pos(this->cursors.front());
-				if(cp.y() != this->lines.size()){
-					auto& l = this->lines[cp.y()];
-					l.str.insert(cp.x(), unicode);
-					l.extend_line_span(cp.x(), unicode.size());
-				}else{
-					decltype(line::spans) spans = {{
-						line_span{length: unicode.size(), attrs: this->text_style}
-					}};
-					this->lines.push_back(line{
-						str: unicode,
-						spans: std::move(spans)
-					});
-					ASSERT(!this->lines.back().str.empty())
-					ASSERT(this->lines.back().spans.size() == 1)
-					ASSERT(this->lines.back().spans.front().length == unicode.size())
-					ASSERT(this->lines.back().str == unicode)
-				}
+				auto& l = this->lines[cp.y()];
+				l.str.insert(cp.x(), unicode);
+				l.extend_line_span(cp.x(), unicode.size());
 				cp.x() += unicode.size();
 				this->set_cursor_pos(cp);
 
