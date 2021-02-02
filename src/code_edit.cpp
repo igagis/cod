@@ -132,7 +132,7 @@ void code_edit::render_cursors(const morda::matrix4& matrix)const{
 	for(auto& c : this->cursors){
 		morda::matrix4 matr(matrix);
 
-		morda::vector2 pos = this->get_effective_cursor_pos(c).to<morda::real>().comp_mul(this->font_info.glyph_dims);
+		morda::vector2 pos = c.get_effective_pos().to<morda::real>().comp_mul(this->font_info.glyph_dims);
 		matr.translate(pos);
 		matr.scale(morda::vector2(cursor_thickness_dp * this->context->units.dots_per_dp, this->font_info.glyph_dims.y()));
 
@@ -150,35 +150,23 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 	
 	if(event.is_down){
 		// this->set_cursor_index(this->posToIndex(e.pos.x()));
-		this->cursors.push_back(cursor{pos: 0});
+		this->cursors.push_back(cursor(*this, 0));
 		this->focus();
 	}
 	
 	return true;
 }
 
-void code_edit::set_cursor_pos(r4::vector2<size_t> pos){
-	using std::min;
-
-	if(this->cursors.empty()){
-		return;
-	}
-
-	this->cursors.front().pos = pos;
-
-	this->start_cursor_blinking();
-}
-
-r4::vector2<size_t> code_edit::get_effective_cursor_pos(const cursor& c)const noexcept{
+r4::vector2<size_t> code_edit::cursor::get_effective_pos()const noexcept{
 	ASSERT(!this->lines.empty())
-	if(c.pos.y() >= this->lines.size()){
-		return {0, this->lines.size() - 1};
+	if(this->pos.y() >= this->owner.lines.size()){
+		return 0;
 	}
-	auto cur_line_size = this->lines[c.pos.y()].str.size();
-	if(c.pos.x() > cur_line_size){
-		return {cur_line_size, c.pos.y()};
+	auto cur_line_size = this->owner.lines[this->pos.y()].str.size();
+	if(this->pos.x() > cur_line_size){
+		return {cur_line_size, this->pos.y()};
 	}
-	return c.pos;
+	return this->pos;
 }
 
 bool code_edit::on_key(bool is_down, morda::key key){
@@ -213,60 +201,61 @@ void code_edit::line::extend_line_span(size_t at_char_index, size_t by_length){
 void code_edit::on_character_input(const std::u32string& unicode, morda::key key){
 	switch(key){
 		case morda::key::enter:
+
 			break;
 		case morda::key::right:
 			{
-				auto cp = this->get_effective_cursor_pos(this->cursors.front());
+				auto cp = this->cursors.front().get_effective_pos();
 				if(cp.x() != this->lines[cp.y()].str.size()){
-					this->set_cursor_pos(cp + r4::vector2<size_t>{1, 0});
+					this->cursors.front().set_pos(cp + r4::vector2<size_t>{1, 0});
 				}else if(cp.y() != this->lines.size() - 1){
-					this->set_cursor_pos(r4::vector2<size_t>{0, cp.y() + 1});
+					this->cursors.front().set_pos(r4::vector2<size_t>{0, cp.y() + 1});
 				}
 			}
 			break;
 		case morda::key::left:
 			{
-				auto cp = this->get_effective_cursor_pos(this->cursors.front());
+				auto cp = this->cursors.front().get_effective_pos();
 				if(cp.x() != 0){
-					this->set_cursor_pos(cp - r4::vector2<size_t>{1, 0});
+					this->cursors.front().set_pos(cp - r4::vector2<size_t>{1, 0});
 				}else if(cp.y() != 0){
 					auto new_y = cp.y() - 1;
-					this->set_cursor_pos(r4::vector2<size_t>{this->lines[new_y].str.size(), new_y});
+					this->cursors.front().set_pos(r4::vector2<size_t>{this->lines[new_y].str.size(), new_y});
 				}
 			}
 			break;
 		case morda::key::up:
 			{
-				auto& c = this->cursors.front();
-				if(c.pos.y() != 0){
-					this->set_cursor_pos(c.pos - r4::vector2<size_t>{0, 1});
+				auto p = this->cursors.front().get_effective_pos();
+				if(p.y() != 0){
+					this->cursors.front().set_pos(p - r4::vector2<size_t>{0, 1});
 				}
 			}
 			break;
 		case morda::key::down:
 			{
-				auto& c = this->cursors.front();
-				if(c.pos.y() != this->lines.size() - 1){
-					this->set_cursor_pos(c.pos + r4::vector2<size_t>{0, 1});
+				auto p = this->cursors.front().get_effective_pos();
+				if(p.y() != this->lines.size() - 1){
+					this->cursors.front().set_pos(p + r4::vector2<size_t>{0, 1});
 				}
 			}
 			break;
 		case morda::key::end:
 			{
-				auto cp = this->cursors.front().pos;
+				auto cp = this->cursors.front().get_effective_pos();
 				ASSERT(cp.y() <= this->lines.size())
 				if(cp.y() != this->lines.size()){
 					cp.x() = this->lines[cp.y()].str.size();
-					this->set_cursor_pos(cp);
+					this->cursors.front().set_pos(cp);
 				}
 			}
 			break;
 		case morda::key::home:
 			{
-				auto cp = this->cursors.front().pos;
+				auto cp = this->cursors.front().get_effective_pos();
 				ASSERT(cp.y() <= this->lines.size())
 				cp.x() = 0;
-				this->set_cursor_pos(cp);
+				this->cursors.front().set_pos(cp);
 			}
 			break;
 		case morda::key::backspace:
@@ -307,12 +296,12 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 			// fall through
 		default:
 			if(!unicode.empty()){
-				auto cp = this->get_effective_cursor_pos(this->cursors.front());
+				auto cp = this->cursors.front().get_effective_pos();
 				auto& l = this->lines[cp.y()];
 				l.str.insert(cp.x(), unicode);
 				l.extend_line_span(cp.x(), unicode.size());
 				cp.x() += unicode.size();
-				this->set_cursor_pos(cp);
+				this->cursors.front().set_pos(cp);
 
 				this->notify_text_change();
 			}

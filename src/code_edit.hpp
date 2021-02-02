@@ -80,8 +80,21 @@ class code_edit :
 
 	std::shared_ptr<provider> lines_provider;
 
-	struct cursor{
+	class cursor{
+		code_edit& owner;
 		r4::vector2<size_t> pos = 0;
+	public:
+		cursor(code_edit& owner, r4::vector2<size_t> pos) :
+				owner(owner),
+				pos(pos)
+		{}
+
+		r4::vector2<size_t> get_effective_pos()const noexcept;
+
+		void set_pos(r4::vector2<size_t> pos)noexcept{
+			this->pos = pos;
+			this->owner.start_cursor_blinking();
+		}
 	};
 
 	bool cursor_blink_visible = true;
@@ -101,9 +114,6 @@ class code_edit :
 	bool on_key(bool is_down, morda::key key)override;
 
 	void on_character_input(const std::u32string& unicode, morda::key key)override;
-
-	void set_cursor_pos(r4::vector2<size_t> pos);
-	r4::vector2<size_t> get_effective_cursor_pos(const cursor& c)const noexcept;
 
 	std::shared_ptr<attributes> text_style = std::make_shared<attributes>(attributes{color: 0xffb0b0b0});
 
