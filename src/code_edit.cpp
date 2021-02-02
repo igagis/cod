@@ -230,6 +230,61 @@ void code_edit::line::extend_line_span(size_t at_char_index, size_t by_length){
 	this->spans.back().length += by_length;
 }
 
+void code_edit::cursor::move_right_by(size_t dx)noexcept{
+	auto p = this->get_effective_pos();
+	p.x() += dx;
+	auto line_size = this->owner.lines[p.y()].str.size();
+
+	ASSERT(!this->lines.empty())
+	for(; p.x() > line_size;){
+		if(p.y() < this->owner.lines.size() - 1){
+			p.x() -= line_size + 1;
+			++p.y();
+			line_size = this->owner.lines[p.y()].str.size();
+		}else{
+			p.x() = line_size;
+			break;
+		}
+	}
+	this->set_pos(p);
+}
+
+void code_edit::cursor::move_left_by(size_t dx)noexcept{
+	auto p = this->get_effective_pos();
+	for(; dx > p.x();){
+		if(p.y() == 0){
+			p.x() = 0;
+			this->set_pos(p);
+			return;
+		}else{
+			dx -= p.x() + 1;
+			--p.y();
+			p.x() = this->owner.lines[p.y()].str.size();
+		}
+	}
+	p.x() -= dx;
+
+	this->set_pos(p);
+}
+
+void code_edit::cursor::move_up_by(size_t dy)noexcept{
+	auto p = this->pos;
+	if(p.y() < dy){
+		p.y() = 0;
+	}else{
+		p.y() -= dy;
+	}
+	this->set_pos(p);
+}
+
+void code_edit::cursor::move_down_by(size_t dy)noexcept{
+	auto p = this->pos;
+	p.y() += dy;
+	using std::min;
+	p.y() = min(this->owner.lines.size() - 1, p.y());
+	this->set_pos(p);
+}
+
 void code_edit::on_character_input(const std::u32string& unicode, morda::key key){
 	switch(key){
 		case morda::key::enter:
@@ -246,20 +301,14 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 			});
 			break;
 		case morda::key::up:
-			{
-				auto p = this->cursors.front().get_effective_pos();
-				if(p.y() != 0){
-					this->cursors.front().set_pos(p - r4::vector2<size_t>{0, 1});
-				}
-			}
+			this->for_each_cursor([](cursor& c){
+				c.move_up_by(1);
+			});
 			break;
 		case morda::key::down:
-			{
-				auto p = this->cursors.front().get_effective_pos();
-				if(p.y() != this->lines.size() - 1){
-					this->cursors.front().set_pos(p + r4::vector2<size_t>{0, 1});
-				}
-			}
+			this->for_each_cursor([](cursor& c){
+				c.move_down_by(1);
+			});
 			break;
 		case morda::key::end:
 			this->for_each_cursor([this](cursor& c){

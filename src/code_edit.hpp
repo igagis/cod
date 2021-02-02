@@ -91,42 +91,10 @@ class code_edit :
 
 		r4::vector2<size_t> get_effective_pos()const noexcept;
 
-		void move_right_by(size_t dx)noexcept{
-			auto p = this->get_effective_pos();
-			p.x() += dx;
-			auto line_size = this->owner.lines[p.y()].str.size();
-
-			ASSERT(!this->lines.empty())
-			for(; p.x() > line_size;){
-				if(p.y() < this->owner.lines.size() - 1){
-					p.x() -= line_size + 1;
-					++p.y();
-					line_size = this->owner.lines[p.y()].str.size();
-				}else{
-					p.x() = line_size;
-					break;
-				}
-			}
-			this->set_pos(p);
-		}
-
-		void move_left_by(size_t dx)noexcept{
-			auto p = this->get_effective_pos();
-			for(; dx > p.x();){
-				if(p.y() == 0){
-					p.x() = 0;
-					this->set_pos(p);
-					return;
-				}else{
-					dx -= p.x() + 1;
-					--p.y();
-					p.x() = this->owner.lines[p.y()].str.size();
-				}
-			}
-			p.x() -= dx;
-
-			this->set_pos(p);
-		}
+		void move_right_by(size_t dx)noexcept;
+		void move_left_by(size_t dx)noexcept;
+		void move_up_by(size_t dy)noexcept;
+		void move_down_by(size_t dy)noexcept;
 
 		void set_pos(r4::vector2<size_t> pos)noexcept{
 			this->pos = pos;
