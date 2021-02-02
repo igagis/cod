@@ -91,6 +91,43 @@ class code_edit :
 
 		r4::vector2<size_t> get_effective_pos()const noexcept;
 
+		void move_right_by(size_t dx)noexcept{
+			auto p = this->get_effective_pos();
+			p.x() += dx;
+			auto line_size = this->owner.lines[p.y()].str.size();
+
+			ASSERT(!this->lines.empty())
+			for(; p.x() > line_size;){
+				if(p.y() < this->owner.lines.size() - 1){
+					p.x() -= line_size + 1;
+					++p.y();
+					line_size = this->owner.lines[p.y()].str.size();
+				}else{
+					p.x() = line_size;
+					break;
+				}
+			}
+			this->set_pos(p);
+		}
+
+		void move_left_by(size_t dx)noexcept{
+			auto p = this->get_effective_pos();
+			for(; dx > p.x();){
+				if(p.y() == 0){
+					p.x() = 0;
+					this->set_pos(p);
+					return;
+				}else{
+					dx -= p.x() + 1;
+					--p.y();
+					p.x() = this->owner.lines[p.y()].str.size();
+				}
+			}
+			p.x() -= dx;
+
+			this->set_pos(p);
+		}
+
 		void set_pos(r4::vector2<size_t> pos)noexcept{
 			this->pos = pos;
 			this->owner.start_cursor_blinking();
@@ -100,6 +137,12 @@ class code_edit :
 	bool cursor_blink_visible = true;
 
 	std::vector<cursor> cursors;
+
+	void for_each_cursor(const std::function<void(cursor&)>& func);
+
+	void insert(cursor& c, const std::u32string& str);
+
+	bool text_changed = false;
 
 	void update(uint32_t dt)override;
 	void on_focus_change()override;

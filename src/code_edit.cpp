@@ -119,6 +119,36 @@ void code_edit::start_cursor_blinking(){
 		);
 }
 
+void code_edit::for_each_cursor(const std::function<void(cursor&)>& func){
+	ASSERT(func)
+	for(auto& c : this->cursors){
+		func(c);
+		// TODO: check if cursors do not intersect
+	}
+	if(this->text_changed){
+		this->text_changed = false;
+		this->notify_text_change();
+	}
+}
+
+void code_edit::insert(cursor& c, const std::u32string& str){
+	auto strs = utki::split(str, U'\n');
+	ASSERT(!strs.empty())
+
+	auto cp = c.get_effective_pos();
+
+	if(strs.size() == 1){
+		auto& l = this->lines[cp.y()];
+		l.str.insert(cp.x(), strs.front());
+		l.extend_line_span(cp.x(), strs.front().size());
+		c.move_right_by(strs.front().size());
+	}else{
+		// TODO: multiline insert (from clipboard)
+	}
+
+	this->text_changed = true;
+}
+
 void code_edit::render(const morda::matrix4& matrix)const{
 	this->pile::render(matrix);
 
@@ -150,8 +180,10 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 	
 	if(event.is_down){
 		// this->set_cursor_index(this->posToIndex(e.pos.x()));
-		this->cursors.push_back(cursor(*this, 0));
-		this->focus();
+		if(!this->is_focused()){
+			this->cursors.push_back(cursor(*this, 0));
+			this->focus();
+		}
 	}
 	
 	return true;
@@ -204,25 +236,14 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 
 			break;
 		case morda::key::right:
-			{
-				auto cp = this->cursors.front().get_effective_pos();
-				if(cp.x() != this->lines[cp.y()].str.size()){
-					this->cursors.front().set_pos(cp + r4::vector2<size_t>{1, 0});
-				}else if(cp.y() != this->lines.size() - 1){
-					this->cursors.front().set_pos(r4::vector2<size_t>{0, cp.y() + 1});
-				}
-			}
+			this->for_each_cursor([](cursor& c){
+				c.move_right_by(1);
+			});
 			break;
 		case morda::key::left:
-			{
-				auto cp = this->cursors.front().get_effective_pos();
-				if(cp.x() != 0){
-					this->cursors.front().set_pos(cp - r4::vector2<size_t>{1, 0});
-				}else if(cp.y() != 0){
-					auto new_y = cp.y() - 1;
-					this->cursors.front().set_pos(r4::vector2<size_t>{this->lines[new_y].str.size(), new_y});
-				}
-			}
+			this->for_each_cursor([](cursor& c){
+				c.move_left_by(1);
+			});
 			break;
 		case morda::key::up:
 			{
@@ -296,14 +317,9 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 			// fall through
 		default:
 			if(!unicode.empty()){
-				auto cp = this->cursors.front().get_effective_pos();
-				auto& l = this->lines[cp.y()];
-				l.str.insert(cp.x(), unicode);
-				l.extend_line_span(cp.x(), unicode.size());
-				cp.x() += unicode.size();
-				this->cursors.front().set_pos(cp);
-
-				this->notify_text_change();
+				this->for_each_cursor([this, &unicode](cursor& c){
+					this->insert(c, unicode);
+				});
 			}
 			break;
 	}	
