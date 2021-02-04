@@ -48,6 +48,8 @@ class code_edit :
 
 		void extend_span(size_t at_char_index, size_t by_length);
 		void erase_spans(size_t at_char_index, size_t by_length);
+
+		void append(line&& l);
 	};
 
 	std::vector<line> lines;

@@ -158,7 +158,38 @@ void code_edit::erase_forward(cursor& c, size_t num){
 }
 
 void code_edit::erase_backward(cursor& c, size_t num){
-	// TODO:
+	auto cp = c.get_effective_pos();
+
+	if(cp.x() == 0){
+		if(cp.y() == 0){
+			return;
+		}
+		auto i = std::next(this->lines.begin(), cp.y());
+		auto ll = std::move(*i);
+		this->lines.erase(i);
+		--cp.y();
+		auto& l = this->lines[cp.y()];
+		cp.x() = l.str.size();
+		l.append(std::move(ll));
+	}
+
+	auto& l = this->lines[cp.y()];
+	size_t p;
+	size_t s;
+	if(cp.x() >= num){
+		p = cp.x() - num;
+		s = num;
+	}else{
+		p = 0;
+		s = cp.x();
+	}
+	cp.x() -= s;
+	c.set_pos(cp);
+
+	l.str.erase(p, s);
+	l.erase_spans(p, s);
+
+	// TODO: correct cursors
 }
 
 void code_edit::render(const morda::matrix4& matrix)const{
@@ -267,6 +298,15 @@ void code_edit::line::erase_spans(size_t at_char_index, size_t by_length){
 		}
 		++i;
 	}
+}
+
+void code_edit::line::append(line&& l){
+	this->str.append(std::move(l.str));
+	this->spans.insert(
+			this->spans.end(),
+			std::make_move_iterator(l.spans.begin()),
+			std::make_move_iterator(l.spans.end())
+		);
 }
 
 void code_edit::cursor::move_right_by(size_t dx)noexcept{
