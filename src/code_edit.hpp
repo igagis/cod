@@ -46,8 +46,16 @@ class code_edit :
 		std::u32string str;
 		std::vector<line_span> spans;
 
+		size_t size()const noexcept{
+			return this->str.size();
+		}
+
 		void extend_span(size_t at_char_index, size_t by_length);
 		void erase_spans(size_t at_char_index, size_t by_length);
+		void erase(size_t pos, size_t num){
+			this->str.erase(pos, num);
+			this->erase_spans(pos, num);
+		}
 
 		void append(line&& l);
 	};

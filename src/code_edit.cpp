@@ -152,9 +152,34 @@ void code_edit::insert(cursor& c, const std::u32string& str){
 }
 
 void code_edit::erase_forward(cursor& c, size_t num){
-	// auto cp = c.get_effective_pos();
+	auto cp = c.get_effective_pos();
 
-	// TODO:
+	auto& l = this->lines[cp.y()];
+
+	ASSERT(cp.x() <= l.size())
+	if(cp.x() == l.size()){
+		ASSERT(cp.y() < this->lines.size())
+		if(cp.y() + 1 == this->lines.size()){
+			return;
+		}
+		auto i = std::next(this->lines.begin(), cp.y() + 1);
+		auto ll = std::move(*i);
+		this->lines.erase(i);
+		l.append(std::move(ll));
+		return;
+	}
+
+	size_t s;
+	ASSERT(cp.x() <= l.size());
+	size_t to_end = l.size() - cp.x();
+	if(num > to_end){
+		s = to_end;
+	}else{
+		s = num;
+	}
+	l.erase(cp.x(), s);
+
+	// TODO: correct cursors
 }
 
 void code_edit::erase_backward(cursor& c, size_t num){
@@ -169,8 +194,10 @@ void code_edit::erase_backward(cursor& c, size_t num){
 		this->lines.erase(i);
 		--cp.y();
 		auto& l = this->lines[cp.y()];
-		cp.x() = l.str.size();
+		cp.x() = l.size();
 		l.append(std::move(ll));
+		c.set_pos(cp);
+		return;
 	}
 
 	auto& l = this->lines[cp.y()];
@@ -186,8 +213,7 @@ void code_edit::erase_backward(cursor& c, size_t num){
 	cp.x() -= s;
 	c.set_pos(cp);
 
-	l.str.erase(p, s);
-	l.erase_spans(p, s);
+	l.erase(p, s);
 
 	// TODO: correct cursors
 }
