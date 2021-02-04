@@ -39,7 +39,7 @@ class code_edit :
 	};
 
 	struct line_span{
-		size_t length;
+		size_t length = 0;
 		std::shared_ptr<attributes> attrs;
 	};
 	struct line{
@@ -58,6 +58,8 @@ class code_edit :
 		}
 
 		void append(line&& l);
+
+		line cut_tail(size_t pos);
 	};
 
 	std::vector<line> lines;
@@ -122,6 +124,7 @@ class code_edit :
 	void insert(cursor& c, const std::u32string& str);
 	void erase_forward(cursor& c, size_t num);
 	void erase_backward(cursor& c, size_t num);
+	void put_new_line(cursor& c);
 
 	bool text_changed = false;
 

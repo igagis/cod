@@ -136,6 +136,7 @@ void code_edit::insert(cursor& c, const std::u32string& str){
 	ASSERT(!strs.empty())
 
 	auto cp = c.get_effective_pos();
+	c.set_pos(cp);
 
 	if(strs.size() == 1){
 		auto& l = this->lines[cp.y()];
@@ -166,20 +167,21 @@ void code_edit::erase_forward(cursor& c, size_t num){
 		auto ll = std::move(*i);
 		this->lines.erase(i);
 		l.append(std::move(ll));
-		return;
-	}
-
-	size_t s;
-	ASSERT(cp.x() <= l.size());
-	size_t to_end = l.size() - cp.x();
-	if(num > to_end){
-		s = to_end;
 	}else{
-		s = num;
+		size_t s;
+		ASSERT(cp.x() <= l.size());
+		size_t to_end = l.size() - cp.x();
+		if(num > to_end){
+			s = to_end;
+		}else{
+			s = num;
+		}
+		l.erase(cp.x(), s);
 	}
-	l.erase(cp.x(), s);
 
 	// TODO: correct cursors
+
+	this->text_changed = true;
 }
 
 void code_edit::erase_backward(cursor& c, size_t num){
@@ -197,25 +199,45 @@ void code_edit::erase_backward(cursor& c, size_t num){
 		cp.x() = l.size();
 		l.append(std::move(ll));
 		c.set_pos(cp);
-		return;
-	}
-
-	auto& l = this->lines[cp.y()];
-	size_t p;
-	size_t s;
-	if(cp.x() >= num){
-		p = cp.x() - num;
-		s = num;
 	}else{
-		p = 0;
-		s = cp.x();
-	}
-	cp.x() -= s;
-	c.set_pos(cp);
+		auto& l = this->lines[cp.y()];
+		size_t p;
+		size_t s;
+		if(cp.x() >= num){
+			p = cp.x() - num;
+			s = num;
+		}else{
+			p = 0;
+			s = cp.x();
+		}
+		cp.x() -= s;
+		c.set_pos(cp);
 
-	l.erase(p, s);
+		l.erase(p, s);
+	}
 
 	// TODO: correct cursors
+
+	this->text_changed = true;
+}
+
+void code_edit::put_new_line(cursor& c){
+	auto cp = c.get_effective_pos();
+
+	ASSERT(cp.y() < this->lines.size())
+
+	auto i = std::next(this->lines.begin(), cp.y());
+
+	auto nl = i->cut_tail(cp.x());
+	this->lines.insert(std::next(i), std::move(nl));
+
+	++cp.y();
+	cp.x() = 0;
+	c.set_pos(cp);
+
+	// TODO: correct cursors
+
+	this->text_changed = true;
 }
 
 void code_edit::render(const morda::matrix4& matrix)const{
@@ -335,6 +357,53 @@ void code_edit::line::append(line&& l){
 		);
 }
 
+code_edit::line code_edit::line::cut_tail(size_t pos){
+	if(pos >= this->size()){
+		return line{
+			spans: {line_span{ attrs: this->spans.back().attrs }}
+		};
+	}
+
+	line ret;
+	ret.str = this->str.substr(pos);
+	this->str = this->str.substr(0, pos);
+
+	size_t cur_span_end = 0;
+	for(auto i = this->spans.begin(); i != this->spans.end(); ++i){
+		cur_span_end += i->length;
+		if(pos < cur_span_end){
+			size_t to_end = cur_span_end - pos;
+			ret.spans.push_back(line_span(*i));
+			ret.spans.back().length = to_end;
+			i->length -= to_end;
+			// LOG("this->spans.size() = " << this->spans.size() << std::endl)
+			// LOG("ret.spans.size() = " << ret.spans.size() << std::endl)
+			// LOG("dst = " << std::distance(this->spans.begin(), i) << std::endl)
+			ret.spans.insert(
+					ret.spans.end(),
+					std::make_move_iterator(std::next(i)),
+					std::make_move_iterator(this->spans.end())
+				);
+			this->spans.erase(std::next(i), this->spans.end());
+			// LOG("this->spans.size() = " << this->spans.size() << std::endl)
+			// LOG("ret.spans.size() = " << ret.spans.size() << std::endl)
+
+			// for(auto& s : this->spans){
+			// 	ASSERT(s.attrs)
+			// }
+			// LOG("ret.spans.size() = " << ret.spans.size() << std::endl)
+			// for(auto& s : ret.spans){
+			// 	ASSERT(s.attrs);
+			// }
+
+			return ret;
+		}
+	}
+
+	ASSERT(false)
+	return ret;
+}
+
 void code_edit::cursor::move_right_by(size_t dx)noexcept{
 	auto p = this->get_effective_pos();
 	p.x() += dx;
@@ -393,7 +462,9 @@ void code_edit::cursor::move_down_by(size_t dy)noexcept{
 void code_edit::on_character_input(const std::u32string& unicode, morda::key key){
 	switch(key){
 		case morda::key::enter:
-
+			this->for_each_cursor([this](cursor& c){
+				this->put_new_line(c);
+			});
 			break;
 		case morda::key::right:
 			this->for_each_cursor([](cursor& c){
