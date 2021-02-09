@@ -75,12 +75,14 @@ void code_edit::line_widget::render(const morda::matrix4& matrix)const{
 				cur_char_pos * this->owner.font_info.glyph_dims.x(),
 				this->owner.font_info.baseline
 			);
-		font.render(
+		auto res = font.render(
 				matr,
 				morda::color_to_vec4f(s.attrs->color),
-				std::u32string_view(str.c_str() + cur_char_pos, s.length)
+				std::u32string_view(str.c_str() + cur_char_pos, s.length),
+				this->owner.settings.tab_size,
+				cur_char_pos
 			);
-		cur_char_pos += s.length;
+		cur_char_pos += res.length;
 	}
 }
 
@@ -135,8 +137,8 @@ void code_edit::insert(cursor& c, const std::u32string& str){
 	auto strs = utki::split(str, U'\n');
 	ASSERT(!strs.empty())
 
-	auto cp = c.get_effective_pos();
-	c.set_pos(cp);
+	auto cp = c.get_pos_chars();
+	c.set_char_pos(cp);
 
 	if(strs.size() == 1){
 		auto& l = this->lines[cp.y()];
@@ -153,7 +155,7 @@ void code_edit::insert(cursor& c, const std::u32string& str){
 }
 
 void code_edit::erase_forward(cursor& c, size_t num){
-	auto cp = c.get_effective_pos();
+	auto cp = c.get_pos_chars();
 
 	auto& l = this->lines[cp.y()];
 
@@ -185,7 +187,7 @@ void code_edit::erase_forward(cursor& c, size_t num){
 }
 
 void code_edit::erase_backward(cursor& c, size_t num){
-	auto cp = c.get_effective_pos();
+	auto cp = c.get_pos_chars();
 
 	if(cp.x() == 0){
 		if(cp.y() == 0){
@@ -198,7 +200,7 @@ void code_edit::erase_backward(cursor& c, size_t num){
 		auto& l = this->lines[cp.y()];
 		cp.x() = l.size();
 		l.append(std::move(ll));
-		c.set_pos(cp);
+		c.set_char_pos(cp);
 	}else{
 		auto& l = this->lines[cp.y()];
 		size_t p;
@@ -211,7 +213,7 @@ void code_edit::erase_backward(cursor& c, size_t num){
 			s = cp.x();
 		}
 		cp.x() -= s;
-		c.set_pos(cp);
+		c.set_char_pos(cp);
 
 		l.erase(p, s);
 	}
@@ -222,7 +224,7 @@ void code_edit::erase_backward(cursor& c, size_t num){
 }
 
 void code_edit::put_new_line(cursor& c){
-	auto cp = c.get_effective_pos();
+	auto cp = c.get_pos_chars();
 
 	ASSERT(cp.y() < this->lines.size())
 
@@ -233,7 +235,7 @@ void code_edit::put_new_line(cursor& c){
 
 	++cp.y();
 	cp.x() = 0;
-	c.set_pos(cp);
+	c.set_char_pos(cp);
 
 	// TODO: correct cursors
 
@@ -253,7 +255,7 @@ void code_edit::render_cursors(const morda::matrix4& matrix)const{
 	for(auto& c : this->cursors){
 		morda::matrix4 matr(matrix);
 
-		morda::vector2 pos = c.get_effective_pos().to<morda::real>().comp_mul(this->font_info.glyph_dims);
+		morda::vector2 pos = c.get_pos_glyphs().to<morda::real>().comp_mul(this->font_info.glyph_dims);
 		matr.translate(pos);
 		matr.scale(morda::vector2(cursor_thickness_dp * this->context->units.dots_per_dp, this->font_info.glyph_dims.y()));
 
@@ -280,16 +282,37 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 	return true;
 }
 
-r4::vector2<size_t> code_edit::cursor::get_effective_pos()const noexcept{
+r4::vector2<size_t> code_edit::cursor::get_pos_chars()const noexcept{
 	ASSERT(!this->owner.lines.empty())
 	if(this->pos.y() >= this->owner.lines.size()){
-		return 0;
+		return {this->owner.lines.back().size(), this->owner.lines.size() - 1};
 	}
 	auto cur_line_size = this->owner.lines[this->pos.y()].str.size();
 	if(this->pos.x() > cur_line_size){
 		return {cur_line_size, this->pos.y()};
 	}
 	return this->pos;
+}
+
+r4::vector2<size_t> code_edit::cursor::get_pos_glyphs()const noexcept{
+	ASSERT(!this->owner.lines.empty())
+	auto p = this->get_pos_chars();
+
+	const auto& l = this->owner.lines[p.y()].str;
+
+	const size_t tab_size = this->owner.settings.tab_size;
+
+	size_t x = 0;
+	for(size_t i = 0; i != p.x(); ++i){
+		ASSERT(i < l.size())
+		if(l[i] == U'\t'){
+			x += tab_size - x % tab_size;
+		}else{
+			++x;
+		}
+	}
+
+	return {x, p.y()};
 }
 
 bool code_edit::on_key(bool is_down, morda::key key){
@@ -405,7 +428,7 @@ code_edit::line code_edit::line::cut_tail(size_t pos){
 }
 
 void code_edit::cursor::move_right_by(size_t dx)noexcept{
-	auto p = this->get_effective_pos();
+	auto p = this->get_pos_chars();
 	p.x() += dx;
 	auto line_size = this->owner.lines[p.y()].str.size();
 
@@ -420,15 +443,15 @@ void code_edit::cursor::move_right_by(size_t dx)noexcept{
 			break;
 		}
 	}
-	this->set_pos(p);
+	this->set_char_pos(p);
 }
 
 void code_edit::cursor::move_left_by(size_t dx)noexcept{
-	auto p = this->get_effective_pos();
+	auto p = this->get_pos_chars();
 	for(; dx > p.x();){
 		if(p.y() == 0){
 			p.x() = 0;
-			this->set_pos(p);
+			this->set_char_pos(p);
 			return;
 		}else{
 			dx -= p.x() + 1;
@@ -438,7 +461,7 @@ void code_edit::cursor::move_left_by(size_t dx)noexcept{
 	}
 	p.x() -= dx;
 
-	this->set_pos(p);
+	this->set_char_pos(p);
 }
 
 void code_edit::cursor::move_up_by(size_t dy)noexcept{
@@ -448,7 +471,7 @@ void code_edit::cursor::move_up_by(size_t dy)noexcept{
 	}else{
 		p.y() -= dy;
 	}
-	this->set_pos(p);
+	this->set_char_pos(p);
 }
 
 void code_edit::cursor::move_down_by(size_t dy)noexcept{
@@ -456,7 +479,7 @@ void code_edit::cursor::move_down_by(size_t dy)noexcept{
 	p.y() += dy;
 	using std::min;
 	p.y() = min(this->owner.lines.size() - 1, p.y());
-	this->set_pos(p);
+	this->set_char_pos(p);
 }
 
 void code_edit::on_character_input(const std::u32string& unicode, morda::key key){
@@ -488,16 +511,16 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 			break;
 		case morda::key::end:
 			this->for_each_cursor([this](cursor& c){
-				auto p = c.get_effective_pos();
+				auto p = c.get_pos_chars();
 				p.x() = this->lines[p.y()].str.size();
-				c.set_pos(p);
+				c.set_char_pos(p);
 			});
 			break;
 		case morda::key::home:
 			this->for_each_cursor([](cursor& c){
-				auto p = c.get_effective_pos();
+				auto p = c.get_pos_chars();
 				p.x() = 0;
-				c.set_pos(p);
+				c.set_char_pos(p);
 			});
 			break;
 		case morda::key::backspace:

@@ -102,14 +102,18 @@ class code_edit :
 				pos(pos)
 		{}
 
-		r4::vector2<size_t> get_effective_pos()const noexcept;
+		// get position in characters
+		r4::vector2<size_t> get_pos_chars()const noexcept;
+
+		// get position in glyphs
+		r4::vector2<size_t> get_pos_glyphs()const noexcept;
 
 		void move_right_by(size_t dx)noexcept;
 		void move_left_by(size_t dx)noexcept;
 		void move_up_by(size_t dy)noexcept;
 		void move_down_by(size_t dy)noexcept;
 
-		void set_pos(r4::vector2<size_t> pos)noexcept{
+		void set_char_pos(r4::vector2<size_t> pos)noexcept{
 			this->pos = pos;
 			this->owner.start_cursor_blinking();
 		}
