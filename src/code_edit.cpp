@@ -288,7 +288,8 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 namespace{
 size_t glyph_pos_to_char_pos(size_t p, const std::u32string& str, size_t tab_size){
 	size_t x = 0;
-	for(size_t i = 0; i != str.size(); ++i){
+	size_t i = 0;
+	for(; i != str.size(); ++i){
 		size_t d;
 
 		if(str[i] == U'\t'){
@@ -307,7 +308,7 @@ size_t glyph_pos_to_char_pos(size_t p, const std::u32string& str, size_t tab_siz
 
 		x += d;
 	}
-	return x;
+	return i;
 }
 }
 
@@ -345,6 +346,8 @@ size_t char_pos_to_glyph_pos(size_t p, const std::u32string& str, size_t tab_siz
 void code_edit::cursor::set_char_pos(r4::vector2<size_t> p)noexcept{
 	ASSERT(!this->owner.lines.empty())
 	ASSERT(p.y() < this->owner.lines.size())
+
+	LOG("p = " << p << std::endl)
 
 	this->pos = {
 		char_pos_to_glyph_pos(
@@ -516,6 +519,7 @@ void code_edit::cursor::move_left_by(size_t dx)noexcept{
 			p.x() = this->owner.lines[p.y()].str.size();
 		}
 	}
+	LOG("p = " << p << " dx = " << dx << std::endl)
 	p.x() -= dx;
 
 	this->set_char_pos(p);
