@@ -575,9 +575,15 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 			});
 			break;
 		case morda::key::home:
-			this->for_each_cursor([](cursor& c){
+			this->for_each_cursor([this](cursor& c){
 				auto p = c.get_pos_chars();
-				p.x() = 0;
+				auto& l = this->lines[p.y()].str;
+				auto non_ws_pos = l.find_first_not_of(U" \t");
+				if(non_ws_pos == std::remove_reference_t<decltype(l)>::npos || p.x() == non_ws_pos){
+					p.x() = 0;
+				}else{
+					p.x() = non_ws_pos;
+				}
 				c.set_char_pos(p);
 			});
 			break;
