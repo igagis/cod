@@ -64,10 +64,12 @@ std::shared_ptr<morda::widget> code_edit::provider::get_widget(size_t index){
 void code_edit::line_widget::render(const morda::matrix4& matrix)const{	
 	using std::round;
 
-	const auto& str = this->owner.lines[this->line_num].str;
+	const auto& l = this->owner.lines[this->line_num];
+	const auto& str = l.str;
 
-	unsigned cur_char_pos = 0;
-	for(const auto& s : this->owner.lines[this->line_num].spans){
+	size_t cur_char_pos = 0;
+	size_t cur_char_index = 0;
+	for(const auto& s : l.spans){
 		const auto& font = this->owner.get_font().get(s.attrs->style);
 
 		morda::matrix4 matr(matrix);
@@ -78,10 +80,11 @@ void code_edit::line_widget::render(const morda::matrix4& matrix)const{
 		auto res = font.render(
 				matr,
 				morda::color_to_vec4f(s.attrs->color),
-				std::u32string_view(str.c_str() + cur_char_pos, s.length),
+				std::u32string_view(str.c_str() + cur_char_index, s.length),
 				this->owner.settings.tab_size,
 				cur_char_pos
 			);
+		cur_char_index += s.length;
 		cur_char_pos += res.length;
 	}
 }
