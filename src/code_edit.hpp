@@ -113,10 +113,7 @@ class code_edit :
 		void move_up_by(size_t dy)noexcept;
 		void move_down_by(size_t dy)noexcept;
 
-		void set_char_pos(r4::vector2<size_t> pos)noexcept{
-			this->pos = pos;
-			this->owner.start_cursor_blinking();
-		}
+		void set_char_pos(r4::vector2<size_t> pos)noexcept;
 	};
 
 	bool cursor_blink_visible = true;

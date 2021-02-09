@@ -285,37 +285,91 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 	return true;
 }
 
+namespace{
+size_t glyph_pos_to_char_pos(size_t p, const std::u32string& str, size_t tab_size){
+	size_t x = 0;
+	for(size_t i = 0; i != str.size(); ++i){
+		size_t d;
+
+		if(str[i] == U'\t'){
+			d = tab_size - x % tab_size;
+		}else{
+			d = 1;
+		}
+
+		size_t px = p - x;
+		if(px <= d){
+			if(px <= d / 2)
+				return i;
+			else
+				return i + 1;
+		}
+
+		x += d;
+	}
+	return x;
+}
+}
+
 r4::vector2<size_t> code_edit::cursor::get_pos_chars()const noexcept{
 	ASSERT(!this->owner.lines.empty())
 	if(this->pos.y() >= this->owner.lines.size()){
 		return {this->owner.lines.back().size(), this->owner.lines.size() - 1};
 	}
-	auto cur_line_size = this->owner.lines[this->pos.y()].str.size();
-	if(this->pos.x() > cur_line_size){
-		return {cur_line_size, this->pos.y()};
+
+	return {
+		glyph_pos_to_char_pos(
+				this->pos.x(),
+				this->owner.lines[this->pos.y()].str,
+				this->owner.settings.tab_size
+			),
+		this->pos.y()
+	};
+}
+
+namespace{
+size_t char_pos_to_glyph_pos(size_t p, const std::u32string& str, size_t tab_size){
+	size_t x = 0;
+	for(size_t i = 0; i < str.size() && i != p; ++i){
+		ASSERT(i < str.size())
+		if(str[i] == U'\t'){
+			x += tab_size - x % tab_size;
+		}else{
+			++x;
+		}
 	}
-	return this->pos;
+	return x;
+}
+}
+
+void code_edit::cursor::set_char_pos(r4::vector2<size_t> p)noexcept{
+	ASSERT(!this->owner.lines.empty())
+	ASSERT(p.y() < this->owner.lines.size())
+
+	this->pos = {
+		char_pos_to_glyph_pos(
+				p.x(),
+				this->owner.lines[p.y()].str,
+				this->owner.settings.tab_size
+			),
+		p.y()
+	};
+
+	this->owner.start_cursor_blinking();
 }
 
 r4::vector2<size_t> code_edit::cursor::get_pos_glyphs()const noexcept{
 	ASSERT(!this->owner.lines.empty())
 	auto p = this->get_pos_chars();
 
-	const auto& l = this->owner.lines[p.y()].str;
-
-	const size_t tab_size = this->owner.settings.tab_size;
-
-	size_t x = 0;
-	for(size_t i = 0; i != p.x(); ++i){
-		ASSERT(i < l.size())
-		if(l[i] == U'\t'){
-			x += tab_size - x % tab_size;
-		}else{
-			++x;
-		}
-	}
-
-	return {x, p.y()};
+	return {
+		char_pos_to_glyph_pos(
+				p.x(),
+				this->owner.lines[p.y()].str,
+				this->owner.settings.tab_size
+			),
+		p.y()
+	};
 }
 
 bool code_edit::on_key(bool is_down, morda::key key){
@@ -468,21 +522,22 @@ void code_edit::cursor::move_left_by(size_t dx)noexcept{
 }
 
 void code_edit::cursor::move_up_by(size_t dy)noexcept{
-	auto p = this->pos;
-	if(p.y() < dy){
-		p.y() = 0;
+	if(this->pos.y() < dy){
+		this->pos.y() = 0;
 	}else{
-		p.y() -= dy;
+		this->pos.y() -= dy;
 	}
-	this->set_char_pos(p);
+	this->owner.start_cursor_blinking();
 }
 
 void code_edit::cursor::move_down_by(size_t dy)noexcept{
-	auto p = this->pos;
-	p.y() += dy;
-	using std::min;
-	p.y() = min(this->owner.lines.size() - 1, p.y());
-	this->set_char_pos(p);
+	size_t max_y = this->owner.lines.size() - 1;
+	if(max_y - this->pos.y() < dy){
+		this->pos.y() = max_y;
+	}else{
+		this->pos.y() += dy;
+	}
+	this->owner.start_cursor_blinking();
 }
 
 void code_edit::on_character_input(const std::u32string& unicode, morda::key key){
