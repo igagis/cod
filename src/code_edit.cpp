@@ -23,9 +23,12 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc)
 	this->on_font_change();
 
 	this->push_back_inflate(puu::read(R"qwertyuiop(
-			@list{
-				id{lines}
+			@scroll_area{
 				layout{dx{fill} dy{fill}}
+				@list{
+					id{lines}
+					layout{dx{min} dy{fill}}
+				}
 			}
 		)qwertyuiop"));
 
@@ -347,7 +350,7 @@ void code_edit::cursor::set_char_pos(r4::vector2<size_t> p)noexcept{
 	ASSERT(!this->owner.lines.empty())
 	ASSERT(p.y() < this->owner.lines.size())
 
-	LOG("p = " << p << std::endl)
+	// LOG("p = " << p << std::endl)
 
 	this->pos = {
 		char_pos_to_glyph_pos(
@@ -519,7 +522,7 @@ void code_edit::cursor::move_left_by(size_t dx)noexcept{
 			p.x() = this->owner.lines[p.y()].str.size();
 		}
 	}
-	LOG("p = " << p << " dx = " << dx << std::endl)
+	// LOG("p = " << p << " dx = " << dx << std::endl)
 	p.x() -= dx;
 
 	this->set_char_pos(p);

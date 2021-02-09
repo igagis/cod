@@ -1,44 +1,58 @@
-@row{
-
-	@pile{
+@column{
+	@row{
 		layout{
-			dy{fill}
-			dx{0}
 			weight{1}
+			dx{fill}
 		}
 
-		@color{
-			layout{dx{fill} dy{fill}}
-			color{0xff004000}
-		}
-
-		@margins{
-			defs{w{0.1}}
-			layout{dx{fill} dy{fill}}
-			weight_left{${w}}
-			weight_right{${w}}
-			weight_top{${w}}
-			weight_bottom{${w}}
+		@pile{
+			layout{
+				dy{fill}
+				dx{0}
+				weight{1}
+			}
 
 			@color{
 				layout{dx{fill} dy{fill}}
-				color{0xff000000}
+				color{0xff004000}
 			}
 
-			@code_edit{
-				id{code_edit}
-				layout{
-					dx{fill} dy{fill}
+			@margins{
+				defs{w{0.1}}
+				layout{dx{fill} dy{fill}}
+				weight_left{${w}}
+				weight_right{${w}}
+				weight_top{${w}}
+				weight_bottom{${w}}
+
+				@color{
+					layout{dx{fill} dy{fill}}
+					color{0xff000000}
 				}
+
+				@code_edit{
+					id{code_edit}
+					layout{
+						dx{fill} dy{fill}
+					}
+				}
+			}	
+		}
+
+		@vertical_scroll_bar{
+			id{vert_scroll}
+
+			layout{
+				dx{min} dy{max}
 			}
-		}	
+		}
 	}
 
-	@vertical_scroll_bar{
-		id{scroll_code_edit}
+	@horizontal_scroll_bar{
+		id{hori_scroll}
 
 		layout{
-			dx{min} dy{max}
+			dx{fill} dy{min}
 		}
 	}
 }

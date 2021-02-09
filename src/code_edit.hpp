@@ -96,6 +96,8 @@ class code_edit :
 	class cursor{
 		code_edit& owner;
 		r4::vector2<size_t> pos = 0;
+		bool selection_mode = false;
+		r4::vector2<size_t> sel_pos = 0;
 	public:
 		cursor(code_edit& owner, r4::vector2<size_t> pos) :
 				owner(owner),
@@ -114,6 +116,15 @@ class code_edit :
 		void move_down_by(size_t dy)noexcept;
 
 		void set_char_pos(r4::vector2<size_t> pos)noexcept;
+
+		void start_selection()noexcept{
+			this->sel_pos = this->get_pos_chars();
+			this->selection_mode = true;
+		}
+
+		void clear_selection()noexcept{
+			this->selection_mode = false;
+		}
 	};
 
 	bool cursor_blink_visible = true;

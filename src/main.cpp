@@ -21,7 +21,44 @@ public:
 				*this->get_res_file("res/main.gui")
 			);
 
-		c->get_widget_as<morda::text_widget>("code_edit").set_text("Hello world!\nsecond line\n\tthird line");
+		c->get_widget_as<morda::text_widget>("code_edit").set_text(
+R"qwertyuiop(Hello world!
+second line
+\tthird line
+very very long line lorem ipsum dolor sit amet consecteteur blah blag
+ef
+ef
+qw
+ef
+wqef
+we
+fw
+ef
+we 
+fwe 
+fwe 
+fw e
+fwe we
+f w
+ef 
+we
+f we
+f we
+	f
+	we 
+	fwe
+	
+	fwqe
+	fwe
+	
+	fwqe
+		f
+		wqe
+		f
+		wqf
+
+
+	wef wqe)qwertyuiop");
 		
 		this->gui.set_root(std::move(c));
 	}
