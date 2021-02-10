@@ -78,7 +78,13 @@ void code_edit::set_text(std::u32string&& text){
 			unsigned front_size = s.size() / 2;
 			decltype(line::spans) spans = {{
 				line_span{length: front_size, attrs: this->text_style},
-				line_span{length: size_t(s.size()) - front_size, attrs: std::make_shared<attributes>(attributes{style: morda::res::font::style::italic, color: 0xff0000ff})}
+				line_span{
+						length: size_t(s.size()) - front_size,
+						attrs: std::make_shared<attributes>(attributes{
+								style: morda::res::font::style::italic,
+								color: 0xff0000ff
+							})
+					}
 			}};
 			return line{
 					str: std::move(s),
@@ -386,7 +392,7 @@ size_t glyph_pos_to_char_pos(size_t p, const std::u32string& str, size_t tab_siz
 
 		size_t px = p - x;
 		if(px <= d){
-			if(px < d / 2)
+			if(px <= d / 2)
 				return i;
 			else
 				return i + 1;
