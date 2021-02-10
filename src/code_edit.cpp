@@ -421,6 +421,10 @@ void code_edit::line::erase_spans(size_t at_char_index, size_t by_length){
 			}else{
 				by_length -= to_end;
 				if(to_end == i->length){
+					if(this->spans.size() == 1){ // do not remove the last span
+						this->spans.back().length = 0;
+						break;
+					}
 					// remove span
 					i = this->spans.erase(i);
 					continue;

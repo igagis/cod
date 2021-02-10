@@ -122,7 +122,7 @@ class code_edit :
 			this->selection_mode = true;
 		}
 
-		void clear_selection()noexcept{
+		void stop_selection()noexcept{
 			this->selection_mode = false;
 		}
 	};
