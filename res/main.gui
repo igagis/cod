@@ -31,12 +31,4 @@
 			}
 		}	
 	}
-
-	@horizontal_scroll_bar{
-		id{horizontal_scroll}
-
-		layout{
-			dx{fill} dy{min}
-		}
-	}
 }

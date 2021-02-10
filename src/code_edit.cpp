@@ -43,6 +43,13 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc)
 					}
 				}
 			}
+			@horizontal_scroll_bar{
+				id{horizontal_scroll}
+
+				layout{
+					dx{fill} dy{min}
+				}
+			}
 		)qwertyuiop"));
 
 	auto& list_widget = this->get_widget_as<morda::list_widget>("lines");
