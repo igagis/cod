@@ -159,8 +159,6 @@ class code_edit :
 
 	void render(const morda::matrix4& matrix)const override;
 
-	void render_cursors(const morda::matrix4& matrix)const;
-
 	bool on_key(bool is_down, morda::key key)override;
 
 	void on_character_input(const std::u32string& unicode, morda::key key)override;
@@ -168,6 +166,8 @@ class code_edit :
 	std::shared_ptr<attributes> text_style = std::make_shared<attributes>(attributes{color: 0xffb0b0b0});
 
 	void notify_text_change();
+
+	size_t num_lines_on_page()const noexcept;
 public:
 	code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc);
 	

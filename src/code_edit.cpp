@@ -154,7 +154,7 @@ void code_edit::line_widget::render(const morda::matrix4& matrix)const{
 
 morda::vector2 code_edit::line_widget::measure(const morda::vector2& quotum)const noexcept{
 	morda::vector2 ret = this->owner.font_info.glyph_dims;
-	ret.x() *= this->owner.lines[this->line_num].str.size();
+	ret.x() *= this->owner.lines[this->line_num].str.size() + 1; // for empty strings the widget will still have size of one glyph
 
 	for(unsigned i = 0; i != ret.size(); ++i){
 		if(quotum[i] >= 0){
@@ -322,24 +322,6 @@ void code_edit::put_new_line(cursor& c){
 
 void code_edit::render(const morda::matrix4& matrix)const{
 	this->base_container::render(matrix);
-
-	// this->render_cursors(matrix);
-}
-
-void code_edit::render_cursors(const morda::matrix4& matrix)const{
-	if(!this->is_focused()) return;
-	if(!this->cursor_blink_visible) return;
-
-	for(auto& c : this->cursors){
-		morda::matrix4 matr(matrix);
-
-		morda::vector2 pos = c.get_pos_glyphs().to<morda::real>().comp_mul(this->font_info.glyph_dims);
-		matr.translate(pos);
-		matr.scale(morda::vector2(cursor_thickness_dp * this->context->units.dots_per_dp, this->font_info.glyph_dims.y()));
-
-		auto& r = *this->context->renderer;
-		r.shader->color_pos->render(matr, *r.pos_quad_01_vao, 0xffffffff);
-	}
 }
 
 bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
@@ -350,8 +332,6 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 	if(event.button != morda::mouse_button::left){
 		return false;
 	}
-
-	// this->leftMouseButtonDown = e.is_down;
 	
 	if(event.is_down){
 		this->cursors.clear();
@@ -362,7 +342,7 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 					this->list->get_pos_offset()
 				};
 
-		LOG("corrected_pos = " << corrected_pos << std::endl)
+		// LOG("corrected_pos = " << corrected_pos << std::endl)
 
 		using std::floor;
 		auto char_pos = floor(corrected_pos.comp_div(this->font_info.glyph_dims)).to<size_t>();
@@ -645,6 +625,11 @@ void code_edit::cursor::move_down_by(size_t dy)noexcept{
 	this->owner.start_cursor_blinking();
 }
 
+size_t code_edit::num_lines_on_page()const noexcept{
+	using std::floor;
+	return size_t(floor(this->list->rect().d.y() / this->font_info.glyph_dims.y()));
+}
+
 void code_edit::on_character_input(const std::u32string& unicode, morda::key key){
 	switch(key){
 		case morda::key::enter:
@@ -670,6 +655,16 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 		case morda::key::down:
 			this->for_each_cursor([](cursor& c){
 				c.move_down_by(1);
+			});
+			break;
+		case morda::key::page_up:
+			this->for_each_cursor([n = this->num_lines_on_page()](cursor& c){
+				c.move_up_by(n);
+			});
+			break;
+		case morda::key::page_down:
+			this->for_each_cursor([n = this->num_lines_on_page()](cursor& c){
+				c.move_down_by(n);
 			});
 			break;
 		case morda::key::end:
