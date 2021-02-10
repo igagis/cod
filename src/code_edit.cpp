@@ -64,6 +64,13 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc)
 					w->set_scroll_factor(fw.fraction());
 				}
 			};
+	
+	this->get_widget_as<morda::fraction_widget>("horizontal_scroll").fraction_change_handler =
+			[lw = utki::make_weak(this->scroll_area)](morda::fraction_widget& fw){
+				if(auto w = lw.lock()){
+					w->set_scroll_factor(fw.fraction());
+				}
+			};
 }
 
 void code_edit::set_text(std::u32string&& text){
