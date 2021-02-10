@@ -52,11 +52,11 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc)
 			}
 		)qwertyuiop"));
 
-	auto& list_widget = this->get_widget_as<morda::list_widget>("lines");
-	list_widget.set_provider(this->lines_provider);
+	this->list = utki::make_shared_from(this->get_widget_as<morda::list_widget>("lines"));
+	this->list->set_provider(this->lines_provider);
 
 	this->get_widget_as<morda::fraction_widget>("vertical_scroll").fraction_change_handler =
-			[lw = utki::make_weak_from(list_widget)](morda::fraction_widget& fw){
+			[lw = utki::make_weak(this->list)](morda::fraction_widget& fw){
 				if(auto w = lw.lock()){
 					w->set_scroll_factor(fw.fraction());
 				}
@@ -340,6 +340,8 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 	if(event.is_down){
 		// this->set_cursor_index(this->posToIndex(e.pos.x()));
 		if(!this->is_focused()){
+			// auto corrected_pos = event.pos + this->list->get
+
 			this->cursors.push_back(cursor(*this, 0));
 			this->focus();
 		}

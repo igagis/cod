@@ -17,6 +17,7 @@ class code_edit :
 {
 	typedef morda::column base_container;
 
+	std::shared_ptr<morda::list_widget> list;
 	struct{
 		morda::vector2 glyph_dims;
 		morda::real baseline;

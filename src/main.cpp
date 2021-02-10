@@ -24,7 +24,7 @@ public:
 		c->get_widget_as<morda::text_widget>("code_edit").set_text(
 R"qwertyuiop(Hello world!
 second line
-\tthird line
+	third line
 very very long line lorem ipsum dolor sit amet consecteteur blah blag
 ef
 ef
