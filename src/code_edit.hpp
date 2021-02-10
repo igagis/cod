@@ -5,16 +5,18 @@
 #include <morda/widgets/character_input_widget.hpp>
 #include <morda/widgets/base/text_widget.hpp>
 #include <morda/widgets/group/list.hpp>
-#include <morda/widgets/group/pile.hpp>
+#include <morda/widgets/group/column.hpp>
 
 #include <morda/updateable.hpp>
 
 class code_edit :
 		public morda::character_input_widget,
 		public morda::text_widget,
-		private morda::pile,
+		private morda::column,
 		private morda::updateable
 {
+	typedef morda::column base_container;
+
 	struct{
 		morda::vector2 glyph_dims;
 		morda::real baseline;

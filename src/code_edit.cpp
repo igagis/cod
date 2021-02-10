@@ -6,6 +6,7 @@
 #include <utki/linq.hpp>
 
 #include <morda/widgets/label/text.hpp>
+#include <morda/widgets/base/fraction_widget.hpp>
 
 namespace{
 uint16_t cursor_blink_period_ms = 500;
@@ -16,23 +17,43 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc)
 		widget(std::move(c), desc),
 		character_input_widget(this->context),
 		text_widget(this->context, desc),
-		pile(this->context, puu::forest()),
+		column(this->context, puu::forest()),
 		lines_provider(std::make_shared<provider>(*this))
 {
 	this->set_font(this->context->loader.load<morda::res::font>("fnt_monospace"));
 	this->on_font_change();
 
 	this->push_back_inflate(puu::read(R"qwertyuiop(
-			@scroll_area{
-				layout{dx{fill} dy{fill}}
-				@list{
-					id{lines}
-					layout{dx{min} dy{fill}}
+			@row{
+				layout{dx{fill} dy{0} weight{1}}
+
+				@scroll_area{
+					layout{dx{0} dy{fill} weight{1}}
+					clip{true}
+					@list{
+						id{lines}
+						layout{dx{min} dy{fill}}
+					}
+				}
+				@vertical_scroll_bar{
+					id{vertical_scroll}
+
+					layout{
+						dx{min} dy{max}
+					}
 				}
 			}
 		)qwertyuiop"));
 
-	this->get_widget_as<morda::list_widget>("lines").set_provider(this->lines_provider);
+	auto& list_widget = this->get_widget_as<morda::list_widget>("lines");
+	list_widget.set_provider(this->lines_provider);
+
+	this->get_widget_as<morda::fraction_widget>("vertical_scroll").fraction_change_handler =
+			[lw = utki::make_weak_from(list_widget)](morda::fraction_widget& fw){
+				if(auto w = lw.lock()){
+					w->set_scroll_factor(fw.fraction());
+				}
+			};
 }
 
 void code_edit::set_text(std::u32string&& text){
@@ -249,7 +270,7 @@ void code_edit::put_new_line(cursor& c){
 }
 
 void code_edit::render(const morda::matrix4& matrix)const{
-	this->pile::render(matrix);
+	this->base_container::render(matrix);
 
 	this->render_cursors(matrix);
 }
@@ -271,6 +292,10 @@ void code_edit::render_cursors(const morda::matrix4& matrix)const{
 }
 
 bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
+	if(this->base_container::on_mouse_button(event)){
+		return true;
+	}
+
 	if(event.button != morda::mouse_button::left){
 		return false;
 	}
