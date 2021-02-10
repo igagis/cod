@@ -106,6 +106,8 @@ class code_edit :
 				pos(pos)
 		{}
 
+		size_t get_line_num()const noexcept;
+
 		// get position in characters
 		r4::vector2<size_t> get_pos_chars()const noexcept;
 
@@ -134,6 +136,8 @@ class code_edit :
 	std::vector<cursor> cursors;
 
 	void for_each_cursor(const std::function<void(cursor&)>& func);
+
+	std::vector<const cursor*> find_cursors(size_t line_num);
 
 	void insert(cursor& c, const std::u32string& str);
 	void erase_forward(cursor& c, size_t num);

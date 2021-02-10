@@ -86,11 +86,13 @@ std::shared_ptr<morda::widget> code_edit::provider::get_widget(size_t index){
 }
 
 void code_edit::line_widget::render(const morda::matrix4& matrix)const{	
-	using std::round;
+	// find cursors
+	auto cursors = this->owner.find_cursors(this->line_num);
 
 	const auto& l = this->owner.lines[this->line_num];
 	const auto& str = l.str;
 
+	// render text
 	size_t cur_char_pos = 0;
 	size_t cur_char_index = 0;
 	for(const auto& s : l.spans){
@@ -110,6 +112,20 @@ void code_edit::line_widget::render(const morda::matrix4& matrix)const{
 			);
 		cur_char_index += s.length;
 		cur_char_pos += res.length;
+	}
+
+	// render cursors
+	if(this->owner.cursor_blink_visible){
+		for(auto c : cursors){
+			morda::matrix4 matr(matrix);
+
+			auto pos = morda::real(c->get_pos_glyphs().x()) * this->owner.font_info.glyph_dims.x();
+			matr.translate(pos, 0);
+			matr.scale(morda::vector2(cursor_thickness_dp * this->context->units.dots_per_dp, this->owner.font_info.glyph_dims.y()));
+
+			auto& r = *this->context->renderer;
+			r.shader->color_pos->render(matr, *r.pos_quad_01_vao, 0xffffffff);
+		}
 	}
 }
 
@@ -158,6 +174,18 @@ void code_edit::for_each_cursor(const std::function<void(cursor&)>& func){
 		this->text_changed = false;
 		this->notify_text_change();
 	}
+}
+
+std::vector<const code_edit::cursor*> code_edit::find_cursors(size_t line_num){
+	std::vector<const cursor*> ret;
+
+	for(auto& c : this->cursors){
+		if(c.get_line_num() == line_num){
+			ret.push_back(&c);
+		}
+	}
+
+	return ret;
 }
 
 void code_edit::insert(cursor& c, const std::u32string& str){
@@ -272,7 +300,7 @@ void code_edit::put_new_line(cursor& c){
 void code_edit::render(const morda::matrix4& matrix)const{
 	this->base_container::render(matrix);
 
-	this->render_cursors(matrix);
+	// this->render_cursors(matrix);
 }
 
 void code_edit::render_cursors(const morda::matrix4& matrix)const{
@@ -340,16 +368,21 @@ size_t glyph_pos_to_char_pos(size_t p, const std::u32string& str, size_t tab_siz
 }
 }
 
-r4::vector2<size_t> code_edit::cursor::get_pos_chars()const noexcept{
+size_t code_edit::cursor::get_line_num()const noexcept{
 	ASSERT(!this->owner.lines.empty())
 	if(this->pos.y() >= this->owner.lines.size()){
-		return {this->owner.lines.back().size(), this->owner.lines.size() - 1};
+		return this->owner.lines.size() - 1;
 	}
+	return this->pos.y();
+}
+
+r4::vector2<size_t> code_edit::cursor::get_pos_chars()const noexcept{
+	size_t line_num = this->get_line_num();
 
 	return {
 		glyph_pos_to_char_pos(
 				this->pos.x(),
-				this->owner.lines[this->pos.y()].str,
+				this->owner.lines[line_num].str,
 				this->owner.settings.tab_size
 			),
 		this->pos.y()
