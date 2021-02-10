@@ -28,6 +28,7 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc)
 				layout{dx{fill} dy{0} weight{1}}
 
 				@scroll_area{
+					id{scroll_area}
 					layout{dx{0} dy{fill} weight{1}}
 					clip{true}
 					@list{
@@ -51,6 +52,8 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc)
 				}
 			}
 		)qwertyuiop"));
+
+	this->scroll_area = utki::make_shared_from(this->get_widget_as<morda::scroll_area>("scroll_area"));
 
 	this->list = utki::make_shared_from(this->get_widget_as<morda::list_widget>("lines"));
 	this->list->set_provider(this->lines_provider);
@@ -338,13 +341,24 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 	// this->leftMouseButtonDown = e.is_down;
 	
 	if(event.is_down){
-		// this->set_cursor_index(this->posToIndex(e.pos.x()));
-		if(!this->is_focused()){
-			// auto corrected_pos = event.pos + this->list->get
+		this->cursors.clear();
 
-			this->cursors.push_back(cursor(*this, 0));
-			this->focus();
-		}
+		auto corrected_pos = event.pos +
+				morda::vector2{
+					this->scroll_area->get_scroll_pos().x(),
+					this->list->get_pos_offset()
+				};
+
+		LOG("corrected_pos = " << corrected_pos << std::endl)
+
+		using std::floor;
+		auto char_pos = floor(corrected_pos.comp_div(this->font_info.glyph_dims)).to<size_t>();
+		char_pos.y() += this->list->get_pos_index();
+
+		this->cursors.push_back(cursor(*this, char_pos));
+
+		this->focus();
+		this->start_cursor_blinking();
 	}
 	
 	return true;
@@ -365,7 +379,7 @@ size_t glyph_pos_to_char_pos(size_t p, const std::u32string& str, size_t tab_siz
 
 		size_t px = p - x;
 		if(px <= d){
-			if(px <= d / 2)
+			if(px < d / 2)
 				return i;
 			else
 				return i + 1;

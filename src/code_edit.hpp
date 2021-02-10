@@ -6,6 +6,7 @@
 #include <morda/widgets/base/text_widget.hpp>
 #include <morda/widgets/group/list.hpp>
 #include <morda/widgets/group/column.hpp>
+#include <morda/widgets/group/scroll_area.hpp>
 
 #include <morda/updateable.hpp>
 
@@ -18,6 +19,7 @@ class code_edit :
 	typedef morda::column base_container;
 
 	std::shared_ptr<morda::list_widget> list;
+	std::shared_ptr<morda::scroll_area> scroll_area;
 	struct{
 		morda::vector2 glyph_dims;
 		morda::real baseline;
@@ -105,7 +107,9 @@ class code_edit :
 		cursor(code_edit& owner, r4::vector2<size_t> pos) :
 				owner(owner),
 				pos(pos)
-		{}
+		{
+			this->pos = this->get_pos_glyphs();
+		}
 
 		size_t get_line_num()const noexcept;
 
