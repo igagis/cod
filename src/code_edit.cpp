@@ -53,24 +53,40 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc)
 			}
 		)qwertyuiop"));
 
-	this->scroll_area = utki::make_shared_from(this->get_widget_as<morda::scroll_area>("scroll_area"));
-
 	this->list = utki::make_shared_from(this->get_widget_as<morda::list_widget>("lines"));
 	this->list->set_provider(this->lines_provider);
 
-	this->get_widget_as<morda::fraction_widget>("vertical_scroll").fraction_change_handler =
+	auto& vs = this->get_widget_as<morda::fraction_widget>("vertical_scroll");
+
+	vs.fraction_change_handler =
 			[lw = utki::make_weak(this->list)](morda::fraction_widget& fw){
 				if(auto w = lw.lock()){
 					w->set_scroll_factor(fw.fraction());
 				}
 			};
+
+	this->list->scroll_pos_change_handler = [vs = utki::make_weak_from(vs)](morda::list_widget& lw){
+		if(auto s = vs.lock()){
+			s->set_fraction(lw.get_scroll_factor(), false);
+		}
+	};
 	
-	this->get_widget_as<morda::fraction_widget>("horizontal_scroll").fraction_change_handler =
+	this->scroll_area = utki::make_shared_from(this->get_widget_as<morda::scroll_area>("scroll_area"));
+
+	auto& hs = this->get_widget_as<morda::fraction_widget>("horizontal_scroll");
+	
+	hs.fraction_change_handler =
 			[lw = utki::make_weak(this->scroll_area)](morda::fraction_widget& fw){
 				if(auto w = lw.lock()){
 					w->set_scroll_factor(fw.fraction());
 				}
 			};
+	
+	this->scroll_area->scroll_pos_change_handler = [hs = utki::make_weak_from(hs)](morda::scroll_area& sa){
+		if(auto s = hs.lock()){
+			s->set_fraction(sa.get_scroll_factor().x(), false);
+		}
+	};
 }
 
 void code_edit::set_text(std::u32string&& text){
