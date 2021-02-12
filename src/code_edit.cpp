@@ -572,23 +572,35 @@ code_edit::line code_edit::line::cut_tail(size_t pos){
 
 void code_edit::scroll_to(r4::vector2<size_t> pos_glyphs){
 	// vertical
-
 	size_t top = this->list->get_pos_index();
 	if(top >= pos_glyphs.y()){
 		this->list->scroll_by(
 				-morda::real(top - pos_glyphs.y()) * this->font_info.glyph_dims.y()
 				- this->list->get_pos_offset()
 			);
+	}else{
+		ASSERT(!this->list->children().empty())
+		size_t bottom = top + this->list->children().size() - 1;
+		if(bottom <= pos_glyphs.y()){
+			morda::real bottom_offset = this->list->children().back()->rect().y2() - this->list->rect().d.y();
+			this->list->scroll_by(
+					morda::real(pos_glyphs.y() - bottom) * this->font_info.glyph_dims.y()
+					+ bottom_offset
+				);
+		}
 	}
 
-	ASSERT(!this->list->children().empty())
-	size_t bottom = top + this->list->children().size();
-	if(bottom <= pos_glyphs.y()){
-		morda::real bottom_offset = this->list->rect().d.y() - this->list->children().back()->rect().y2();
-		this->list->scroll_by(
-				morda::real(pos_glyphs.y() - bottom) * this->font_info.glyph_dims.y()
-				+ bottom_offset
-			);
+	// horizontal
+	morda::real pos_x = pos_glyphs.x() * this->font_info.glyph_dims.x();
+
+	morda::real left = this->scroll_area->get_scroll_pos().x();
+	if(left > pos_x){
+		this->scroll_area->set_scroll_pos({pos_x, 0});
+	}else{
+		pos_x -= this->scroll_area->rect().d.x() - this->font_info.glyph_dims.x();
+		if(left < pos_x){
+			this->scroll_area->set_scroll_pos({pos_x, 0});
+		}
 	}
 }
 
