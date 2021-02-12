@@ -124,7 +124,7 @@ class code_edit :
 		void move_up_by(size_t dy)noexcept;
 		void move_down_by(size_t dy)noexcept;
 
-		void set_char_pos(r4::vector2<size_t> pos)noexcept;
+		void set_pos_chars(r4::vector2<size_t> pos)noexcept;
 
 		void start_selection()noexcept{
 			this->sel_pos = this->get_pos_chars();
@@ -168,6 +168,8 @@ class code_edit :
 	void notify_text_change();
 
 	size_t num_lines_on_page()const noexcept;
+
+	void scroll_to(r4::vector2<size_t> pos_glyphs);
 public:
 	code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc);
 	

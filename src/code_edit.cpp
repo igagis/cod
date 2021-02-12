@@ -216,7 +216,7 @@ void code_edit::insert(cursor& c, const std::u32string& str){
 	ASSERT(!strs.empty())
 
 	auto cp = c.get_pos_chars();
-	c.set_char_pos(cp);
+	c.set_pos_chars(cp);
 
 	if(strs.size() == 1){
 		auto& l = this->lines[cp.y()];
@@ -278,7 +278,7 @@ void code_edit::erase_backward(cursor& c, size_t num){
 		auto& l = this->lines[cp.y()];
 		cp.x() = l.size();
 		l.append(std::move(ll));
-		c.set_char_pos(cp);
+		c.set_pos_chars(cp);
 	}else{
 		auto& l = this->lines[cp.y()];
 		size_t p;
@@ -291,7 +291,7 @@ void code_edit::erase_backward(cursor& c, size_t num){
 			s = cp.x();
 		}
 		cp.x() -= s;
-		c.set_char_pos(cp);
+		c.set_pos_chars(cp);
 
 		l.erase(p, s);
 	}
@@ -313,7 +313,7 @@ void code_edit::put_new_line(cursor& c){
 
 	++cp.y();
 	cp.x() = 0;
-	c.set_char_pos(cp);
+	c.set_pos_chars(cp);
 
 	// TODO: correct cursors
 
@@ -420,7 +420,7 @@ size_t char_pos_to_glyph_pos(size_t p, const std::u32string& str, size_t tab_siz
 }
 }
 
-void code_edit::cursor::set_char_pos(r4::vector2<size_t> p)noexcept{
+void code_edit::cursor::set_pos_chars(r4::vector2<size_t> p)noexcept{
 	ASSERT(!this->owner.lines.empty())
 	ASSERT(p.y() < this->owner.lines.size())
 
@@ -434,6 +434,8 @@ void code_edit::cursor::set_char_pos(r4::vector2<size_t> p)noexcept{
 			),
 		p.y()
 	};
+
+	this->owner.scroll_to(this->pos);
 
 	this->owner.start_cursor_blinking();
 }
@@ -568,6 +570,28 @@ code_edit::line code_edit::line::cut_tail(size_t pos){
 	return ret;
 }
 
+void code_edit::scroll_to(r4::vector2<size_t> pos_glyphs){
+	// vertical
+
+	size_t top = this->list->get_pos_index();
+	if(top >= pos_glyphs.y()){
+		this->list->scroll_by(
+				-morda::real(top - pos_glyphs.y()) * this->font_info.glyph_dims.y()
+				- this->list->get_pos_offset()
+			);
+	}
+
+	ASSERT(!this->list->children().empty())
+	size_t bottom = top + this->list->children().size();
+	if(bottom <= pos_glyphs.y()){
+		morda::real bottom_offset = this->list->rect().d.y() - this->list->children().back()->rect().y2();
+		this->list->scroll_by(
+				morda::real(pos_glyphs.y() - bottom) * this->font_info.glyph_dims.y()
+				+ bottom_offset
+			);
+	}
+}
+
 void code_edit::cursor::move_right_by(size_t dx)noexcept{
 	auto p = this->get_pos_chars();
 	p.x() += dx;
@@ -584,7 +608,7 @@ void code_edit::cursor::move_right_by(size_t dx)noexcept{
 			break;
 		}
 	}
-	this->set_char_pos(p);
+	this->set_pos_chars(p);
 }
 
 void code_edit::cursor::move_left_by(size_t dx)noexcept{
@@ -592,7 +616,7 @@ void code_edit::cursor::move_left_by(size_t dx)noexcept{
 	for(; dx > p.x();){
 		if(p.y() == 0){
 			p.x() = 0;
-			this->set_char_pos(p);
+			this->set_pos_chars(p);
 			return;
 		}else{
 			dx -= p.x() + 1;
@@ -603,7 +627,7 @@ void code_edit::cursor::move_left_by(size_t dx)noexcept{
 	// LOG("p = " << p << " dx = " << dx << std::endl)
 	p.x() -= dx;
 
-	this->set_char_pos(p);
+	this->set_pos_chars(p);
 }
 
 void code_edit::cursor::move_up_by(size_t dy)noexcept{
@@ -612,6 +636,9 @@ void code_edit::cursor::move_up_by(size_t dy)noexcept{
 	}else{
 		this->pos.y() -= dy;
 	}
+
+	this->owner.scroll_to(this->get_pos_glyphs());
+
 	this->owner.start_cursor_blinking();
 }
 
@@ -622,6 +649,9 @@ void code_edit::cursor::move_down_by(size_t dy)noexcept{
 	}else{
 		this->pos.y() += dy;
 	}
+
+	this->owner.scroll_to(this->get_pos_glyphs());
+
 	this->owner.start_cursor_blinking();
 }
 
@@ -671,7 +701,7 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 			this->for_each_cursor([this](cursor& c){
 				auto p = c.get_pos_chars();
 				p.x() = this->lines[p.y()].str.size();
-				c.set_char_pos(p);
+				c.set_pos_chars(p);
 			});
 			break;
 		case morda::key::home:
@@ -684,7 +714,7 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 				}else{
 					p.x() = non_ws_pos;
 				}
-				c.set_char_pos(p);
+				c.set_pos_chars(p);
 			});
 			break;
 		case morda::key::backspace:
