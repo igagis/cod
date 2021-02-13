@@ -103,6 +103,8 @@ class code_edit :
 		r4::vector2<size_t> pos = 0;
 		bool selection_mode = false;
 		r4::vector2<size_t> sel_pos = 0;
+
+		void update_selection();
 	public:
 		cursor(code_edit& owner, r4::vector2<size_t> pos) :
 				owner(owner),
@@ -133,6 +135,10 @@ class code_edit :
 
 		void stop_selection()noexcept{
 			this->selection_mode = false;
+		}
+
+		bool is_selection()const noexcept{
+			return this->pos != this->sel_pos;
 		}
 	};
 

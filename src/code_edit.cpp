@@ -373,6 +373,13 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 	return true;
 }
 
+void code_edit::cursor::update_selection(){
+	if(this->selection_mode){
+		return;
+	}
+	this->sel_pos = this->pos;
+}
+
 namespace{
 size_t glyph_pos_to_char_pos(size_t p, const std::u32string& str, size_t tab_size){
 	size_t x = 0;
@@ -450,6 +457,8 @@ void code_edit::cursor::set_pos_chars(r4::vector2<size_t> p)noexcept{
 			),
 		p.y()
 	};
+
+	this->update_selection();
 
 	this->owner.scroll_to(this->pos);
 
@@ -665,6 +674,8 @@ void code_edit::cursor::move_up_by(size_t dy)noexcept{
 		this->pos.y() -= dy;
 	}
 
+	this->update_selection();
+
 	this->owner.scroll_to(this->get_pos_glyphs());
 
 	this->owner.start_cursor_blinking();
@@ -677,6 +688,8 @@ void code_edit::cursor::move_down_by(size_t dy)noexcept{
 	}else{
 		this->pos.y() += dy;
 	}
+
+	this->update_selection();
 
 	this->owner.scroll_to(this->get_pos_glyphs());
 
