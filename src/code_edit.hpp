@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include <utki/flags.hpp>
+
 #include <morda/widgets/character_input_widget.hpp>
 #include <morda/widgets/base/text_widget.hpp>
 #include <morda/widgets/group/list.hpp>
@@ -35,6 +37,15 @@ class code_edit :
 	struct{
 		unsigned tab_size = 4;
 	} settings;
+
+	enum class modifier{
+		selection,
+		word_navigation,
+
+		enum_size
+	};
+
+	utki::flags<modifier> modifiers;
 
 	struct attributes{
 		morda::res::font::style style = morda::res::font::style::normal;
