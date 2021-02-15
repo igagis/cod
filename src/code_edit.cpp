@@ -124,11 +124,63 @@ std::shared_ptr<morda::widget> code_edit::provider::get_widget(size_t index){
 	return w;
 }
 
+namespace{
+size_t char_pos_to_glyph_pos(size_t p, const std::u32string& str, size_t tab_size){
+	size_t x = 0;
+	for(size_t i = 0; i < str.size() && i != p; ++i){
+		ASSERT(i < str.size())
+		if(str[i] == U'\t'){
+			x += tab_size - x % tab_size;
+		}else{
+			++x;
+		}
+	}
+	return x;
+}
+}
+
+namespace{
+size_t string_length_glyphs(const std::u32string& str, size_t tab_size){
+	return char_pos_to_glyph_pos(str.size(), str, tab_size);
+}
+}
+
 void code_edit::line_widget::render(const morda::matrix4& matrix)const{	
 	// find cursors
 	auto cursors = this->owner.find_cursors(this->line_num);
 
-	// TODO: render selection
+	// render selection
+	for(auto c : cursors){
+		auto& sel = std::get<cursor::selection>(c).segment;
+
+		if(sel.p1.y() > this->line_num || this->line_num > sel.p2.y()){
+			continue;
+		}
+
+		size_t start, length;
+		if(sel.p1.y() == this->line_num){
+			start = sel.p1.x();
+		}else{
+			start = 0;
+		}
+		if(sel.p2.y() == this->line_num){
+			length = sel.p2.x() - start;
+		}else{
+			length = string_length_glyphs(
+					this->owner.lines[this->line_num].str,
+					this->owner.settings.tab_size
+				) - start;
+		}
+
+		morda::matrix4 matr(matrix);
+
+		auto pos = morda::real(start) * this->owner.font_info.glyph_dims.x();
+		matr.translate(pos, 0);
+		matr.scale(morda::vector2(morda::real(length), 1).comp_mul(this->owner.font_info.glyph_dims));
+
+		auto& r = *this->context->renderer;
+		r.shader->color_pos->render(matr, *r.pos_quad_01_vao, 0xffff8000);
+	}
 
 	const auto& l = this->owner.lines[this->line_num];
 	const auto& str = l.str;
@@ -228,7 +280,7 @@ std::vector<std::tuple<const code_edit::cursor*, code_edit::cursor::selection>> 
 
 	for(auto& c : this->cursors){
 		auto s = c.get_selection_glyphs();
-		if(s.sel.p1.y() <= line_num && line_num <= s.sel.p2.y()){
+		if(s.segment.p1.y() <= line_num && line_num <= s.segment.p2.y()){
 			ret.push_back(std::make_tuple(&c, s));
 		}
 	}
@@ -431,12 +483,12 @@ code_edit::cursor::selection code_edit::cursor::get_selection_glyphs()const noex
 	auto cp = this->get_pos_glyphs();
 
 	if(cp.y() < this->sel_pos_glyphs.y() || (cp.y() == this->sel_pos_glyphs.y() && cp.x() < this->sel_pos_glyphs.x())){
-		ret.sel.p1 = cp;
-		ret.sel.p2 = this->sel_pos_glyphs;
+		ret.segment.p1 = cp;
+		ret.segment.p2 = this->sel_pos_glyphs;
 		ret.is_left_to_right = false;
 	}else{
-		ret.sel.p1 = this->sel_pos_glyphs;
-		ret.sel.p2 = cp;
+		ret.segment.p1 = this->sel_pos_glyphs;
+		ret.segment.p2 = cp;
 		ret.is_left_to_right = true;
 	}
 
@@ -454,21 +506,6 @@ r4::vector2<size_t> code_edit::cursor::get_pos_chars()const noexcept{
 			),
 		this->pos.y()
 	};
-}
-
-namespace{
-size_t char_pos_to_glyph_pos(size_t p, const std::u32string& str, size_t tab_size){
-	size_t x = 0;
-	for(size_t i = 0; i < str.size() && i != p; ++i){
-		ASSERT(i < str.size())
-		if(str[i] == U'\t'){
-			x += tab_size - x % tab_size;
-		}else{
-			++x;
-		}
-	}
-	return x;
-}
 }
 
 void code_edit::cursor::set_pos_chars(r4::vector2<size_t> p)noexcept{

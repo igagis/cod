@@ -129,14 +129,17 @@ class code_edit :
 		size_t get_line_num()const noexcept;
 
 		struct selection{
-			r4::segment2<size_t> sel;
+			// the segment points are sorted left to right and top to bottom
+			r4::segment2<size_t> segment;
+
+			// tells if the cursor is at the beginning (false) of the selection or at the end (true)
 			bool is_left_to_right;
 
 			r4::vector2<size_t> get_cursor_pos_glyphs()const noexcept{
 				if(this->is_left_to_right){
-					return this->sel.p2;
+					return this->segment.p2;
 				}else{
-					return this->sel.p1;
+					return this->segment.p1;
 				}
 			}
 		};
@@ -167,7 +170,7 @@ class code_edit :
 
 		bool is_selection()const noexcept{
 			auto s = this->get_selection_glyphs();
-			return s.sel.p1 != s.sel.p2;
+			return s.segment.p1 != s.segment.p2;
 		}
 	};
 
