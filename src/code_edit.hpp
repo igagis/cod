@@ -45,7 +45,7 @@ class code_edit :
 		enum_size
 	};
 
-	utki::flags<modifier> modifiers;
+	utki::flags<modifier> modifiers = false;
 
 	struct attributes{
 		morda::res::font::style style = morda::res::font::style::normal;
@@ -140,12 +140,12 @@ class code_edit :
 		void set_pos_chars(r4::vector2<size_t> pos)noexcept;
 
 		void start_selection()noexcept{
-			this->sel_pos = this->get_pos_chars();
 			this->selection_mode = true;
 		}
 
 		void stop_selection()noexcept{
 			this->selection_mode = false;
+			this->sel_pos = this->get_pos_chars();
 		}
 
 		bool is_selection()const noexcept{
@@ -165,6 +165,8 @@ class code_edit :
 	void erase_forward(cursor& c, size_t num);
 	void erase_backward(cursor& c, size_t num);
 	void put_new_line(cursor& c);
+
+	size_t calc_word_length_forward(const cursor& c)const noexcept;
 
 	bool text_changed = false;
 

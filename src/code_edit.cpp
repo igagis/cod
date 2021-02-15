@@ -483,11 +483,11 @@ bool code_edit::on_key(bool is_down, morda::key key){
 	switch(key){
 		case morda::key::left_control:
 		case morda::key::right_control:
-			// this->ctrlPressed = isDown;
+			this->modifiers.set(modifier::word_navigation, is_down);
 			break;
 		case morda::key::left_shift:
 		case morda::key::right_shift:
-			// this->shiftPressed = isDown;
+			this->modifiers.set(modifier::selection, is_down);
 			break;
 		default:
 			break;
@@ -701,6 +701,38 @@ size_t code_edit::num_lines_on_page()const noexcept{
 	return size_t(floor(this->list->rect().d.y() / this->font_info.glyph_dims.y()));
 }
 
+size_t code_edit::calc_word_length_forward(const cursor& c)const noexcept{
+	size_t ret = 0;
+
+	auto cp = c.get_pos_chars();
+
+	if(cp.x() == this->lines[cp.y()].size()){
+		++cp.y();
+		if(cp.y() == this->lines.size()){
+			return 0;
+		}
+		++ret; // for new line
+		cp.x() = 0;
+	}
+
+	auto& l = this->lines[cp.y()].str;
+
+	bool non_ws_met = false;
+	for(auto i = std::next(l.begin(), cp.x()); i != l.end(); ++i, ++ret){
+		if(non_ws_met){
+			if(std::isspace(*i)){
+				break;
+			}
+		}else{
+			if(!std::isspace(*i)){
+				non_ws_met = true;
+			}
+		}
+	}
+
+	return ret;
+}
+
 void code_edit::on_character_input(const std::u32string& unicode, morda::key key){
 	switch(key){
 		case morda::key::enter:
@@ -709,12 +741,16 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 			});
 			break;
 		case morda::key::right:
-			this->for_each_cursor([](cursor& c){
-				c.move_right_by(1);
+			this->for_each_cursor([this](cursor& c){
+				size_t d = 1;
+				if(this->modifiers.get(code_edit::modifier::word_navigation)){
+					d = this->calc_word_length_forward(c);
+				}
+				c.move_right_by(d);
 			});
 			break;
 		case morda::key::left:
-			this->for_each_cursor([](cursor& c){
+			this->for_each_cursor([this](cursor& c){
 				c.move_left_by(1);
 			});
 			break;
