@@ -179,7 +179,7 @@ void code_edit::line_widget::render(const morda::matrix4& matrix)const{
 		matr.scale(morda::vector2(morda::real(length), 1).comp_mul(this->owner.font_info.glyph_dims));
 
 		auto& r = *this->context->renderer;
-		r.shader->color_pos->render(matr, *r.pos_quad_01_vao, 0xffff8000);
+		r.shader->color_pos->render(matr, *r.pos_quad_01_vao, 0xff804000);
 	}
 
 	const auto& l = this->owner.lines[this->line_num];
