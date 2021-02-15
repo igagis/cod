@@ -124,6 +124,7 @@ class code_edit :
 				pos(pos)
 		{
 			this->pos = this->get_pos_glyphs();
+			this->sel_pos_glyphs = this->pos; // no selection initially
 		}
 
 		size_t get_line_num()const noexcept;
