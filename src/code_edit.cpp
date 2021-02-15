@@ -128,6 +128,8 @@ void code_edit::line_widget::render(const morda::matrix4& matrix)const{
 	// find cursors
 	auto cursors = this->owner.find_cursors(this->line_num);
 
+	// TODO: render selection
+
 	const auto& l = this->owner.lines[this->line_num];
 	const auto& str = l.str;
 
@@ -156,9 +158,15 @@ void code_edit::line_widget::render(const morda::matrix4& matrix)const{
 	// render cursors
 	if(this->owner.cursor_blink_visible){
 		for(auto c : cursors){
+			auto cp = std::get<cursor::selection>(c).get_cursor_pos_glyphs();
+
+			if(cp.y() != this->line_num){
+				continue;
+			}
+
 			morda::matrix4 matr(matrix);
 
-			auto pos = morda::real(c->get_pos_glyphs().x()) * this->owner.font_info.glyph_dims.x();
+			auto pos = morda::real(cp.x()) * this->owner.font_info.glyph_dims.x();
 			matr.translate(pos, 0);
 			matr.scale(morda::vector2(cursor_thickness_dp * this->context->units.dots_per_dp, this->owner.font_info.glyph_dims.y()));
 
@@ -215,12 +223,13 @@ void code_edit::for_each_cursor(const std::function<void(cursor&)>& func){
 	}
 }
 
-std::vector<const code_edit::cursor*> code_edit::find_cursors(size_t line_num){
-	std::vector<const cursor*> ret;
+std::vector<std::tuple<const code_edit::cursor*, code_edit::cursor::selection>> code_edit::find_cursors(size_t line_num){
+	std::vector<std::tuple<const cursor*, cursor::selection>> ret;
 
 	for(auto& c : this->cursors){
-		if(c.get_line_num() == line_num){
-			ret.push_back(&c);
+		auto s = c.get_selection_glyphs();
+		if(s.sel.p1.y() <= line_num && line_num <= s.sel.p2.y()){
+			ret.push_back(std::make_tuple(&c, s));
 		}
 	}
 
@@ -374,10 +383,11 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 }
 
 void code_edit::cursor::update_selection(){
-	if(this->selection_mode){
+	bool selection = this->selection_mode || this->owner.modifiers.get(code_edit::modifier::selection);
+	if(selection){
 		return;
 	}
-	this->sel_pos = this->pos;
+	this->sel_pos_glyphs = this->get_pos_glyphs();
 }
 
 namespace{
@@ -413,6 +423,24 @@ size_t code_edit::cursor::get_line_num()const noexcept{
 		return this->owner.lines.size() - 1;
 	}
 	return this->pos.y();
+}
+
+code_edit::cursor::selection code_edit::cursor::get_selection_glyphs()const noexcept{
+	selection ret;
+
+	auto cp = this->get_pos_glyphs();
+
+	if(cp.y() < this->sel_pos_glyphs.y() || (cp.y() == this->sel_pos_glyphs.y() && cp.x() < this->sel_pos_glyphs.x())){
+		ret.sel.p1 = cp;
+		ret.sel.p2 = this->sel_pos_glyphs;
+		ret.is_left_to_right = false;
+	}else{
+		ret.sel.p1 = this->sel_pos_glyphs;
+		ret.sel.p2 = cp;
+		ret.is_left_to_right = true;
+	}
+
+	return ret;
 }
 
 r4::vector2<size_t> code_edit::cursor::get_pos_chars()const noexcept{

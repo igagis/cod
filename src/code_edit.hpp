@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include <r4/segment2.hpp>
+
 #include <utki/flags.hpp>
 
 #include <morda/widgets/character_input_widget.hpp>
@@ -113,7 +115,7 @@ class code_edit :
 		code_edit& owner;
 		r4::vector2<size_t> pos = 0;
 		bool selection_mode = false;
-		r4::vector2<size_t> sel_pos = 0;
+		r4::vector2<size_t> sel_pos_glyphs = 0;
 
 		void update_selection();
 	public:
@@ -125,6 +127,21 @@ class code_edit :
 		}
 
 		size_t get_line_num()const noexcept;
+
+		struct selection{
+			r4::segment2<size_t> sel;
+			bool is_left_to_right;
+
+			r4::vector2<size_t> get_cursor_pos_glyphs()const noexcept{
+				if(this->is_left_to_right){
+					return this->sel.p2;
+				}else{
+					return this->sel.p1;
+				}
+			}
+		};
+
+		selection get_selection_glyphs()const noexcept;
 
 		// get position in characters
 		r4::vector2<size_t> get_pos_chars()const noexcept;
@@ -145,11 +162,12 @@ class code_edit :
 
 		void stop_selection()noexcept{
 			this->selection_mode = false;
-			this->sel_pos = this->get_pos_chars();
+			this->sel_pos_glyphs = this->get_pos_glyphs();
 		}
 
 		bool is_selection()const noexcept{
-			return this->pos != this->sel_pos;
+			auto s = this->get_selection_glyphs();
+			return s.sel.p1 != s.sel.p2;
 		}
 	};
 
@@ -159,7 +177,8 @@ class code_edit :
 
 	void for_each_cursor(const std::function<void(cursor&)>& func);
 
-	std::vector<const cursor*> find_cursors(size_t line_num);
+	// find cursors intersecting line_num by its selection
+	std::vector<std::tuple<const cursor*, cursor::selection>> find_cursors(size_t line_num);
 
 	void insert(cursor& c, const std::u32string& str);
 	void erase_forward(cursor& c, size_t num);
