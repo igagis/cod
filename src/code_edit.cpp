@@ -733,6 +733,40 @@ size_t code_edit::calc_word_length_forward(const cursor& c)const noexcept{
 	return ret;
 }
 
+size_t code_edit::calc_word_length_backward(const cursor& c)const noexcept{
+	size_t ret = 0;
+
+	auto cp = c.get_pos_chars();
+
+	if(cp.x() == 0){
+		if(cp.y() == 0){
+			return 0;
+		}
+		--cp.y();
+		cp.x() = this->lines[cp.y()].size();
+		++ret; // for new line
+	}
+
+	auto& l = this->lines[cp.y()].str;
+
+	bool non_ws_met = false;
+
+	ASSERT(cp.x() <= l.size())
+	for(auto i = std::next(l.rbegin(), l.size() - cp.x()); i != l.rend(); ++i, ++ret){
+		if(non_ws_met){
+			if(std::isspace(*i)){
+				break;
+			}
+		}else{
+			if(!std::isspace(*i)){
+				non_ws_met = true;
+			}
+		}
+	}
+
+	return ret;
+}
+
 void code_edit::on_character_input(const std::u32string& unicode, morda::key key){
 	switch(key){
 		case morda::key::enter:
@@ -751,7 +785,11 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 			break;
 		case morda::key::left:
 			this->for_each_cursor([this](cursor& c){
-				c.move_left_by(1);
+				size_t d = 1;
+				if(this->modifiers.get(code_edit::modifier::word_navigation)){
+					d = this->calc_word_length_backward(c);
+				}
+				c.move_left_by(d);
 			});
 			break;
 		case morda::key::up:

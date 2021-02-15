@@ -167,6 +167,7 @@ class code_edit :
 	void put_new_line(cursor& c);
 
 	size_t calc_word_length_forward(const cursor& c)const noexcept;
+	size_t calc_word_length_backward(const cursor& c)const noexcept;
 
 	bool text_changed = false;
 
