@@ -200,6 +200,8 @@ class code_edit :
 
 	bool on_mouse_button(const morda::mouse_button_event& event)override;
 
+	bool on_mouse_move(const morda::mouse_move_event& event)override;
+
 	void render(const morda::matrix4& matrix)const override;
 
 	bool on_key(bool is_down, morda::key key)override;

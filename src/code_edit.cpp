@@ -421,8 +421,12 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 
 		// LOG("corrected_pos = " << corrected_pos << std::endl)
 
+		using std::round;
 		using std::floor;
-		auto char_pos = floor(corrected_pos.comp_div(this->font_info.glyph_dims)).to<size_t>();
+		auto char_pos_real = corrected_pos.comp_div(this->font_info.glyph_dims);
+		char_pos_real.x() = round(char_pos_real.x());
+		char_pos_real.y() = floor(char_pos_real.y());
+		auto char_pos = char_pos_real.to<size_t>();
 		char_pos.y() += this->list->get_pos_index();
 
 		this->cursors.push_back(cursor(*this, char_pos));
@@ -432,6 +436,10 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 	}
 	
 	return true;
+}
+
+bool code_edit::on_mouse_move(const morda::mouse_move_event& event){
+	return false;
 }
 
 void code_edit::cursor::update_selection(){
