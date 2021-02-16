@@ -401,6 +401,26 @@ void code_edit::render(const morda::matrix4& matrix)const{
 	this->base_container::render(matrix);
 }
 
+r4::vector2<size_t> code_edit::mouse_pos_to_char_pos(const morda::vector2& p)const noexcept{
+	auto corrected_pos = p +
+			morda::vector2{
+				this->scroll_area->get_scroll_pos().x(),
+				this->list->get_pos_offset()
+			};
+
+	// LOG("corrected_pos = " << corrected_pos << std::endl)
+
+	using std::round;
+	using std::floor;
+	auto char_pos_real = corrected_pos.comp_div(this->font_info.glyph_dims);
+	char_pos_real.x() = round(char_pos_real.x());
+	char_pos_real.y() = floor(char_pos_real.y());
+	auto char_pos = char_pos_real.to<size_t>();
+	char_pos.y() += this->list->get_pos_index();
+
+	return char_pos;
+}
+
 bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 	if(this->base_container::on_mouse_button(event)){
 		return true;
@@ -413,23 +433,7 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 	if(event.is_down){
 		this->cursors.clear();
 
-		auto corrected_pos = event.pos +
-				morda::vector2{
-					this->scroll_area->get_scroll_pos().x(),
-					this->list->get_pos_offset()
-				};
-
-		// LOG("corrected_pos = " << corrected_pos << std::endl)
-
-		using std::round;
-		using std::floor;
-		auto char_pos_real = corrected_pos.comp_div(this->font_info.glyph_dims);
-		char_pos_real.x() = round(char_pos_real.x());
-		char_pos_real.y() = floor(char_pos_real.y());
-		auto char_pos = char_pos_real.to<size_t>();
-		char_pos.y() += this->list->get_pos_index();
-
-		this->cursors.push_back(cursor(*this, char_pos));
+		this->cursors.push_back(cursor(*this, this->mouse_pos_to_char_pos(event.pos)));
 
 		this->focus();
 		this->start_cursor_blinking();

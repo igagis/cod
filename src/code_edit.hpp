@@ -198,6 +198,8 @@ class code_edit :
 	void on_focus_change()override;
 	void start_cursor_blinking();
 
+	r4::vector2<size_t> mouse_pos_to_char_pos(const morda::vector2& p)const noexcept;
+
 	bool on_mouse_button(const morda::mouse_button_event& event)override;
 
 	bool on_mouse_move(const morda::mouse_move_event& event)override;
