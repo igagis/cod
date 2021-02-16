@@ -114,7 +114,6 @@ class code_edit :
 	class cursor{
 		code_edit& owner;
 		r4::vector2<size_t> pos = 0;
-		bool selection_mode = false;
 		r4::vector2<size_t> sel_pos_glyphs = 0;
 
 		void update_selection();
@@ -160,18 +159,15 @@ class code_edit :
 
 		void set_pos_chars(r4::vector2<size_t> pos)noexcept;
 
-		void start_selection()noexcept{
-			this->selection_mode = true;
+		void set_pos_glyphs(r4::vector2<size_t> pos)noexcept;
+
+		void drop_selection()noexcept{
+			this->sel_pos_glyphs = this->get_pos_glyphs(); // make selection pos same as cursor pos
 		}
 
-		void stop_selection()noexcept{
-			this->selection_mode = false;
-			this->sel_pos_glyphs = this->get_pos_glyphs();
-		}
-
-		bool is_selection()const noexcept{
+		bool is_selection_empty()const noexcept{
 			auto s = this->get_selection_glyphs();
-			return s.segment.p1 != s.segment.p2;
+			return s.segment.p1 == s.segment.p2;
 		}
 	};
 
@@ -198,9 +194,11 @@ class code_edit :
 	void on_focus_change()override;
 	void start_cursor_blinking();
 
-	r4::vector2<size_t> mouse_pos_to_char_pos(const morda::vector2& p)const noexcept;
+	r4::vector2<size_t> mouse_pos_to_glyph_pos(const morda::vector2& mouse_pos)const noexcept;
 
 	bool on_mouse_button(const morda::mouse_button_event& event)override;
+
+	bool mouse_selection = false;
 
 	bool on_mouse_move(const morda::mouse_move_event& event)override;
 

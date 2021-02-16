@@ -401,8 +401,8 @@ void code_edit::render(const morda::matrix4& matrix)const{
 	this->base_container::render(matrix);
 }
 
-r4::vector2<size_t> code_edit::mouse_pos_to_char_pos(const morda::vector2& p)const noexcept{
-	auto corrected_pos = p +
+r4::vector2<size_t> code_edit::mouse_pos_to_glyph_pos(const morda::vector2& mouse_pos)const noexcept{
+	auto corrected_mouse_pos = mouse_pos +
 			morda::vector2{
 				this->scroll_area->get_scroll_pos().x(),
 				this->list->get_pos_offset()
@@ -412,13 +412,13 @@ r4::vector2<size_t> code_edit::mouse_pos_to_char_pos(const morda::vector2& p)con
 
 	using std::round;
 	using std::floor;
-	auto char_pos_real = corrected_pos.comp_div(this->font_info.glyph_dims);
-	char_pos_real.x() = round(char_pos_real.x());
-	char_pos_real.y() = floor(char_pos_real.y());
-	auto char_pos = char_pos_real.to<size_t>();
-	char_pos.y() += this->list->get_pos_index();
+	auto glyph_pos_real = corrected_mouse_pos.comp_div(this->font_info.glyph_dims);
+	glyph_pos_real.x() = round(glyph_pos_real.x());
+	glyph_pos_real.y() = floor(glyph_pos_real.y());
+	auto glyph_pos = glyph_pos_real.to<size_t>();
+	glyph_pos.y() += this->list->get_pos_index();
 
-	return char_pos;
+	return glyph_pos;
 }
 
 bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
@@ -433,21 +433,34 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 	if(event.is_down){
 		this->cursors.clear();
 
-		this->cursors.push_back(cursor(*this, this->mouse_pos_to_char_pos(event.pos)));
+		this->cursors.push_back(cursor(*this, this->mouse_pos_to_glyph_pos(event.pos)));
+		this->mouse_selection = true;
 
 		this->focus();
 		this->start_cursor_blinking();
+	}else{
+		this->mouse_selection = false;
+		return true;
 	}
 	
 	return true;
 }
 
 bool code_edit::on_mouse_move(const morda::mouse_move_event& event){
+	if(this->base_container::on_mouse_move(event)){
+		return true;
+	}
+
+	if(this->mouse_selection){
+		ASSERT(!this->cursors.empty())
+		this->cursors.front().set_pos_glyphs(this->mouse_pos_to_glyph_pos(event.pos));
+		return true;
+	}
 	return false;
 }
 
 void code_edit::cursor::update_selection(){
-	bool selection = this->selection_mode || this->owner.modifiers.get(code_edit::modifier::selection);
+	bool selection = this->owner.mouse_selection || this->owner.modifiers.get(code_edit::modifier::selection);
 	if(selection){
 		return;
 	}
@@ -510,13 +523,18 @@ code_edit::cursor::selection code_edit::cursor::get_selection_glyphs()const noex
 r4::vector2<size_t> code_edit::cursor::get_pos_chars()const noexcept{
 	size_t line_num = this->get_line_num();
 
+	ASSERT(line_num < this->owner.lines.size())
+	
+	using std::min;
+
+	ASSERT(!this->owner.lines.empty())
 	return {
 		glyph_pos_to_char_pos(
 				this->pos.x(),
 				this->owner.lines[line_num].str,
 				this->owner.settings.tab_size
 			),
-		this->pos.y()
+		min(this->pos.y(), this->owner.lines.size() - 1)
 	};
 }
 
@@ -542,9 +560,17 @@ void code_edit::cursor::set_pos_chars(r4::vector2<size_t> p)noexcept{
 	this->owner.start_cursor_blinking();
 }
 
+void code_edit::cursor::set_pos_glyphs(r4::vector2<size_t> p)noexcept{
+	this->pos = p;
+
+	this->update_selection();
+}
+
 r4::vector2<size_t> code_edit::cursor::get_pos_glyphs()const noexcept{
 	ASSERT(!this->owner.lines.empty())
 	auto p = this->get_pos_chars();
+
+	ASSERT_INFO(p.y() < this->owner.lines.size(), "this->owner.lines.size() = " << this->owner.lines.size() << ", p.y() = " << p.y())
 
 	return {
 		char_pos_to_glyph_pos(
