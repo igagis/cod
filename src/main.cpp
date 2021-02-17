@@ -7,7 +7,7 @@ public:
 			application(
 					"cod",
 					[](){
-						return mordavokne::window_params(r4::vector2<unsigned>(320, 480));
+						return mordavokne::window_params(r4::vector2<unsigned>(1024, 768));
 					}()
 				)
 	{

@@ -1,8 +1,18 @@
-@column{
-	@pile{
+@row{
+	@tree_view{
+		id{file_tree}
+		clip{true}
 		layout{
 			weight{1}
-			dx{fill}
+			dx{0} dy{fill}
+		}
+	}
+
+	@pile{
+		layout{
+			weight{5}
+			// dx{fill}
+			dy{fill}
 		}
 
 		@color{
