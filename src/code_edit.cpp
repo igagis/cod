@@ -408,6 +408,9 @@ r4::vector2<size_t> code_edit::mouse_pos_to_glyph_pos(const morda::vector2& mous
 				this->list->get_pos_offset()
 			};
 
+	using std::max;
+	corrected_mouse_pos = max(corrected_mouse_pos, 0); // clamp to positive values
+
 	// LOG("corrected_pos = " << corrected_pos << std::endl)
 
 	using std::round;
