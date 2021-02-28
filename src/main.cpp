@@ -1,16 +1,26 @@
 #include <mordavokne/application.hpp>
+
+#include <clargs/parser.hpp>
+
 #include "code_edit.hpp"
 #include "file_tree.hpp"
 
-class Application : public mordavokne::application{
+struct command_line_arguments{
+	std::string base_dir;
+};
+
+class application : public mordavokne::application{
 public:
-	Application() :
-			application(
+	const command_line_arguments cla;
+
+	application(command_line_arguments&& cla) :
+			mordavokne::application(
 					"cod",
 					[](){
 						return mordavokne::window_params(r4::vector2<unsigned>(1024, 768));
 					}()
-				)
+				),
+			cla(std::move(cla))
 	{
 		this->gui.initStandardWidgets(*this->get_res_file());
 		
@@ -67,5 +77,28 @@ f we
 };
 
 std::unique_ptr<mordavokne::application> mordavokne::create_application(int argc, const char** argv){
-	return std::make_unique<::Application>();
+	command_line_arguments cla;
+
+	clargs::parser p;
+
+	bool help = false;
+
+	p.add("help", "display help information", [&help](){help = true;});
+
+	auto fa = p.parse(argc, argv);
+
+	if(help){
+		std::cout << p.description() << std::endl;
+		return nullptr;
+	}
+
+	if(fa.size() > 1){
+		throw std::invalid_argument("error: more than one directory given");
+	}
+
+	if(fa.size() == 1){
+		cla.base_dir = std::move(fa.front());
+	}
+
+	return std::make_unique<::application>(std::move(cla));
 }
