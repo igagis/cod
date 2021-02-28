@@ -1,5 +1,6 @@
 #include <mordavokne/application.hpp>
 #include "code_edit.hpp"
+#include "file_tree.hpp"
 
 class Application : public mordavokne::application{
 public:
@@ -14,6 +15,7 @@ public:
 		this->gui.initStandardWidgets(*this->get_res_file());
 		
 		this->gui.context->inflater.register_widget<code_edit>("code_edit");
+		this->gui.context->inflater.register_widget<file_tree>("file_tree");
 
 		this->gui.context->loader.mount_res_pack(*this->get_res_file("res/"));
 		

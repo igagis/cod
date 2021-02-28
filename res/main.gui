@@ -1,9 +1,8 @@
 @row{
-	@tree_view{
+	@file_tree{
 		id{file_tree}
-		clip{true}
 		layout{
-			weight{1}
+			weight{2}
 			dx{0} dy{fill}
 		}
 	}

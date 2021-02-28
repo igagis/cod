@@ -13,17 +13,17 @@ uint16_t cursor_blink_period_ms = 500;
 morda::real cursor_thickness_dp = 2.0f;
 }
 
-code_edit::code_edit(std::shared_ptr<morda::context> c, const puu::forest& desc) :
+code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
 		widget(std::move(c), desc),
 		character_input_widget(this->context),
 		text_widget(this->context, desc),
-		column(this->context, puu::forest()),
+		column(this->context, treeml::forest()),
 		lines_provider(std::make_shared<provider>(*this))
 {
 	this->set_font(this->context->loader.load<morda::res::font>("fnt_monospace"));
 	this->on_font_change();
 
-	this->push_back_inflate(puu::read(R"qwertyuiop(
+	this->push_back_inflate(treeml::read(R"qwertyuiop(
 			@row{
 				layout{dx{fill} dy{0} weight{1}}
 
