@@ -1,5 +1,7 @@
 #include "file_tree.hpp"
 
+#include <utki/tree.hpp>
+
 using namespace cod;
 
 namespace{
@@ -34,9 +36,33 @@ const treeml::forest layout = treeml::read(R"qwertyuiop(
 )qwertyuiop");
 }
 
+namespace{
+struct file_tree_provider : public morda::tree_view::provider{
+	struct file_entry{
+		bool is_directory;
+		std::string name;
+		// TODO: type
+	};
+
+	utki::tree<file_entry> file_tree;
+
+	size_t count(const std::vector<size_t>& index)const noexcept override{
+		return 0;
+	}
+
+	std::shared_ptr<morda::widget> get_widget(const std::vector<size_t>& index, bool is_collapsed)override{
+		return nullptr;
+	}
+};
+}
+
 file_tree::file_tree(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
 		morda::widget(std::move(c), desc),
 		morda::column(this->context, layout)
 {
+	auto& tv = this->get_widget_as<morda::tree_view>("tree_view");
 
+	this->provider = std::make_shared<file_tree_provider>();
+
+	tv.set_provider(this->provider);
 }
