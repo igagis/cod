@@ -14,6 +14,8 @@
 
 #include <morda/updateable.hpp>
 
+namespace cod{
+
 class code_edit :
 		public morda::character_input_widget,
 		public morda::text_widget,
@@ -226,3 +228,5 @@ public:
 	void set_text(std::u32string&& text)override;
 	std::u32string get_text()const override;
 };
+
+}

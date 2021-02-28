@@ -8,6 +8,8 @@
 #include <morda/widgets/label/text.hpp>
 #include <morda/widgets/base/fraction_widget.hpp>
 
+using namespace cod;
+
 namespace{
 uint16_t cursor_blink_period_ms = 500;
 morda::real cursor_thickness_dp = 2.0f;

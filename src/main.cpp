@@ -3,7 +3,7 @@
 #include "application.hpp"
 
 std::unique_ptr<mordavokne::application> mordavokne::create_application(int argc, const char** argv){
-	command_line_arguments cla;
+	cod::command_line_arguments cla;
 
 	clargs::parser p;
 
@@ -26,5 +26,5 @@ std::unique_ptr<mordavokne::application> mordavokne::create_application(int argc
 		cla.base_dir = std::move(fa.front());
 	}
 
-	return std::make_unique<::application>(std::move(cla));
+	return std::make_unique<cod::application>(std::move(cla));
 }

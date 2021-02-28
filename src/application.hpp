@@ -5,6 +5,8 @@
 #include "code_edit.hpp"
 #include "file_tree.hpp"
 
+namespace cod{
+
 struct command_line_arguments{
 	std::string base_dir;
 };
@@ -15,3 +17,5 @@ public:
 
 	application(command_line_arguments&& cla);
 };
+
+}

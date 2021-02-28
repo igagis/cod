@@ -1,5 +1,7 @@
 #include "application.hpp"
 
+using namespace cod;
+
 application::application(command_line_arguments&& cla) :
 		mordavokne::application(
 				"cod",
