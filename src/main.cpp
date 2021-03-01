@@ -24,6 +24,8 @@ std::unique_ptr<mordavokne::application> mordavokne::create_application(int argc
 
 	if(fa.size() == 1){
 		cla.base_dir = std::move(fa.front());
+	}else{
+		cla.base_dir = "./";
 	}
 
 	return std::make_unique<cod::application>(std::move(cla));

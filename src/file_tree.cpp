@@ -1,6 +1,13 @@
 #include "file_tree.hpp"
 
 #include <utki/tree.hpp>
+#include <utki/linq.hpp>
+
+#include <papki/fs_file.hpp>
+
+#include <morda/widgets/label/text.hpp>
+
+#include "application.hpp"
 
 using namespace cod;
 
@@ -42,16 +49,62 @@ struct file_tree_provider : public morda::tree_view::provider{
 		bool is_directory;
 		std::string name;
 		// TODO: type
+
+		bool children_read = false;
 	};
 
-	utki::tree<file_entry> file_tree;
+	mutable utki::tree<file_entry>::container_type cache;
+
+	decltype(cache) read_files(utki::span<const size_t> index)const{
+		auto cur_file_list = &this->cache;
+		std::string dir_name = cod::application::inst().cla.base_dir;
+		for(auto i = index.begin(); i != index.end(); ++i){
+			ASSERT(*i < cur_file_list->size())
+			auto& f = (*cur_file_list)[*i];
+			ASSERT(f.value.is_directory)
+			dir_name.append(f.value.name).append("/");
+		}
+
+		return utki::linq(papki::fs_file(dir_name).list_dir()).select([](auto&& e){
+			bool is_dir = papki::is_dir(e);
+			return typename decltype(this->cache)::value_type(file_entry{
+				is_dir,
+				is_dir ? e.substr(0, e.size() - 1) : std::move(e)
+			});
+		}).get();
+	}
+
+	file_tree_provider() :
+			cache(read_files(utki::make_span<size_t>(nullptr, 0)))
+	{}
 
 	size_t count(const std::vector<size_t>& index)const noexcept override{
-		return 0;
+		decltype(this->cache)* cur_file_list = &this->cache;
+		for(auto i = index.begin(); i != index.end(); ++i){
+			ASSERT(*i < cur_file_list->size())
+			auto& f = (*cur_file_list)[*i];
+			if(!f.value.is_directory){
+				ASSERT(i == --index.end())
+				return 0;
+			}
+			if(!f.value.children_read){
+				f.children = this->read_files(utki::make_span(index.data(), std::distance(index.begin(), i) + 1));
+				f.value.children_read = true;
+			}
+			cur_file_list = &f.children;
+		}
+
+		return cur_file_list->size();
 	}
 
 	std::shared_ptr<morda::widget> get_widget(const std::vector<size_t>& index, bool is_collapsed)override{
-		return nullptr;
+		auto tr = utki::make_traversal(this->cache);
+		ASSERT(tr.is_valid(index))
+		auto& fe = tr[index];
+
+		auto ret = std::make_shared<morda::text>(this->get_list()->context, treeml::forest());
+		ret->set_text(fe.value.name);
+		return ret;
 	}
 };
 }

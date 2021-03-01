@@ -16,6 +16,10 @@ public:
 	const command_line_arguments cla;
 
 	application(command_line_arguments&& cla);
+
+	static application& inst(){
+		return static_cast<application&>(mordavokne::application::inst());
+	}
 };
 
 }
