@@ -44,7 +44,9 @@ const treeml::forest layout = treeml::read(R"qwertyuiop(
 }
 
 namespace{
-struct file_tree_provider : public morda::tree_view::provider{
+class file_tree_provider : public morda::tree_view::provider{
+	std::shared_ptr<morda::context> context;
+
 	struct file_entry{
 		bool is_directory;
 		std::string name;
@@ -56,6 +58,12 @@ struct file_tree_provider : public morda::tree_view::provider{
 	mutable utki::tree<file_entry>::container_type cache;
 
 	decltype(cache) read_files(utki::span<const size_t> index)const{
+#ifdef DEBUG
+		for(auto& i : index){
+			LOG(" " << i)
+		}
+		LOG(std::endl)
+#endif
 		auto cur_file_list = &this->cache;
 		std::string dir_name = cod::application::inst().cla.base_dir;
 		for(auto i = index.begin(); i != index.end(); ++i){
@@ -63,7 +71,10 @@ struct file_tree_provider : public morda::tree_view::provider{
 			auto& f = (*cur_file_list)[*i];
 			ASSERT(f.value.is_directory)
 			dir_name.append(f.value.name).append("/");
+			cur_file_list = &f.children;
 		}
+
+		LOG("dir_name = " << dir_name << std::endl)
 
 		return utki::linq(papki::fs_file(dir_name).list_dir()).select([](auto&& e){
 			bool is_dir = papki::is_dir(e);
@@ -74,7 +85,9 @@ struct file_tree_provider : public morda::tree_view::provider{
 		}).get();
 	}
 
-	file_tree_provider() :
+public:
+	file_tree_provider(std::shared_ptr<morda::context> context) :
+			context(std::move(context)),
 			cache(read_files(utki::make_span<size_t>(nullptr, 0)))
 	{}
 
@@ -102,7 +115,7 @@ struct file_tree_provider : public morda::tree_view::provider{
 		ASSERT(tr.is_valid(index))
 		auto& fe = tr[index];
 
-		auto ret = std::make_shared<morda::text>(this->get_list()->context, treeml::forest());
+		auto ret = std::make_shared<morda::text>(this->context, treeml::forest());
 		ret->set_text(fe.value.name);
 		return ret;
 	}
@@ -115,7 +128,7 @@ file_tree::file_tree(std::shared_ptr<morda::context> c, const treeml::forest& de
 {
 	auto& tv = this->get_widget_as<morda::tree_view>("tree_view");
 
-	this->provider = std::make_shared<file_tree_provider>();
+	this->provider = std::make_shared<file_tree_provider>(this->context);
 
 	tv.set_provider(this->provider);
 }
