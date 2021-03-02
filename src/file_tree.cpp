@@ -76,13 +76,15 @@ class file_tree_provider : public morda::tree_view::provider{
 
 		LOG("dir_name = " << dir_name << std::endl)
 
-		return utki::linq(papki::fs_file(dir_name).list_dir()).select([](auto&& e){
-			bool is_dir = papki::is_dir(e);
-			return typename decltype(this->cache)::value_type(file_entry{
-				is_dir,
-				is_dir ? e.substr(0, e.size() - 1) : std::move(e)
-			});
-		}).get();
+		return utki::linq(papki::fs_file(dir_name).list_dir())
+				.order_by([](const auto& v) -> const auto&{return v;})
+				.select([](auto&& e){
+						bool is_dir = papki::is_dir(e);
+						return typename decltype(this->cache)::value_type(file_entry{
+							is_dir,
+							is_dir ? e.substr(0, e.size() - 1) : std::move(e)
+						});
+					}).get();
 	}
 
 public:
