@@ -6,6 +6,7 @@
 #include <papki/fs_file.hpp>
 
 #include <morda/widgets/label/text.hpp>
+#include <morda/widgets/slider/scroll_bar.hpp>
 
 #include "application.hpp"
 
@@ -35,7 +36,7 @@ const treeml::forest layout = treeml::read(R"qwertyuiop(
 		}
 	}
 	@horizontal_scroll_bar{
-		id{treeview_vertical_slider}
+		id{horizontal_scroll}
 		layout{
 			dx{max} dy{min}
 		}
@@ -129,6 +130,32 @@ file_tree::file_tree(std::shared_ptr<morda::context> c, const treeml::forest& de
 		morda::column(this->context, layout)
 {
 	auto& tv = this->get_widget_as<morda::tree_view>("tree_view");
+
+	auto& vs = this->get_widget_as<morda::scroll_bar>("vertical_scroll");
+	auto& hs = this->get_widget_as<morda::scroll_bar>("horizontal_scroll");
+
+	// TODO:
+	// tv.view_change_handler = [vs = utki::make_weak_from(vs), hs = utki::make_weak_from(hs)](morda::tree_view& tv){
+	// 	auto f = tv.get_visible_area_fraction();
+	// 	if(auto sb = hs.lock()){
+	// 		sb->set_fraction(f.x());
+	// 	}
+	// 	if(auto sb = vs.lock()){
+	// 		sb->set_fraction(f.y());
+	// 	}
+	// };
+
+	vs.fraction_change_handler = [tv = utki::make_weak_from(tv)](morda::fraction_widget& fw){
+		if(auto w = tv.lock()){
+			w->set_vertical_scroll_factor(fw.fraction());
+		}
+	};
+
+	hs.fraction_change_handler = [tv = utki::make_weak_from(tv)](morda::fraction_widget& fw){
+		if(auto w = tv.lock()){
+			w->set_horizontal_scroll_factor(fw.fraction());
+		}
+	};
 
 	this->provider = std::make_shared<file_tree_provider>(this->context);
 
