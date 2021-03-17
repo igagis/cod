@@ -134,16 +134,18 @@ file_tree::file_tree(std::shared_ptr<morda::context> c, const treeml::forest& de
 	auto& vs = this->get_widget_as<morda::scroll_bar>("vertical_scroll");
 	auto& hs = this->get_widget_as<morda::scroll_bar>("horizontal_scroll");
 
-	// TODO:
-	// tv.view_change_handler = [vs = utki::make_weak_from(vs), hs = utki::make_weak_from(hs)](morda::tree_view& tv){
-	// 	auto f = tv.get_visible_area_fraction();
-	// 	if(auto sb = hs.lock()){
-	// 		sb->set_fraction(f.x());
-	// 	}
-	// 	if(auto sb = vs.lock()){
-	// 		sb->set_fraction(f.y());
-	// 	}
-	// };
+	tv.scroll_change_handler = [vs = utki::make_weak_from(vs), hs = utki::make_weak_from(hs)](morda::tree_view& tv){
+		auto f = tv.get_scroll_factor();
+		auto b = tv.get_scroll_band();
+		if(auto sb = hs.lock()){
+			sb->set_fraction(f.x());
+			sb->set_band_fraction(b.x());
+		}
+		if(auto sb = vs.lock()){
+			sb->set_fraction(f.y());
+			sb->set_band_fraction(b.y());
+		}
+	};
 
 	vs.fraction_change_handler = [tv = utki::make_weak_from(tv)](morda::fraction_widget& fw){
 		if(auto w = tv.lock()){

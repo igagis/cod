@@ -67,7 +67,7 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& de
 				}
 			};
 
-	this->list->scroll_pos_change_handler = [vs = utki::make_weak_from(vs)](morda::list_widget& lw){
+	this->list->scroll_change_handler = [vs = utki::make_weak_from(vs)](morda::list_widget& lw){
 		if(auto s = vs.lock()){
 			s->set_fraction(lw.get_scroll_factor(), false);
 		}
@@ -84,7 +84,7 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& de
 				}
 			};
 	
-	this->scroll_area->scroll_pos_change_handler = [hs = utki::make_weak_from(hs)](morda::scroll_area& sa){
+	this->scroll_area->scroll_change_handler = [hs = utki::make_weak_from(hs)](morda::scroll_area& sa){
 		if(auto s = hs.lock()){
 			s->set_fraction(sa.get_scroll_factor().x(), false);
 		}
