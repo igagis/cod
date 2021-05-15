@@ -2,7 +2,7 @@
 
 #include "application.hpp"
 
-std::unique_ptr<mordavokne::application> mordavokne::create_application(int argc, const char** argv){
+mordavokne::application_factory app_fac([](auto args) -> std::unique_ptr<mordavokne::application>{
 	cod::command_line_arguments cla;
 
 	clargs::parser p;
@@ -11,7 +11,7 @@ std::unique_ptr<mordavokne::application> mordavokne::create_application(int argc
 
 	p.add("help", "display help information", [&help](){help = true;});
 
-	auto fa = p.parse(argc, argv);
+	auto fa = p.parse(args);
 
 	if(help){
 		std::cout << p.description() << std::endl;
@@ -29,4 +29,4 @@ std::unique_ptr<mordavokne::application> mordavokne::create_application(int argc
 	}
 
 	return std::make_unique<cod::application>(std::move(cla));
-}
+});

@@ -61,9 +61,9 @@ class file_tree_provider : public morda::tree_view::provider{
 	decltype(cache) read_files(utki::span<const size_t> index)const{
 #ifdef DEBUG
 		for(auto& i : index){
-			LOG(" " << i)
+			LOG([&](auto&o){o << " " << i;})
 		}
-		LOG(std::endl)
+		LOG([&](auto&o){o << std::endl;})
 #endif
 		auto cur_file_list = &this->cache;
 		std::string dir_name = cod::application::inst().cla.base_dir;
@@ -75,7 +75,7 @@ class file_tree_provider : public morda::tree_view::provider{
 			cur_file_list = &f.children;
 		}
 
-		LOG("dir_name = " << dir_name << std::endl)
+		LOG([&](auto&o){o << "dir_name = " << dir_name << std::endl;})
 
 		return utki::linq(papki::fs_file(dir_name).list_dir())
 				.order_by([](const auto& v) -> const auto&{return v;})
