@@ -1,5 +1,8 @@
 #include "application.hpp"
 
+#include "tabbed_book.hpp"
+#include "editor_page.hpp"
+
 using namespace cod;
 
 application::application(command_line_arguments&& cla) :
@@ -15,6 +18,7 @@ application::application(command_line_arguments&& cla) :
 	
 	this->gui.context->inflater.register_widget<code_edit>("code_edit");
 	this->gui.context->inflater.register_widget<file_tree>("file_tree");
+	this->gui.context->inflater.register_widget<tabbed_book>("tabbed_book");
 
 	this->gui.context->loader.mount_res_pack(*this->get_res_file("res/"));
 	
@@ -22,44 +26,10 @@ application::application(command_line_arguments&& cla) :
 			*this->get_res_file("res/main.gui")
 		);
 
-	c->get_widget_as<morda::text_widget>("code_edit").set_text(
-R"qwertyuiop(Hello world!
-second line
-third line
-very very long line lorem ipsum dolor sit amet consecteteur blah blag
-ef
-ef
-qw
-ef
-wqef
-we
-fw
-ef
-we 
-fwe 
-fwe 
-fw e
-fwe we
-f w
-ef 
-we
-f we
-f we
-f
-we 
-fwe
 
-fwqe
-fwe
+	auto& tb = c->get_widget_as<tabbed_book>("tabbed_book");
 
-fwqe
-	f
-	wqe
-	f
-	wqf
-
-
-wef wqe)qwertyuiop");
+	tb.add("test", std::make_shared<editor_page>(this->gui.context, treeml::forest()));
 	
 	this->gui.set_root(std::move(c));
 }
