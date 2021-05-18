@@ -3,7 +3,6 @@
 #include <morda/widgets/group/tabbed_book.hpp>
 #include <morda/widgets/label/text.hpp>
 
-// #include "tabbed_book.hpp"
 #include "editor_page.hpp"
 
 using namespace cod;
@@ -71,7 +70,6 @@ application::application(command_line_arguments&& cla) :
 	auto c = this->gui.context->inflater.inflate(
 			*this->get_res_file("res/main.gui")
 		);
-
 
 	auto& tb = c->get_widget_as<morda::tabbed_book>("tabbed_book");
 
