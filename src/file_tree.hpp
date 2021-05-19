@@ -15,6 +15,7 @@ class file_tree :
 public:
 	file_tree(std::shared_ptr<morda::context> c, const treeml::forest& desc);
 
+	std::function<void(utki::span<const size_t>)> file_select_handler;
 };
 
 }

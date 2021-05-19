@@ -6,7 +6,10 @@
 #include <papki/fs_file.hpp>
 
 #include <morda/widgets/label/text.hpp>
+#include <morda/widgets/label/color.hpp>
 #include <morda/widgets/slider/scroll_bar.hpp>
+#include <morda/widgets/proxy/mouse_proxy.hpp>
+#include <morda/widgets/proxy/click_proxy.hpp>
 
 #include "application.hpp"
 
@@ -78,7 +81,7 @@ std::string make_path(utki::span<const size_t> index, const file_entry_forest_ty
 
 namespace{
 class file_tree_provider : public morda::tree_view::provider{
-	std::shared_ptr<morda::context> context;	
+	file_tree& owner;
 
 	mutable file_entry_forest_type cache;
 
@@ -106,8 +109,8 @@ class file_tree_provider : public morda::tree_view::provider{
 	}
 
 public:
-	file_tree_provider(std::shared_ptr<morda::context> context) :
-			context(std::move(context)),
+	file_tree_provider(file_tree& owner) :
+			owner(owner),
 			cache(read_files(utki::make_span<size_t>(nullptr, 0)))
 	{}
 
@@ -135,9 +138,41 @@ public:
 		ASSERT(tr.is_valid(index))
 		auto& file_entry = tr[index];
 
-		auto ret = std::make_shared<morda::text>(this->context, treeml::forest());
-		ret->set_text(file_entry.value.name);
-		return ret;
+		auto w = this->owner.context->inflater.inflate(R"(
+			@pile{
+				@mouse_proxy{
+					id{mp}
+					layout{
+						dx{fill}
+						dy{fill}
+					}
+				}
+				@color{
+					id{bg}
+					layout{
+						dx{fill}
+						dy{fill}
+					}
+					color{0}
+				}
+				@text{
+					id{tx}
+				}
+			}
+		)");
+
+		w->get_widget_as<morda::text>("tx").set_text(file_entry.value.name);
+
+		// auto bg = w->try_get_widget_as<morda::color>("bg");
+		// ASSERT(bg)
+		// auto mp = w->try_get_widget_as<morda::mouse_proxy>("mp");
+		// ASSERT(mp)
+
+		// mp.mouse_button_handler = [bg](morda::mouse_button_event e){
+
+		// };
+
+		return w;
 	}
 };
 }
@@ -176,7 +211,7 @@ file_tree::file_tree(std::shared_ptr<morda::context> c, const treeml::forest& de
 		}
 	};
 
-	this->provider = std::make_shared<file_tree_provider>(this->context);
+	this->provider = std::make_shared<file_tree_provider>(*this);
 
 	tv.set_provider(this->provider);
 }
