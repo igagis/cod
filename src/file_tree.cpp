@@ -45,18 +45,42 @@ const treeml::forest layout = treeml::read(R"qwertyuiop(
 }
 
 namespace{
+struct file_entry{
+	bool is_directory;
+	std::string name;
+	// TODO: type
+
+	bool children_read = false;
+};
+
+typedef utki::tree<file_entry>::container_type file_entry_forest_type;
+}
+
+namespace{
+std::string make_path(utki::span<const size_t> index, const file_entry_forest_type& fef){
+	auto cur_file_list = &fef;
+	std::string dir_name;
+	for(auto i = index.begin(); i != index.end(); ++i){
+		ASSERT(*i < cur_file_list->size())
+		auto& f = (*cur_file_list)[*i];
+		ASSERT(f.value.is_directory)
+		dir_name.append(f.value.name);
+		if(f.value.is_directory){
+			dir_name.append("/");
+		}else{
+			ASSERT(std::next(i) == index.end())
+		}
+		cur_file_list = &f.children;
+	}
+	return dir_name;
+}
+}
+
+namespace{
 class file_tree_provider : public morda::tree_view::provider{
-	std::shared_ptr<morda::context> context;
+	std::shared_ptr<morda::context> context;	
 
-	struct file_entry{
-		bool is_directory;
-		std::string name;
-		// TODO: type
-
-		bool children_read = false;
-	};
-
-	mutable utki::tree<file_entry>::container_type cache;
+	mutable file_entry_forest_type cache;
 
 	decltype(cache) read_files(utki::span<const size_t> index)const{
 #ifdef DEBUG
@@ -65,15 +89,8 @@ class file_tree_provider : public morda::tree_view::provider{
 		}
 		LOG([&](auto&o){o << std::endl;})
 #endif
-		auto cur_file_list = &this->cache;
-		std::string dir_name = cod::application::inst().cla.base_dir;
-		for(auto i = index.begin(); i != index.end(); ++i){
-			ASSERT(*i < cur_file_list->size())
-			auto& f = (*cur_file_list)[*i];
-			ASSERT(f.value.is_directory)
-			dir_name.append(f.value.name).append("/");
-			cur_file_list = &f.children;
-		}
+
+		auto dir_name = cod::application::inst().cla.base_dir + make_path(index, this->cache);
 
 		LOG([&](auto&o){o << "dir_name = " << dir_name << std::endl;})
 
@@ -116,10 +133,10 @@ public:
 	std::shared_ptr<morda::widget> get_widget(const std::vector<size_t>& index, bool is_collapsed)override{
 		auto tr = utki::make_traversal(this->cache);
 		ASSERT(tr.is_valid(index))
-		auto& fe = tr[index];
+		auto& file_entry = tr[index];
 
 		auto ret = std::make_shared<morda::text>(this->context, treeml::forest());
-		ret->set_text(fe.value.name);
+		ret->set_text(file_entry.value.name);
 		return ret;
 	}
 };
