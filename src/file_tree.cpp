@@ -8,7 +8,6 @@
 #include <morda/widgets/label/text.hpp>
 #include <morda/widgets/label/color.hpp>
 #include <morda/widgets/slider/scroll_bar.hpp>
-#include <morda/widgets/proxy/mouse_proxy.hpp>
 #include <morda/widgets/proxy/click_proxy.hpp>
 
 #include "application.hpp"
@@ -140,8 +139,8 @@ public:
 
 		auto w = this->owner.context->inflater.inflate(R"(
 			@pile{
-				@mouse_proxy{
-					id{mp}
+				@click_proxy{
+					id{cp}
 					layout{
 						dx{fill}
 						dy{fill}
@@ -153,7 +152,8 @@ public:
 						dx{fill}
 						dy{fill}
 					}
-					color{0}
+					color{${morda_color_highlight}}
+					visible{false}
 				}
 				@text{
 					id{tx}
@@ -163,14 +163,18 @@ public:
 
 		w->get_widget_as<morda::text>("tx").set_text(file_entry.value.name);
 
-		// auto bg = w->try_get_widget_as<morda::color>("bg");
-		// ASSERT(bg)
-		// auto mp = w->try_get_widget_as<morda::mouse_proxy>("mp");
-		// ASSERT(mp)
+		auto bg = w->try_get_widget_as<morda::color>("bg");
+		ASSERT(bg)
+		auto& cp = w->get_widget_as<morda::click_proxy>("cp");
 
-		// mp.mouse_button_handler = [bg](morda::mouse_button_event e){
-
-		// };
+		cp.click_handler = [
+				bg
+				// ,
+				// ft = utki::make_shared_from(this->owner)
+			](morda::click_proxy& cp)
+		{
+			bg->set_visible(true);
+		};
 
 		return w;
 	}

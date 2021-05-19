@@ -12,6 +12,8 @@ class file_tree :
 		private morda::column
 {
 	std::shared_ptr<morda::tree_view::provider> provider;
+
+	std::vector<size_t> cursor_index;
 public:
 	file_tree(std::shared_ptr<morda::context> c, const treeml::forest& desc);
 
