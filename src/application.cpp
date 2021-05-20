@@ -63,7 +63,6 @@ application::application(command_line_arguments&& cla) :
 	
 	this->gui.context->inflater.register_widget<code_edit>("code_edit");
 	this->gui.context->inflater.register_widget<file_tree>("file_tree");
-	this->gui.context->inflater.register_widget<morda::tabbed_book>("tabbed_book");
 
 	this->gui.context->loader.mount_res_pack(*this->get_res_file("res/"));
 	

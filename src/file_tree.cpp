@@ -113,13 +113,13 @@ public:
 			cache(read_files(utki::make_span<size_t>(nullptr, 0)))
 	{}
 
-	size_t count(const std::vector<size_t>& index)const noexcept override{
+	size_t count(utki::span<const size_t> index)const noexcept override{
 		decltype(this->cache)* cur_file_list = &this->cache;
 		for(auto i = index.begin(); i != index.end(); ++i){
 			ASSERT(*i < cur_file_list->size())
 			auto& f = (*cur_file_list)[*i];
 			if(!f.value.is_directory){
-				ASSERT(i == --index.end())
+				ASSERT(i == std::prev(index.end()))
 				return 0;
 			}
 			if(!f.value.children_read){
@@ -132,7 +132,7 @@ public:
 		return cur_file_list->size();
 	}
 
-	std::shared_ptr<morda::widget> get_widget(const std::vector<size_t>& index, bool is_collapsed)override{
+	std::shared_ptr<morda::widget> get_widget(utki::span<const size_t> index, bool is_collapsed)override{
 		auto tr = utki::make_traversal(this->cache);
 		ASSERT(tr.is_valid(index))
 		auto& file_entry = tr[index];
