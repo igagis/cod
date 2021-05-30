@@ -147,9 +147,8 @@ std::shared_ptr<morda::widget> file_tree::file_tree_provider::get_widget(utki::s
 	auto& cp = w->get_widget_as<morda::click_proxy>("cp");
 
 	cp.click_handler = [
-			bg
-			// ,
-			// ft = utki::make_shared_from(this->owner)
+			bg,
+			&owner = this->owner
 		](morda::click_proxy& cp)
 	{
 		bg->set_visible(true);
