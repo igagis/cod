@@ -46,20 +46,7 @@ const treeml::forest layout = treeml::read(R"qwertyuiop(
 )qwertyuiop");
 }
 
-namespace{
-struct file_entry{
-	bool is_directory;
-	std::string name;
-	// TODO: type
-
-	bool children_read = false;
-};
-
-typedef utki::tree<file_entry>::container_type file_entry_forest_type;
-}
-
-namespace{
-std::string make_path(utki::span<const size_t> index, const file_entry_forest_type& fef){
+std::string file_tree::file_tree_provider::make_path(utki::span<const size_t> index, const file_entry_forest_type& fef){
 	auto cur_file_list = &fef;
 	std::string dir_name;
 	for(auto i = index.begin(); i != index.end(); ++i){
@@ -76,109 +63,99 @@ std::string make_path(utki::span<const size_t> index, const file_entry_forest_ty
 	}
 	return dir_name;
 }
-}
 
-namespace{
-class file_tree_provider : public morda::tree_view::provider{
-	file_tree& owner;
-
-	mutable file_entry_forest_type cache;
-
-	decltype(cache) read_files(utki::span<const size_t> index)const{
+auto file_tree::file_tree_provider::read_files(utki::span<const size_t> index)const -> decltype(cache){
 #ifdef DEBUG
-		for(auto& i : index){
-			LOG([&](auto&o){o << " " << i;})
-		}
-		LOG([&](auto&o){o << std::endl;})
+	for(auto& i : index){
+		LOG([&](auto&o){o << " " << i;})
+	}
+	LOG([&](auto&o){o << std::endl;})
 #endif
 
-		auto dir_name = cod::application::inst().cla.base_dir + make_path(index, this->cache);
+	auto dir_name = cod::application::inst().cla.base_dir + make_path(index, this->cache);
 
-		LOG([&](auto&o){o << "dir_name = " << dir_name << std::endl;})
+	LOG([&](auto&o){o << "dir_name = " << dir_name << std::endl;})
 
-		return utki::linq(papki::fs_file(dir_name).list_dir())
-				.order_by([](const auto& v) -> const auto&{return v;})
-				.select([](auto&& e){
-						bool is_dir = papki::is_dir(e);
-						return typename decltype(this->cache)::value_type(file_entry{
-							is_dir,
-							is_dir ? e.substr(0, e.size() - 1) : std::move(e)
-						});
-					}).get();
-	}
+	return utki::linq(papki::fs_file(dir_name).list_dir())
+			.order_by([](const auto& v) -> const auto&{return v;})
+			.select([](auto&& e){
+					bool is_dir = papki::is_dir(e);
+					return typename decltype(this->cache)::value_type(file_entry{
+						is_dir,
+						is_dir ? e.substr(0, e.size() - 1) : std::move(e)
+					});
+				}).get();
+}
 
-public:
-	file_tree_provider(file_tree& owner) :
-			owner(owner),
-			cache(read_files(utki::make_span<size_t>(nullptr, 0)))
-	{}
+file_tree::file_tree_provider::file_tree_provider(file_tree& owner) :
+		owner(owner),
+		cache(read_files(utki::make_span<size_t>(nullptr, 0)))
+{}
 
-	size_t count(utki::span<const size_t> index)const noexcept override{
-		decltype(this->cache)* cur_file_list = &this->cache;
-		for(auto i = index.begin(); i != index.end(); ++i){
-			ASSERT(*i < cur_file_list->size())
-			auto& f = (*cur_file_list)[*i];
-			if(!f.value.is_directory){
-				ASSERT(i == std::prev(index.end()))
-				return 0;
-			}
-			if(!f.value.children_read){
-				f.children = this->read_files(utki::make_span(index.data(), std::distance(index.begin(), i) + 1));
-				f.value.children_read = true;
-			}
-			cur_file_list = &f.children;
+size_t file_tree::file_tree_provider::count(utki::span<const size_t> index)const noexcept{
+	decltype(this->cache)* cur_file_list = &this->cache;
+	for(auto i = index.begin(); i != index.end(); ++i){
+		ASSERT(*i < cur_file_list->size())
+		auto& f = (*cur_file_list)[*i];
+		if(!f.value.is_directory){
+			ASSERT(i == std::prev(index.end()))
+			return 0;
 		}
-
-		return cur_file_list->size();
+		if(!f.value.children_read){
+			f.children = this->read_files(utki::make_span(index.data(), std::distance(index.begin(), i) + 1));
+			f.value.children_read = true;
+		}
+		cur_file_list = &f.children;
 	}
 
-	std::shared_ptr<morda::widget> get_widget(utki::span<const size_t> index, bool is_collapsed)override{
-		auto tr = utki::make_traversal(this->cache);
-		ASSERT(tr.is_valid(index))
-		auto& file_entry = tr[index];
+	return cur_file_list->size();
+}
 
-		auto w = this->owner.context->inflater.inflate(R"(
-			@pile{
-				@click_proxy{
-					id{cp}
-					layout{
-						dx{fill}
-						dy{fill}
-					}
-				}
-				@color{
-					id{bg}
-					layout{
-						dx{fill}
-						dy{fill}
-					}
-					color{${morda_color_highlight}}
-					visible{false}
-				}
-				@text{
-					id{tx}
+std::shared_ptr<morda::widget> file_tree::file_tree_provider::get_widget(utki::span<const size_t> index, bool is_collapsed){
+	auto tr = utki::make_traversal(this->cache);
+	ASSERT(tr.is_valid(index))
+	auto& file_entry = tr[index];
+
+	auto w = this->owner.context->inflater.inflate(R"(
+		@pile{
+			@click_proxy{
+				id{cp}
+				layout{
+					dx{fill}
+					dy{fill}
 				}
 			}
-		)");
+			@color{
+				id{bg}
+				layout{
+					dx{fill}
+					dy{fill}
+				}
+				color{${morda_color_highlight}}
+				visible{false}
+			}
+			@text{
+				id{tx}
+			}
+		}
+	)");
 
-		w->get_widget_as<morda::text>("tx").set_text(file_entry.value.name);
+	w->get_widget_as<morda::text>("tx").set_text(file_entry.value.name);
 
-		auto bg = w->try_get_widget_as<morda::color>("bg");
-		ASSERT(bg)
-		auto& cp = w->get_widget_as<morda::click_proxy>("cp");
+	auto bg = w->try_get_widget_as<morda::color>("bg");
+	ASSERT(bg)
+	auto& cp = w->get_widget_as<morda::click_proxy>("cp");
 
-		cp.click_handler = [
-				bg
-				// ,
-				// ft = utki::make_shared_from(this->owner)
-			](morda::click_proxy& cp)
-		{
-			bg->set_visible(true);
-		};
+	cp.click_handler = [
+			bg
+			// ,
+			// ft = utki::make_shared_from(this->owner)
+		](morda::click_proxy& cp)
+	{
+		bg->set_visible(true);
+	};
 
-		return w;
-	}
-};
+	return w;
 }
 
 file_tree::file_tree(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
