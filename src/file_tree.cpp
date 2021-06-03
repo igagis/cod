@@ -142,16 +142,21 @@ std::shared_ptr<morda::widget> file_tree::file_tree_provider::get_widget(utki::s
 
 	w->get_widget_as<morda::text>("tx").set_text(file_entry.value.name);
 
-	auto bg = w->try_get_widget_as<morda::color>("bg");
-	ASSERT(bg)
+	if(utki::make_span(this->owner.cursor_index) == index){
+		auto bg = w->try_get_widget_as<morda::color>("bg");
+		ASSERT(bg)
+		bg->set_visible(true);
+	}
+
 	auto& cp = w->get_widget_as<morda::click_proxy>("cp");
 
 	cp.click_handler = [
-			bg,
-			&owner = this->owner
+			this,
+			index = utki::make_vector(index)
 		](morda::click_proxy& cp)
 	{
-		bg->set_visible(true);
+		this->owner.cursor_index = index;
+		this->notify_item_changed();
 	};
 
 	return w;
