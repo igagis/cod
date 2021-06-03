@@ -88,13 +88,24 @@ auto file_tree::file_tree_provider::read_files(utki::span<const size_t> index)co
 }
 
 std::string file_tree::file_tree_provider::get_path(utki::span<const size_t> index)const noexcept{
-	// auto tr = utki::make_traversal(this->cache);
+	auto tr = utki::make_traversal(this->cache);
 
-	// tr.make_iterator(index);
+	auto iter = tr.make_iterator(index);
 
-	// TODO:
+	std::stringstream ss;
 
-	return nullptr;
+	for(size_t i = 0; i != iter.depth(); ++i){
+		if(i != 0){
+			ss << "/";
+		}
+		ss << iter.at_level(i).value.name;
+	}
+
+	if(iter->value.is_directory){
+		ss << "/";
+	}
+
+	return ss.str();
 }
 
 file_tree::file_tree_provider::file_tree_provider(file_tree& owner) :
@@ -178,7 +189,7 @@ std::shared_ptr<morda::widget> file_tree::file_tree_provider::get_widget(utki::s
 
 void file_tree::notify_file_select(){
 	if(this->file_select_handler){
-		this->file_select_handler(utki::make_span(this->cursor_index));
+		this->file_select_handler(this->provider->get_path(utki::make_span(this->cursor_index)));
 	}
 }
 

@@ -71,8 +71,8 @@ application::application(command_line_arguments&& cla) :
 		);
 
 	auto& ft = c->get_widget_as<file_tree>("file_tree");
-	ft.file_select_handler = [](utki::span<const size_t> index){
-
+	ft.file_select_handler = [](std::string file_name){
+		std::cout << "file = " << file_name << '\n';
 	};
 
 	auto& tb = c->get_widget_as<morda::tabbed_book>("tabbed_book");
