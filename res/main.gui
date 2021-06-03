@@ -15,45 +15,4 @@
 			dy{fill}
 		}
 	}
-
-/*
-	@pile{
-		layout{
-			weight{5}
-			// dx{fill}
-			dy{fill}
-		}
-
-		@color{
-			layout{dx{fill} dy{fill}}
-			color{0xff004000}
-		}
-
-		@margins{
-			defs{
-				w { 0.1 }
-			}
-			layout{dx{fill} dy{fill}}
-			weight_left{${w}}
-			weight_right{${w}}
-			weight_top{${w}}
-			weight_bottom{${w}}
-
-			@color{
-				layout{
-					dx { fill }
-					dy { fill }
-				}
-				color { 0xff000000 }
-			}
-
-			@code_edit{
-				id{code_edit}
-				layout{
-					dx{fill} dy{fill}
-				}
-			}
-		}	
-	}
-*/
 }

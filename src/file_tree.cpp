@@ -87,6 +87,16 @@ auto file_tree::file_tree_provider::read_files(utki::span<const size_t> index)co
 				}).get();
 }
 
+std::string file_tree::file_tree_provider::get_path(utki::span<const size_t> index)const noexcept{
+	// auto tr = utki::make_traversal(this->cache);
+
+	// tr.make_iterator(index);
+
+	// TODO:
+
+	return nullptr;
+}
+
 file_tree::file_tree_provider::file_tree_provider(file_tree& owner) :
 		owner(owner),
 		cache(read_files(utki::make_span<size_t>(nullptr, 0)))
@@ -160,9 +170,16 @@ std::shared_ptr<morda::widget> file_tree::file_tree_provider::get_widget(utki::s
 		}
 		this->owner.cursor_index = index;
 		this->notify_item_changed();
+		this->owner.notify_file_select();
 	};
 
 	return w;
+}
+
+void file_tree::notify_file_select(){
+	if(this->file_select_handler){
+		this->file_select_handler(utki::make_span(this->cursor_index));
+	}
 }
 
 file_tree::file_tree(std::shared_ptr<morda::context> c, const treeml::forest& desc) :

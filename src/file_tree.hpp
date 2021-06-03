@@ -33,12 +33,15 @@ class file_tree :
 		file_tree_provider(file_tree& owner);
 		size_t count(utki::span<const size_t> index)const noexcept override;
 		std::shared_ptr<morda::widget> get_widget(utki::span<const size_t> index, bool is_collapsed)override;
+
+		std::string get_path(utki::span<const size_t> index)const noexcept;
 	};
 
 	std::shared_ptr<file_tree_provider> provider;
 
 	std::vector<size_t> cursor_index;
 
+	void notify_file_select();
 public:
 	file_tree(std::shared_ptr<morda::context> c, const treeml::forest& desc);
 

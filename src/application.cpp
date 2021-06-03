@@ -70,6 +70,11 @@ application::application(command_line_arguments&& cla) :
 			*this->get_res_file("res/main.gui")
 		);
 
+	auto& ft = c->get_widget_as<file_tree>("file_tree");
+	ft.file_select_handler = [](utki::span<const size_t> index){
+
+	};
+
 	auto& tb = c->get_widget_as<morda::tabbed_book>("tabbed_book");
 
 	tb.add(
