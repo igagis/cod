@@ -155,6 +155,9 @@ std::shared_ptr<morda::widget> file_tree::file_tree_provider::get_widget(utki::s
 			index = utki::make_vector(index)
 		](morda::click_proxy& cp)
 	{
+		if(this->owner.cursor_index == index){
+			return;
+		}
 		this->owner.cursor_index = index;
 		this->notify_item_changed();
 	};
