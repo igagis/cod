@@ -3,6 +3,10 @@
 #include <morda/widgets/group/tabbed_book.hpp>
 #include <morda/widgets/label/text.hpp>
 
+#include <utki/unicode.hpp>
+
+#include <papki/fs_file.hpp>
+
 #include "editor_page.hpp"
 
 using namespace cod;
@@ -70,17 +74,27 @@ application::application(command_line_arguments&& cla) :
 			*this->get_res_file("res/main.gui")
 		);
 
-	auto& ft = c->get_widget_as<file_tree>("file_tree");
-	ft.file_select_handler = [](std::string file_name){
-		std::cout << "file = " << file_name << '\n';
-	};
-
 	auto& tb = c->get_widget_as<morda::tabbed_book>("tabbed_book");
 
-	tb.add(
-			inflate_tab(utki::make_shared_from(tb), "test"),
-			std::make_shared<editor_page>(this->gui.context, treeml::forest())
-		);
+	auto& ft = c->get_widget_as<file_tree>("file_tree");
+	ft.file_select_handler = [tb = utki::make_shared_from(tb)](std::string file_name){
+		if(papki::is_dir(file_name)){
+			return;
+		}
+
+		papki::fs_file f(file_name);
+		auto t = f.load();
+
+		auto p = std::make_shared<editor_page>(tb->context, treeml::forest());
+		p->set_text(utki::to_utf32(std::string(reinterpret_cast<char*>(t.data()), t.size())));
+
+		tb->add(
+				inflate_tab(tb, f.not_dir()),
+				p
+			);
+		
+		// std::cout << "file = " << file_name << '\n';
+	};
 	
 	this->gui.set_root(std::move(c));
 }
