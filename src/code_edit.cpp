@@ -92,7 +92,7 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& de
 }
 
 void code_edit::set_text(std::u32string&& text){
-	this->lines = utki::linq(utki::split(text, U'\n')).select([this](auto&& s){
+	this->lines = utki::linq(utki::split(std::u32string_view(text), U'\n')).select([this](auto&& s){
 			unsigned front_size = s.size() / 2;
 			decltype(line::spans) spans = {{
 				line_span{length: front_size, attrs: this->text_style},
@@ -291,7 +291,7 @@ std::vector<std::tuple<const code_edit::cursor*, code_edit::cursor::selection>> 
 }
 
 void code_edit::insert(cursor& c, const std::u32string& str){
-	auto strs = utki::split(str, U'\n');
+	auto strs = utki::split(std::u32string_view(str), U'\n');
 	ASSERT(!strs.empty())
 
 	auto cp = c.get_pos_chars();
