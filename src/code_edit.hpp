@@ -62,6 +62,7 @@ class code_edit :
 		size_t length = 0;
 		std::shared_ptr<attributes> attrs;
 	};
+
 	struct line{
 		std::u32string str;
 		std::vector<line_span> spans;
@@ -227,6 +228,10 @@ public:
 
 	void set_text(std::u32string&& text)override;
 	std::u32string get_text()const override;
+
+	const decltype(lines)& get_lines()const{
+		return this->lines;
+	}
 };
 
 }
