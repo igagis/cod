@@ -40,7 +40,7 @@
         {
             "label": "run",
             "type": "shell",
-            "command": "out/rel/cod",
+            "command": "make run_cod",
             "group": "build",
             "dependsOn": "build",
             "problemMatcher": []
@@ -48,10 +48,32 @@
 		{
             "label": "run_dbg",
             "type": "shell",
-            "command": "out/dbg/cod",
+            "command": "make run_cod config=dbg",
             "group": "build",
             "dependsOn": "build_dbg",
             "problemMatcher": []
+        },
+        {
+            "label": "test_",
+            "type": "shell",
+            "command": "make test autojobs=true",
+            "args": [],
+            "group": "build",
+            "dependsOn": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+		},
+        {
+            "label": "test_dbg",
+            "type": "shell",
+            "command": "make test autojobs=true config=dbg",
+            "args": [],
+            "group": "build",
+            "dependsOn": "build_dbg",
+            "problemMatcher": [
+                "$gcc"
+            ]
         }
     ]
 }
