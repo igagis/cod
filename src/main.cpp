@@ -1,5 +1,5 @@
 /*
-cod text editor
+cod - text editor
 
 Copyright (C) 2021  Ivan Gagis <igagis@gmail.com>
 
