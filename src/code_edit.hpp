@@ -74,8 +74,8 @@ class code_edit :
 
 	struct attributes{
 		morda::res::font::style style = morda::res::font::style::normal;
-		bool underlined = false;
-		bool stroked = false;
+		bool underline = false;
+		bool stroke = false;
 		uint32_t color = 0xffffffff;
 	};
 

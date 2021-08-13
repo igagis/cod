@@ -1,0 +1,44 @@
+styles{
+    text{
+        color{0xff808080}
+    }
+
+    quoted_string{
+        color{0xff800080}
+    }
+}
+
+matchers{
+    quote{
+        regex{"\""}
+        push_state{quoted_string}
+    }
+
+    closing_quote{
+        regex{"\""}
+        pop_state
+    }
+
+    escape_sequence{
+        regex{"\\[rnt\"]"}
+        style{
+            color{0xffff0000}
+        }
+    }
+}
+
+states{
+    idle{
+        style{text}
+        matchers{quote}
+    }
+
+    quoted_string{
+        style{quoted_string}
+        matchers{closing_quote}
+        matcher{
+            regex{blabla}
+            pop_state
+        }
+    }
+}
