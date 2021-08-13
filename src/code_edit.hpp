@@ -250,6 +250,12 @@ public:
 	void set_text(std::u32string&& text)override;
 	std::u32string get_text()const override;
 
+	void set_line_spans(decltype(line::spans)&& spans, size_t line_index);
+
+	void set_line_spans(decltype(line::spans)&& spans, decltype(lines)::const_iterator i){
+		this->set_line_spans(std::move(spans), std::distance(this->lines.cbegin(), i));
+	}
+
 	const decltype(lines)& get_lines()const{
 		return this->lines;
 	}
