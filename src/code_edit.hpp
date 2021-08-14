@@ -35,6 +35,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <morda/updateable.hpp>
 
+#include "syntax_highlight/syntax_highlighter.hpp"
+
 namespace cod{
 
 class code_edit :
@@ -71,18 +73,6 @@ class code_edit :
 	};
 
 	utki::flags<modifier> modifiers = false;
-
-	struct attributes{
-		morda::res::font::style style = morda::res::font::style::normal;
-		bool underline = false;
-		bool stroke = false;
-		uint32_t color = 0xffffffff;
-	};
-
-	struct line_span{
-		size_t length = 0;
-		std::shared_ptr<attributes> attrs;
-	};
 
 	struct line{
 		std::u32string str;
