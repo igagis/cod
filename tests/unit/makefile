@@ -7,7 +7,11 @@ this_name := unit_tests
 
 this_srcs := $(call prorab-src-dir, .)
 
-this_ldlibs += -ltst
+this_srcs += ../../src/cod/syntax_highlight/regex_syntax_highlighter.cpp
+
+this_cxxflags += -I../../src
+
+this_ldlibs += -ltst -lpapki -ltreeml
 
 $(eval $(prorab-build-app))
 
