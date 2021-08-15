@@ -20,6 +20,8 @@ class syntax_highlighter{
 public:
     virtual std::vector<line_span> highlight(std::u32string_view str) = 0;
 
+    virtual void reset() = 0;
+
     virtual ~syntax_highlighter(){}
 };
 
