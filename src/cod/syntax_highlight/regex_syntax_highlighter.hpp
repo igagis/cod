@@ -50,12 +50,31 @@ private:
         state* state_to_push = nullptr;
 
         std::shared_ptr<attributes> style;
+
+        struct parse_result{
+            std::shared_ptr<matcher> m;
+            std::string style;
+            std::string state_to_push;
+        };
+        static parse_result parse(const treeml::forest& spec);
     };
 
     struct state{
         std::vector<std::shared_ptr<matcher>> matchers;
-
         std::shared_ptr<attributes> style;
+
+        struct parse_result{
+            std::vector<std::string> matchers;
+            std::string style;
+        };
+        static parse_result parse(const treeml::forest& spec);
+    };
+
+    struct parsing_context{
+        std::map<std::string, std::shared_ptr<attributes>> styles;
+        std::map<std::string, matcher::parse_result> matchers;
+
+        void parse_styles(const treeml::forest& styles);
     };
 };
 

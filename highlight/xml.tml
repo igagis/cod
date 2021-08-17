@@ -14,19 +14,17 @@ styles{
 matchers{
     quote{
         regex{"\""}
-        push_state{quoted_string}
+        push{quoted_string}
     }
 
     closing_quote{
         regex{"\""}
-        pop_state
+        pop
     }
 
     escape_sequence{
         regex{"\\[rnt\"]"}
-        style{
-            color{0xffff0000}
-        }
+        style{quoted_string}
     }
 }
 
@@ -39,9 +37,5 @@ states{
     quoted_string{
         style{quoted_string}
         matchers{closing_quote}
-        matcher{
-            regex{blabla}
-            pop_state
-        }
     }
 }
