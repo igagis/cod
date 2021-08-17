@@ -60,13 +60,18 @@ std::shared_ptr<attributes> parse_style(const treeml::forest& style){
 }
 }
 
-struct parse_context{
+struct parsing_matcher{
+    
+};
+
+struct parsing_context{
     std::map<std::string, std::shared_ptr<attributes>> styles;
+    std::map<std::string, parsing_matcher> matchers;
 
     void parse_styles(const treeml::forest& styles);
 };
 
-void parse_context::parse_styles(const treeml::forest& styles){
+void parsing_context::parse_styles(const treeml::forest& styles){
     for(const auto& s : styles){
         if(this->styles.find(s.value.to_string()) != this->styles.end()){
             std::stringstream ss;
@@ -79,7 +84,7 @@ void parse_context::parse_styles(const treeml::forest& styles){
 }
 
 regex_syntax_highlighter::regex_syntax_highlighter(const treeml::forest& spec){
-    parse_context c;
+    parsing_context c;
 
     for(const auto& n : spec){
         if(n.value == "styles"){

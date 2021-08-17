@@ -36,7 +36,27 @@ public:
     std::vector<line_span> highlight(std::u32string_view str)override;
 
 private:
+    struct state;
 
+    struct matcher{
+        enum class operation{
+            nothing,
+            push,
+            pop
+        };
+
+        operation op;
+
+        state* state_to_push = nullptr;
+
+        std::shared_ptr<attributes> style;
+    };
+
+    struct state{
+        std::vector<std::shared_ptr<matcher>> matchers;
+
+        std::shared_ptr<attributes> style;
+    };
 };
 
 }
