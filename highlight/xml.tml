@@ -5,6 +5,9 @@ styles{
 
     quoted_string{
         color{0xff800080}
+        style{bold_italic}
+        underline{true}
+        stroke{true}
     }
 }
 

@@ -34,6 +34,9 @@ public:
     void reset()override;
 
     std::vector<line_span> highlight(std::u32string_view str)override;
+
+private:
+
 };
 
 }

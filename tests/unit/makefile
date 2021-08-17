@@ -11,7 +11,7 @@ this_srcs += ../../src/cod/syntax_highlight/regex_syntax_highlighter.cpp
 
 this_cxxflags += -I../../src
 
-this_ldlibs += -ltst -lpapki -ltreeml
+this_ldlibs += -ltst -lpapki -ltreeml -lutki
 
 $(eval $(prorab-build-app))
 

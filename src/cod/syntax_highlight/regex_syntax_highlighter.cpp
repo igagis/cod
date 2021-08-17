@@ -21,14 +21,75 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "regex_syntax_highlighter.hpp"
 
+#include <treeml/crawler.hpp>
+
 using namespace cod;
 
-regex_syntax_highlighter::regex_syntax_highlighter(const treeml::forest& spec){
+namespace{
+std::shared_ptr<attributes> parse_style(const treeml::forest& style){
+    auto ret = std::make_shared<attributes>();
+    for(const auto& n : style){
+        if(n.value == "color"){
+            ret->color = treeml::crawler(n.children).get().value.to_uint32();
+        }else if(n.value == "style"){
+            const auto& v = treeml::crawler(n.children).get().value;
+            if(v == "normal"){
+                ret->style = morda::res::font::style::normal;
+            }else if(v == "bold"){
+                ret->style = morda::res::font::style::bold;
+            }else if(v == "italic"){
+                ret->style = morda::res::font::style::italic;
+            }else if(v == "bold_italic"){
+                ret->style = morda::res::font::style::bold_italic;
+            }else{
+                std::stringstream ss;
+                ss << "unknown font style value: " << v;
+                throw std::invalid_argument(ss.str());
+            }
+        }else if(n.value == "underline"){
+            ret->underline = treeml::crawler(n.children).get().value.to_bool();
+        }else if(n.value == "stroke"){
+            ret->stroke = treeml::crawler(n.children).get().value.to_bool();
+        }else{
+            std::stringstream ss;
+            ss << "unknown font style item: " << n.value;
+            throw std::invalid_argument(ss.str());
+        }
+    }
+    return ret;
+}
+}
 
+struct parse_context{
+    std::map<std::string, std::shared_ptr<attributes>> styles;
+
+    void parse_styles(const treeml::forest& styles);
+};
+
+void parse_context::parse_styles(const treeml::forest& styles){
+    for(const auto& s : styles){
+        if(this->styles.find(s.value.to_string()) != this->styles.end()){
+            std::stringstream ss;
+            ss << "style with name '" << s.value.to_string() << "' already exists";
+            throw std::invalid_argument(ss.str());
+        }
+
+        this->styles.insert(std::make_pair(s.value.to_string(), parse_style(s.children)));
+    }
+}
+
+regex_syntax_highlighter::regex_syntax_highlighter(const treeml::forest& spec){
+    parse_context c;
+
+    for(const auto& n : spec){
+        if(n.value == "styles"){
+            c.parse_styles(n.children);
+        }
+    }
 }
 
 void regex_syntax_highlighter::reset(){
-
+    // TODO:
 }
 
 std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view str){
