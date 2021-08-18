@@ -45,14 +45,14 @@ private:
             pop
         };
 
-        operation op;
+        operation operation_ = operation::nothing;
 
         state* state_to_push = nullptr;
 
         std::shared_ptr<attributes> style;
 
         struct parse_result{
-            std::shared_ptr<matcher> m;
+            std::shared_ptr<matcher> matcher_;
             std::string style;
             std::string state_to_push;
         };
@@ -64,6 +64,7 @@ private:
         std::shared_ptr<attributes> style;
 
         struct parse_result{
+            std::shared_ptr<state> state_;
             std::vector<std::string> matchers;
             std::string style;
         };
@@ -73,9 +74,16 @@ private:
     struct parsing_context{
         std::map<std::string, std::shared_ptr<attributes>> styles;
         std::map<std::string, matcher::parse_result> matchers;
+        std::map<std::string, state::parse_result> states;
 
         void parse_styles(const treeml::forest& styles);
+        void parse_matchers(const treeml::forest& desc);
+        void parse_states(const treeml::forest& desc);
+
+        decltype(styles)::value_type::second_type get_style(const std::string& name);
     };
+
+    std::vector<std::shared_ptr<state>> state_stack;
 };
 
 }

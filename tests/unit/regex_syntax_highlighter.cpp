@@ -10,7 +10,7 @@ tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
     suite.add(
         "parse",
         [](){
-            cod::regex_syntax_highlighter sh(treeml::read(papki::fs_file("../../highlight/xml.tml")));
+            cod::regex_syntax_highlighter sh(treeml::read(papki::fs_file("../../highlight/xml.3ml")));
         }
     );
 });
