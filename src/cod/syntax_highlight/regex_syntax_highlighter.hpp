@@ -43,6 +43,10 @@ private:
     struct matcher{
         srell::u32regex regex;
 
+        matcher(std::u32string_view regex_str) :
+                regex(regex_str.data(), regex_str.size(), srell::regex_constants::optimize)
+        {}
+
         enum class operation{
             nothing,
             push,

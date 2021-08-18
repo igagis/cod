@@ -139,24 +139,28 @@ regex_syntax_highlighter::parsing_context::get_matcher(const std::string& name)
 regex_syntax_highlighter::matcher::parse_result regex_syntax_highlighter::matcher::parse(const treeml::forest& desc){
     parse_result ret;
 
-    ret.matcher_ = std::make_shared<matcher>();
+    std::u32string regex;
+    operation operation_ = operation::nothing;
 
     for(const auto& n : desc){
         if(n.value == "style"){
             ret.style = treeml::crawler(n.children).get().value.to_string();
         }else if(n.value == "regex"){
-            ret.matcher_->regex = utki::to_utf32(treeml::crawler(n.children).get().value.to_string());
+            regex = utki::to_utf32(treeml::crawler(n.children).get().value.to_string());
         }else if(n.value == "push"){
             ret.state_to_push = treeml::crawler(n.children).get().value.to_string();
-            ret.matcher_->operation_ = operation::push;
+            operation_ = operation::push;
         }else if(n.value == "pop"){
-            ret.matcher_->operation_ = operation::pop;
+            operation_ = operation::pop;
         }else{
             std::stringstream ss;
             ss << "unknown matcher keyword: " << n.value;
             throw std::invalid_argument(ss.str());
         }
     }
+
+    ret.matcher_ = std::make_shared<matcher>(regex);
+    ret.matcher_->operation_ = operation_;
 
     return ret;
 }
@@ -239,6 +243,10 @@ void regex_syntax_highlighter::reset(){
 
 std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view str){
     std::vector<line_span> ret;
+
+
     // TODO:
+
+
     return ret;
 }
