@@ -9,7 +9,7 @@ this_srcs := $(call prorab-src-dir, .)
 
 this_srcs += ../../src/cod/syntax_highlight/regex_syntax_highlighter.cpp
 
-this_cxxflags += -I../../src
+this_cxxflags += -I../../src -I../../src/3rd_party
 
 this_ldlibs += -ltst -lpapki -ltreeml -lutki
 

@@ -8,9 +8,7 @@ this_srcs += $(call prorab-src-dir,cod)
 
 $(eval $(call prorab-config, ../config))
 
-ifeq ($(debug),true)
-    this_cxxflags += -DDEBUG
-endif
+this_cxxflags += -I3rd_party
 
 this_ldlibs += -lmordavokne-opengl -lmorda -ltreeml -lpapki -lclargs -lutki -rdynamic -lm
 
