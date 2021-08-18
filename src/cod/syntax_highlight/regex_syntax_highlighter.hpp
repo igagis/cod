@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <regex>
+#include "srell.hpp"
 
 #include "syntax_highlighter.hpp"
 
@@ -41,7 +41,7 @@ private:
     struct state;
 
     struct matcher{
-        std::basic_regex<char32_t> regex;
+        srell::u32regex regex;
 
         enum class operation{
             nothing,
