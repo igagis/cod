@@ -13,23 +13,23 @@ styles{
 
 matchers{
     quote{
-        regex{"\""}
+        regex{"\\\""}
         push{quoted_string}
     }
 
     closing_quote{
-        regex{"\""}
+//        regex{"\""}
         pop
     }
 
     escape_sequence{
-        regex{"\\[rnt\"]"}
+//        regex{"\\[rnt\"]"}
         style{quoted_string}
     }
 }
 
 states{
-    idle{
+    initial{
         style{text}
         matchers{quote}
     }

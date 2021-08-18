@@ -98,7 +98,7 @@ void regex_syntax_highlighter::parsing_context::parse_states(const treeml::fores
     }
 }
 
-decltype(regex_syntax_highlighter::parsing_context::styles)::value_type::second_type
+std::shared_ptr<attributes>
 regex_syntax_highlighter::parsing_context::get_style(const std::string& name)
 {
     auto i = this->styles.find(name);
@@ -107,76 +107,33 @@ regex_syntax_highlighter::parsing_context::get_style(const std::string& name)
         ss << "style '" << name << "' not found";
         throw std::invalid_argument(ss.str());
     }
+    ASSERT(i->second)
     return i->second;
 }
 
-regex_syntax_highlighter::regex_syntax_highlighter(const treeml::forest& spec){
-    parsing_context c;
-
-    for(const auto& n : spec){
-        if(n.value == "styles"){
-            c.parse_styles(n.children);
-        }else if(n.value == "matchers"){
-            c.parse_matchers(n.children);
-        }else if(n.value == "states"){
-            c.parse_states(n.children);
-        }else{
-            std::stringstream ss;
-            ss << "unknown keyword: " << n.value;
-            throw std::invalid_argument(ss.str());
-        }
+std::shared_ptr<regex_syntax_highlighter::state>
+regex_syntax_highlighter::parsing_context::get_state(const std::string& name)
+{
+    auto i = this->states.find(name);
+    if(i == this->states.end()){
+        std::stringstream ss;
+        ss << "state not found: " << name;
+        throw std::invalid_argument(ss.str());
     }
-
-    // set state -> matchers and state -> styles references
-    for(const auto& n : c.states){
-        ASSERT(n.second.state_)
-        auto& state_ = *n.second.state_;
-        const auto& parsed = n.second;
-        state_.matchers = utki::linq(parsed.matchers).select([&](const auto& m){
-            auto i = c.matchers.find(m);
-            if(i == c.matchers.end()){
-                std::stringstream ss;
-                ss << "matcher '" << m << "' not found, referenced from state: " << n.first;
-                throw std::invalid_argument(ss.str());
-            }
-            return i->second.matcher_;
-        }).get();
-
-        state_.style = c.get_style(parsed.style);
-    }
-
-    // set matcher -> style and matcher -> state references
-    for(const auto& n : c.matchers){
-        ASSERT(n.second.matcher_)
-
-        auto& matcher_ = *n.second.matcher_;
-        const auto& parsed = n.second;
-
-        // matcher can have no style, then it inherits style from pushed state
-        if(!parsed.style.empty()){
-            matcher_.style = c.get_style(parsed.style);
-        }
-
-        if(matcher_.operation_ == matcher::operation::push){
-            auto i = c.states.find(parsed.state_to_push);
-            if(i == c.states.end()){
-                std::stringstream ss;
-                ss << "state not found: " << parsed.state_to_push;
-                throw std::invalid_argument(ss.str());
-            }
-            matcher_.state_to_push = i->second.state_.get();
-        }
-    }
+    ASSERT(i->second.state_)
+    return i->second.state_;
 }
 
-void regex_syntax_highlighter::reset(){
-    // TODO:
-}
-
-std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view str){
-    std::vector<line_span> ret;
-    // TODO:
-    return ret;
+std::shared_ptr<regex_syntax_highlighter::matcher>
+regex_syntax_highlighter::parsing_context::get_matcher(const std::string& name)
+{
+    auto i = this->matchers.find(name);
+    if(i == this->matchers.end()){
+        std::stringstream ss;
+        ss << "matcher '" << name << "' not found";
+        throw std::invalid_argument(ss.str());
+    }
+    return i->second.matcher_;
 }
 
 regex_syntax_highlighter::matcher::parse_result regex_syntax_highlighter::matcher::parse(const treeml::forest& desc){
@@ -188,7 +145,7 @@ regex_syntax_highlighter::matcher::parse_result regex_syntax_highlighter::matche
         if(n.value == "style"){
             ret.style = treeml::crawler(n.children).get().value.to_string();
         }else if(n.value == "regex"){
-            // TODO:
+            ret.matcher_->regex = utki::to_utf32(treeml::crawler(n.children).get().value.to_string());
         }else if(n.value == "push"){
             ret.state_to_push = treeml::crawler(n.children).get().value.to_string();
             ret.matcher_->operation_ = operation::push;
@@ -221,5 +178,67 @@ regex_syntax_highlighter::state::parse_result regex_syntax_highlighter::state::p
         }
     }
 
+    return ret;
+}
+
+regex_syntax_highlighter::regex_syntax_highlighter(const treeml::forest& spec){
+    parsing_context c;
+
+    for(const auto& n : spec){
+        if(n.value == "styles"){
+            c.parse_styles(n.children);
+        }else if(n.value == "matchers"){
+            c.parse_matchers(n.children);
+        }else if(n.value == "states"){
+            c.parse_states(n.children);
+        }else{
+            std::stringstream ss;
+            ss << "unknown keyword: " << n.value;
+            throw std::invalid_argument(ss.str());
+        }
+    }
+
+    // set state -> matchers and state -> styles references
+    for(const auto& n : c.states){
+        ASSERT(n.second.state_)
+        auto& state_ = *n.second.state_;
+        const auto& parsed = n.second;
+        state_.matchers = utki::linq(parsed.matchers).select([&](const auto& m){
+            return c.get_matcher(m);
+        }).get();
+
+        state_.style = c.get_style(parsed.style);
+    }
+
+    // set matcher -> style and matcher -> state references
+    for(const auto& n : c.matchers){
+        ASSERT(n.second.matcher_)
+
+        auto& matcher_ = *n.second.matcher_;
+        const auto& parsed = n.second;
+
+        // matcher can have no style, then it inherits style from pushed state
+        if(!parsed.style.empty()){
+            matcher_.style = c.get_style(parsed.style);
+        }
+
+        if(matcher_.operation_ == matcher::operation::push){
+            matcher_.state_to_push = c.get_state(parsed.state_to_push).get();
+        }
+    }
+
+    this->initial_state = c.get_state("initial");
+    this->reset();
+}
+
+void regex_syntax_highlighter::reset(){
+    this->state_stack.clear();
+    ASSERT(this->initial_state);
+    this->state_stack.push_back(*this->initial_state);
+}
+
+std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view str){
+    std::vector<line_span> ret;
+    // TODO:
     return ret;
 }

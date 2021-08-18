@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include <regex>
+
 #include "syntax_highlighter.hpp"
 
 #include <treeml/tree.hpp>
@@ -39,6 +41,8 @@ private:
     struct state;
 
     struct matcher{
+        std::basic_regex<char32_t> regex;
+
         enum class operation{
             nothing,
             push,
@@ -47,6 +51,7 @@ private:
 
         operation operation_ = operation::nothing;
 
+        // plain pointer to avoid circular references
         state* state_to_push = nullptr;
 
         std::shared_ptr<attributes> style;
@@ -71,6 +76,7 @@ private:
         static parse_result parse(const treeml::forest& spec);
     };
 
+    // this struct is only used when parsing highlighter rules
     struct parsing_context{
         std::map<std::string, std::shared_ptr<attributes>> styles;
         std::map<std::string, matcher::parse_result> matchers;
@@ -80,10 +86,14 @@ private:
         void parse_matchers(const treeml::forest& desc);
         void parse_states(const treeml::forest& desc);
 
-        decltype(styles)::value_type::second_type get_style(const std::string& name);
+        std::shared_ptr<attributes> get_style(const std::string& name);
+        std::shared_ptr<state> get_state(const std::string& name);
+        std::shared_ptr<matcher> get_matcher(const std::string& name);
     };
 
-    std::vector<std::shared_ptr<state>> state_stack;
+    // highlighter state
+    std::shared_ptr<state> initial_state;
+    std::vector<std::reference_wrapper<state>> state_stack;
 };
 
 }
