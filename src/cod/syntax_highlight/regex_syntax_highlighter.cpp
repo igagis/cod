@@ -136,8 +136,18 @@ regex_syntax_highlighter::parsing_context::get_rule(const std::string& name)
     return i->second.rule_;
 }
 
-size_t regex_syntax_highlighter::regex_rule::match(std::u32string_view str){
-    return str.size();
+regex_syntax_highlighter::rule::match_result regex_syntax_highlighter::regex_rule::match(std::u32string_view str){
+    srell::match_results<decltype(str)::const_iterator> m;
+
+    if(!srell::regex_search(str.begin(), str.end(), m, this->regex)){
+        return match_result{.begin = str.size()};
+    }
+
+    ASSERT(!m.empty())
+    return match_result{
+        .begin = size_t(std::distance(str.cbegin(), m[0].first)),
+        .end = size_t(std::distance(str.cbegin(), m[0].second))
+    };
 }
 
 regex_syntax_highlighter::rule::parse_result regex_syntax_highlighter::rule::parse(const treeml::forest& desc){

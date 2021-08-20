@@ -43,7 +43,11 @@ private:
     struct rule{
         virtual ~rule(){}
 
-        virtual size_t match(std::u32string_view str) = 0;
+        struct match_result{
+            size_t begin;
+            size_t end;
+        };
+        virtual match_result match(std::u32string_view str) = 0;
 
         enum class operation{
             nothing,
@@ -73,7 +77,7 @@ private:
         regex_rule(std::u32string_view regex_str) :
                 regex(regex_str.data(), regex_str.size(), srell::regex_constants::optimize)
         {}
-        size_t match(std::u32string_view str)override;
+        match_result match(std::u32string_view str)override;
     };
 
     struct state{
