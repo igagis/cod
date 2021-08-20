@@ -136,10 +136,20 @@ regex_syntax_highlighter::parsing_context::get_rule(const std::string& name)
     return i->second.rule_;
 }
 
-regex_syntax_highlighter::rule::match_result regex_syntax_highlighter::regex_rule::match(std::u32string_view str){
+regex_syntax_highlighter::rule::match_result
+regex_syntax_highlighter::regex_rule::match(
+        std::u32string_view str,
+        bool line_begin
+    )
+{
     srell::match_results<decltype(str)::const_iterator> m;
 
-    if(!srell::regex_search(str.begin(), str.end(), m, this->regex)){
+    auto regex_flags = srell::regex_constants::match_default;
+    if(!line_begin){
+        regex_flags |= srell::regex_constants::match_not_bol;
+    }
+
+    if(!srell::regex_search(str.begin(), str.end(), m, this->regex, regex_flags)){
         return match_result{.begin = str.size()};
     }
 

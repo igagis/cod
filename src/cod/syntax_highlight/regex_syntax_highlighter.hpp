@@ -47,7 +47,7 @@ private:
             size_t begin;
             size_t end;
         };
-        virtual match_result match(std::u32string_view str) = 0;
+        virtual match_result match(std::u32string_view str, bool line_begin) = 0;
 
         enum class operation{
             nothing,
@@ -77,7 +77,7 @@ private:
         regex_rule(std::u32string_view regex_str) :
                 regex(regex_str.data(), regex_str.size(), srell::regex_constants::optimize)
         {}
-        match_result match(std::u32string_view str)override;
+        match_result match(std::u32string_view str, bool line_begin)override;
     };
 
     struct state{
