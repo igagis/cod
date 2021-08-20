@@ -57,6 +57,10 @@ tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
             auto in = utki::to_utf32(p.first);
 
             auto res = highlighter.highlight(in);
+
+            // TODO: remove
+            res.push_back(cod::line_span{1, nullptr});
+
             tst::check_eq(
                     to_markup(in, res),
                     p.second,
