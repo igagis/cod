@@ -11,7 +11,7 @@ styles{
     }
 }
 
-matchers{
+rules{
     quote{
         regex{"\""}
         push{quoted_string}
@@ -31,11 +31,11 @@ matchers{
 states{
     initial{
         style{text}
-        matchers{quote}
+        rules{quote}
     }
 
     quoted_string{
         style{quoted_string}
-        matchers{closing_quote}
+        rules{closing_quote}
     }
 }

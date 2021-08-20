@@ -40,10 +40,10 @@ public:
 private:
     struct state;
 
-    struct matcher{
+    struct rule{
         srell::u32regex regex;
 
-        matcher(std::u32string_view regex_str) :
+        rule(std::u32string_view regex_str) :
                 regex(regex_str.data(), regex_str.size(), srell::regex_constants::optimize)
         {}
 
@@ -61,7 +61,7 @@ private:
         std::shared_ptr<attributes> style;
 
         struct parse_result{
-            std::shared_ptr<matcher> matcher_;
+            std::shared_ptr<rule> rule_;
             std::string style;
             std::string state_to_push;
         };
@@ -69,12 +69,12 @@ private:
     };
 
     struct state{
-        std::vector<std::shared_ptr<matcher>> matchers;
+        std::vector<std::shared_ptr<rule>> rules;
         std::shared_ptr<attributes> style;
 
         struct parse_result{
             std::shared_ptr<state> state_;
-            std::vector<std::string> matchers;
+            std::vector<std::string> rules;
             std::string style;
         };
         static parse_result parse(const treeml::forest& spec);
@@ -83,16 +83,16 @@ private:
     // this struct is only used when parsing highlighter rules
     struct parsing_context{
         std::map<std::string, std::shared_ptr<attributes>> styles;
-        std::map<std::string, matcher::parse_result> matchers;
+        std::map<std::string, rule::parse_result> rules;
         std::map<std::string, state::parse_result> states;
 
         void parse_styles(const treeml::forest& styles);
-        void parse_matchers(const treeml::forest& desc);
+        void parse_rules(const treeml::forest& desc);
         void parse_states(const treeml::forest& desc);
 
         std::shared_ptr<attributes> get_style(const std::string& name);
         std::shared_ptr<state> get_state(const std::string& name);
-        std::shared_ptr<matcher> get_matcher(const std::string& name);
+        std::shared_ptr<rule> get_rule(const std::string& name);
     };
 
     // highlighter state

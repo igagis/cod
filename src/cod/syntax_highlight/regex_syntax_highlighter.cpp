@@ -74,15 +74,15 @@ void regex_syntax_highlighter::parsing_context::parse_styles(const treeml::fores
     }
 }
 
-void regex_syntax_highlighter::parsing_context::parse_matchers(const treeml::forest& desc){
+void regex_syntax_highlighter::parsing_context::parse_rules(const treeml::forest& desc){
     for(const auto& m : desc){
-        if(this->matchers.find(m.value.to_string()) != this->matchers.end()){
+        if(this->rules.find(m.value.to_string()) != this->rules.end()){
             std::stringstream ss;
-            ss << "matcher with name '" << m.value.to_string() << "' already exists";
+            ss << "rule with name '" << m.value.to_string() << "' already exists";
             throw std::invalid_argument(ss.str());
         }
 
-        this->matchers.insert(std::make_pair(m.value.to_string(), matcher::parse(m.children)));
+        this->rules.insert(std::make_pair(m.value.to_string(), rule::parse(m.children)));
     }
 }
 
@@ -124,19 +124,19 @@ regex_syntax_highlighter::parsing_context::get_state(const std::string& name)
     return i->second.state_;
 }
 
-std::shared_ptr<regex_syntax_highlighter::matcher>
-regex_syntax_highlighter::parsing_context::get_matcher(const std::string& name)
+std::shared_ptr<regex_syntax_highlighter::rule>
+regex_syntax_highlighter::parsing_context::get_rule(const std::string& name)
 {
-    auto i = this->matchers.find(name);
-    if(i == this->matchers.end()){
+    auto i = this->rules.find(name);
+    if(i == this->rules.end()){
         std::stringstream ss;
-        ss << "matcher '" << name << "' not found";
+        ss << "rule '" << name << "' not found";
         throw std::invalid_argument(ss.str());
     }
-    return i->second.matcher_;
+    return i->second.rule_;
 }
 
-regex_syntax_highlighter::matcher::parse_result regex_syntax_highlighter::matcher::parse(const treeml::forest& desc){
+regex_syntax_highlighter::rule::parse_result regex_syntax_highlighter::rule::parse(const treeml::forest& desc){
     parse_result ret;
 
     std::u32string regex;
@@ -154,13 +154,13 @@ regex_syntax_highlighter::matcher::parse_result regex_syntax_highlighter::matche
             operation_ = operation::pop;
         }else{
             std::stringstream ss;
-            ss << "unknown matcher keyword: " << n.value;
+            ss << "unknown rule keyword: " << n.value;
             throw std::invalid_argument(ss.str());
         }
     }
 
-    ret.matcher_ = std::make_shared<matcher>(regex);
-    ret.matcher_->operation_ = operation_;
+    ret.rule_ = std::make_shared<rule>(regex);
+    ret.rule_->operation_ = operation_;
 
     return ret;
 }
@@ -173,8 +173,8 @@ regex_syntax_highlighter::state::parse_result regex_syntax_highlighter::state::p
     for(const auto& n : desc){
         if(n.value == "style"){
             ret.style = treeml::crawler(n.children).get().value.to_string();
-        }else if(n.value == "matchers"){
-            ret.matchers = utki::linq(n.children).select([](const auto& c){return c.value.to_string();}).get();
+        }else if(n.value == "rules"){
+            ret.rules = utki::linq(n.children).select([](const auto& c){return c.value.to_string();}).get();
         }else{
             std::stringstream ss;
             ss << "unknown state keyword: " << n.value;
@@ -191,8 +191,8 @@ regex_syntax_highlighter::regex_syntax_highlighter(const treeml::forest& spec){
     for(const auto& n : spec){
         if(n.value == "styles"){
             c.parse_styles(n.children);
-        }else if(n.value == "matchers"){
-            c.parse_matchers(n.children);
+        }else if(n.value == "rules"){
+            c.parse_rules(n.children);
         }else if(n.value == "states"){
             c.parse_states(n.children);
         }else{
@@ -202,32 +202,32 @@ regex_syntax_highlighter::regex_syntax_highlighter(const treeml::forest& spec){
         }
     }
 
-    // set state -> matchers and state -> styles references
+    // set state -> rules and state -> styles references
     for(const auto& n : c.states){
         ASSERT(n.second.state_)
         auto& state_ = *n.second.state_;
         const auto& parsed = n.second;
-        state_.matchers = utki::linq(parsed.matchers).select([&](const auto& m){
-            return c.get_matcher(m);
+        state_.rules = utki::linq(parsed.rules).select([&](const auto& m){
+            return c.get_rule(m);
         }).get();
 
         state_.style = c.get_style(parsed.style);
     }
 
-    // set matcher -> style and matcher -> state references
-    for(const auto& n : c.matchers){
-        ASSERT(n.second.matcher_)
+    // set rule -> style and rule -> state references
+    for(const auto& n : c.rules){
+        ASSERT(n.second.rule_)
 
-        auto& matcher_ = *n.second.matcher_;
+        auto& rule_ = *n.second.rule_;
         const auto& parsed = n.second;
 
-        // matcher can have no style, then it inherits style from pushed state
+        // rule can have no style, then it inherits style from pushed state
         if(!parsed.style.empty()){
-            matcher_.style = c.get_style(parsed.style);
+            rule_.style = c.get_style(parsed.style);
         }
 
-        if(matcher_.operation_ == matcher::operation::push){
-            matcher_.state_to_push = c.get_state(parsed.state_to_push).get();
+        if(rule_.operation_ == rule::operation::push){
+            rule_.state_to_push = c.get_state(parsed.state_to_push).get();
         }
     }
 
