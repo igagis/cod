@@ -5,7 +5,7 @@ $(eval $(call prorab-config, ../../config))
 
 this_name := unit_tests
 
-this_srcs := $(call prorab-src-dir, .)
+this_srcs := $(call prorab-src-dir, src)
 
 this_srcs += ../../src/cod/syntax_highlight/regex_syntax_highlighter.cpp
 
