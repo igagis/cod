@@ -136,6 +136,10 @@ regex_syntax_highlighter::parsing_context::get_rule(const std::string& name)
     return i->second.rule_;
 }
 
+size_t regex_syntax_highlighter::regex_rule::match(std::u32string_view str){
+    return str.size();
+}
+
 regex_syntax_highlighter::rule::parse_result regex_syntax_highlighter::rule::parse(const treeml::forest& desc){
     parse_result ret;
 
@@ -159,7 +163,7 @@ regex_syntax_highlighter::rule::parse_result regex_syntax_highlighter::rule::par
         }
     }
 
-    ret.rule_ = std::make_shared<rule>(regex);
+    ret.rule_ = std::make_shared<regex_rule>(regex);
     ret.rule_->operation_ = operation_;
 
     return ret;

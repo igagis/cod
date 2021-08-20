@@ -41,11 +41,9 @@ private:
     struct state;
 
     struct rule{
-        srell::u32regex regex;
+        virtual ~rule(){}
 
-        rule(std::u32string_view regex_str) :
-                regex(regex_str.data(), regex_str.size(), srell::regex_constants::optimize)
-        {}
+        virtual size_t match(std::u32string_view str) = 0;
 
         enum class operation{
             nothing,
@@ -66,6 +64,16 @@ private:
             std::string state_to_push;
         };
         static parse_result parse(const treeml::forest& spec);
+    };
+
+    class regex_rule : public rule{
+        srell::u32regex regex;
+
+    public:
+        regex_rule(std::u32string_view regex_str) :
+                regex(regex_str.data(), regex_str.size(), srell::regex_constants::optimize)
+        {}
+        size_t match(std::u32string_view str)override;
     };
 
     struct state{
