@@ -1,4 +1,8 @@
 styles{
+    angle_bracket{
+        color{0xffff0000}
+    }
+
     text{
         color{0xff808080}
     }
@@ -12,6 +16,10 @@ styles{
 }
 
 rules{
+    angle_bracket{
+        regex{"[<>]{1}"}
+    }
+
     quote{
         regex{"\""}
         push{quoted_string}
@@ -31,7 +39,7 @@ rules{
 states{
     initial{
         style{text}
-        rules{quote}
+        rules{angle_bracket quote}
     }
 
     quoted_string{
