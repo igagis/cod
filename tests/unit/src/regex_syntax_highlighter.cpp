@@ -52,11 +52,11 @@ tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
             {"<", "(0)<"}
         },
         [](const auto& p){
-            cod::regex_syntax_highlighter sh(treeml::read(papki::fs_file("../../highlight/xml.3ml")));
+            cod::regex_syntax_highlighter highlighter(treeml::read(papki::fs_file("../../highlight/xml.3ml")));
 
             auto in = utki::to_utf32(p.first);
 
-            auto res = sh.highlight(in);
+            auto res = highlighter.highlight(in);
             tst::check_eq(
                     to_markup(in, res),
                     p.second,
