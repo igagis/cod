@@ -150,7 +150,10 @@ regex_syntax_highlighter::regex_rule::match(
     }
 
     if(!srell::regex_search(str.begin(), str.end(), m, this->regex, regex_flags)){
-        return match_result{.begin = str.size()};
+        return match_result{
+            .begin = str.size(),
+            .end = 0
+        };
     }
 
     ASSERT(!m.empty())
