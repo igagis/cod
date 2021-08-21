@@ -18,6 +18,7 @@ styles{
 rules{
     angle_bracket{
         regex{"[<>]{1}"}
+        style{angle_bracket}
     }
 
     quote{

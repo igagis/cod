@@ -333,23 +333,31 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
                 break;
         }
 
-        std::shared_ptr<const attributes> style;
-        if(match_rule->style){
-            style = match_rule->style;
-        }else{
-            style = this->state_stack.back().get().style;
-        }
-
-        auto size = closest_match.size();
         ASSERT(!ret.empty())
         if(ret.back().length == 0){
             ret.pop_back();
         }
-        ret.push_back(line_span{
-            .length = size,
-            .attrs = style
-        });
+
+        auto size = closest_match.size();
         view = view.substr(size);
+
+        if(match_rule->style){
+            ret.push_back(line_span{
+                .length = size,
+                .attrs = match_rule->style
+            });
+            if(!view.empty()){
+                ret.push_back(line_span{
+                    .length = 0,
+                    .attrs = this->state_stack.back().get().style
+                });
+            }
+        }else{
+            ret.push_back(line_span{
+                .length = size,
+                .attrs = this->state_stack.back().get().style
+            });
+        }
 
         line_begin = false;
     }

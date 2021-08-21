@@ -20,6 +20,7 @@ std::string to_markup(const std::u32string& str, utki::span<cod::line_span> span
             std::stringstream ss;
             ss << "(" << cur_free_style_num << ")";
             auto res = style_names.insert(std::make_pair(s.get(), ss.str()));
+            ++cur_free_style_num;
             return res.first->second;
         }
         return i->second;
@@ -31,6 +32,7 @@ std::string to_markup(const std::u32string& str, utki::span<cod::line_span> span
 
         ss << get_style_name(s.attrs);
         ss << utki::to_utf8(v.substr(0, s.length));
+        v = v.substr(s.length);
     }
 
     return ss.str();
@@ -49,7 +51,8 @@ tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
     suite.add<std::pair<std::string, std::string>>(
         "correctness",
         {
-            {"<", "(0)<"}
+            {"<", "(0)<"},
+            {"<tag>bla bla</tag>", "(0)<(1)tag(0)>(1)bla bla(0)<(1)/tag(0)>"},
         },
         [](const auto& p){
             cod::regex_syntax_highlighter highlighter(treeml::read(papki::fs_file("../../highlight/xml.3ml")));

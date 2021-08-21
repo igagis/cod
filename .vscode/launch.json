@@ -29,7 +29,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/tests/unit/out/dbg/unit_tests",
-            "args": ["--suite=regex_syntax_highlighter", "--test=parse"],
+            "args": ["--suite=regex_syntax_highlighter", "--test=correctness[1]"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/tests/unit",
             "environment": [],
