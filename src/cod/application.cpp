@@ -89,10 +89,10 @@ application::application(command_line_arguments&& cla) :
 	this->gui.context->inflater.register_widget<code_edit>("code_edit");
 	this->gui.context->inflater.register_widget<file_tree>("file_tree");
 
-	this->gui.context->loader.mount_res_pack(*this->get_res_file("../res/"));
+	this->gui.context->loader.mount_res_pack(*this->get_res_file("res/"));
 	
 	auto c = this->gui.context->inflater.inflate(
-			*this->get_res_file("../res/main.gui")
+			*this->get_res_file("res/main.gui")
 		);
 
 	auto& tb = c->get_widget_as<morda::tabbed_book>("tabbed_book");

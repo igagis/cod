@@ -68,5 +68,23 @@ tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
                 );
         }
     );
+
+    suite.add(
+        "crash_1",
+        [](){
+            cod::regex_syntax_highlighter highlighter(treeml::read(papki::fs_file("../../highlight/xml.3ml")));
+
+            auto text = utki::to_utf32(utki::make_string(papki::fs_file("../../LICENSE_GPL3").load()));
+
+            auto lines = utki::split(
+                    std::u32string_view(text),
+                    U'\n'
+                );
+            
+            for(auto i = lines.begin(); i != lines.end(); ++i){
+                highlighter.highlight(*i);
+            }
+        }
+    );
 });
 }

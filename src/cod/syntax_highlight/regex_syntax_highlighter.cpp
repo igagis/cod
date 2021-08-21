@@ -325,7 +325,10 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
                 this->state_stack.push_back(*match_rule->state_to_push);
                 break;
             case rule::operation::pop:
-                this->state_stack.pop_back();
+                // we must not pop the initial state, so check that more than one state is currently in the stack
+                if(this->state_stack.size() > 1){
+                    this->state_stack.pop_back();
+                }
                 break;
             default:
                 ASSERT(false)

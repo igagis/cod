@@ -114,22 +114,15 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& de
 
 void code_edit::set_text(std::u32string&& text){
 	this->lines = utki::linq(utki::split(std::u32string_view(text), U'\n')).select([this](auto&& s){
-			unsigned front_size = s.size() / 2;
-			decltype(line::spans) spans = {{
-				line_span{length: front_size, attrs: this->text_style},
-				line_span{
-						length: size_t(s.size()) - front_size,
-						attrs: std::make_shared<attributes>(attributes{
-								style: morda::res::font::style::italic,
-								color: 0xff0000ff
-							})
-					}
-			}};
+			auto size = s.size();
 			return line{
-					str: std::move(s),
-					spans: std::move(spans)
-				};
+				.str = std::move(s),
+				.spans = {
+					line_span{length: size, attrs: this->text_style}
+				}
+			};
 		}).get();
+	this->on_text_change();
 }
 
 std::u32string code_edit::get_text()const{

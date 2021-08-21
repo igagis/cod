@@ -21,6 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "editor_page.hpp"
 
+#include "syntax_highlight/regex_syntax_highlighter.hpp"
+
+#include <papki/fs_file.hpp>
+
 using namespace cod;
 
 editor_page::editor_page(std::shared_ptr<morda::context> context, const treeml::forest& desc) :
@@ -28,42 +32,21 @@ editor_page::editor_page(std::shared_ptr<morda::context> context, const treeml::
 		morda::page(this->context, desc),
 		code_edit(this->context, desc)
 {
-// 	this->set_text(
-// R"qwertyuiop(Hello world!
-// second line
-// third line
-// very very long line lorem ipsum dolor sit amet consecteteur blah blag
-// ef
-// ef
-// qw
-// ef
-// wqef
-// we
-// fw
-// ef
-// we 
-// fwe 
-// fwe 
-// fw e
-// fwe we
-// f w
-// ef 
-// we
-// f we
-// f we
-// f
-// we 
-// fwe
-
-// fwqe
-// fwe
-
-// fwqe
-// 	f
-// 	wqe
-// 	f
-// 	wqf
-
-
-// wef wqe)qwertyuiop");
+	// TODO: for now we set XML syntax highlighter for each code edit page,
+	//       later need to implement proper system
+	this->text_change_handler = [
+			this,
+			hl = std::make_shared<cod::regex_syntax_highlighter>(treeml::read(papki::fs_file("highlight/xml.3ml")))
+		]
+	(morda::text_widget& w)
+	{
+		hl->reset();
+		const auto& lines = this->get_lines();
+		for(auto i = lines.begin(); i != lines.end(); ++i){
+			this->set_line_spans(
+				hl->highlight(i->str),
+				i
+			);
+		}
+	};
 }

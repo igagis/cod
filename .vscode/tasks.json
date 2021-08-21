@@ -6,7 +6,7 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "make ",
+            "command": "make",
             "args": [],
             "group": "build",
             "problemMatcher": [
@@ -16,7 +16,17 @@
 		{
             "label": "build_dbg",
             "type": "shell",
-            "command": "make  config=dbg",
+            "command": "make config=dbg",
+            "args": [],
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "build_asan",
+            "type": "shell",
+            "command": "make config=asan",
             "args": [],
             "group": "build",
             "problemMatcher": [
@@ -61,9 +71,17 @@
             "problemMatcher": []
         },
         {
+            "label": "run_asan",
+            "type": "shell",
+            "command": "make run_cod config=asan",
+            "group": "build",
+            "dependsOn": "build_asan",
+            "problemMatcher": []
+        },
+        {
             "label": "test_",
             "type": "shell",
-            "command": "make test ",
+            "command": "make test",
             "args": [],
             "group": "build",
             "dependsOn": "build",
@@ -74,7 +92,7 @@
         {
             "label": "test_dbg",
             "type": "shell",
-            "command": "make test  config=dbg",
+            "command": "make test config=dbg",
             "args": [],
             "group": "build",
             "dependsOn": "build_dbg",
