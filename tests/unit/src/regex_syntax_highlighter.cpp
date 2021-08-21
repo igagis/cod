@@ -12,9 +12,9 @@ std::string to_markup(const std::u32string& str, utki::span<cod::line_span> span
     std::stringstream ss;
 
     size_t cur_free_style_num = 0;
-    std::map<cod::attributes*, std::string> style_names;
+    std::map<const cod::attributes*, std::string> style_names;
 
-    auto get_style_name = [&](const std::shared_ptr<cod::attributes>& s) -> const std::string&{
+    auto get_style_name = [&](const std::shared_ptr<const cod::attributes>& s) -> const std::string&{
         auto i = style_names.find(s.get());
         if(i == style_names.end()){
             std::stringstream ss;
@@ -57,9 +57,6 @@ tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
             auto in = utki::to_utf32(p.first);
 
             auto res = highlighter.highlight(in);
-
-            // TODO: remove
-            res.push_back(cod::line_span{1, nullptr});
 
             tst::check_eq(
                     to_markup(in, res),

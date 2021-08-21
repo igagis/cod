@@ -140,7 +140,7 @@ regex_syntax_highlighter::rule::match_result
 regex_syntax_highlighter::regex_rule::match(
         std::u32string_view str,
         bool line_begin
-    )
+    )const
 {
     srell::match_results<decltype(str)::const_iterator> m;
 
@@ -234,7 +234,7 @@ regex_syntax_highlighter::regex_syntax_highlighter(const treeml::forest& spec){
         ASSERT(n.second.state_)
         auto& state_ = *n.second.state_;
         const auto& parsed = n.second;
-        state_.rules = utki::linq(parsed.rules).select([&](const auto& m){
+        state_.rules = utki::linq(parsed.rules).select([&](const auto& m) -> std::shared_ptr<const rule>{
             return c.get_rule(m);
         }).get();
 
@@ -271,9 +271,88 @@ void regex_syntax_highlighter::reset(){
 std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view str){
     std::vector<line_span> ret;
 
+    // start with one span of length 0
+    ret.push_back(line_span{
+        .length = 0,
+        .attrs = this->state_stack.back().get().style
+    });
 
-    // TODO:
+    bool line_begin = true;
+    std::u32string_view view(str);
 
+    while(!view.empty()){
+        rule::match_result closest_match{
+            .begin = view.size(),
+            .end = 0
+        };
+        const rule* match_rule = nullptr;
+
+        // go through all rules of the current state to find the match closest to current
+        // position in the text line
+        ASSERT(!this->state_stack.empty())
+        for(const auto& r : this->state_stack.back().get().rules){
+            auto m = r->match(view, line_begin);
+
+            if(m.begin < closest_match.begin){
+                closest_match = m;
+                match_rule = r.get();
+            }
+
+            if(closest_match.begin == 0){
+                // there can be no closer match, so exit early
+                break;
+            }
+        }
+
+        if(!match_rule){
+            // no rule has matched, extend current span to the end of the line an exit
+            ASSERT(!ret.empty())
+            ret.back().length += view.size();
+            break;
+        }
+
+        ASSERT(match_rule)
+
+        if(closest_match.begin != 0){
+            // extend current span and move the current position to the beginning of the match
+            ret.back().length += closest_match.begin;
+            view = view.substr(closest_match.begin);
+        }
+
+        switch(match_rule->operation_){
+            case rule::operation::push:
+                ASSERT(match_rule->state_to_push)
+                this->state_stack.push_back(*match_rule->state_to_push);
+                break;
+            case rule::operation::pop:
+                this->state_stack.pop_back();
+                break;
+            default:
+                ASSERT(false)
+            case rule::operation::nothing:
+                break;
+        }
+
+        std::shared_ptr<const attributes> style;
+        if(match_rule->style){
+            style = match_rule->style;
+        }else{
+            style = this->state_stack.back().get().style;
+        }
+
+        auto size = closest_match.size();
+        ASSERT(!ret.empty())
+        if(ret.back().length == 0){
+            ret.pop_back();
+        }
+        ret.push_back(line_span{
+            .length = size,
+            .attrs = style
+        });
+        view = view.substr(size);
+
+        line_begin = false;
+    }
 
     return ret;
 }

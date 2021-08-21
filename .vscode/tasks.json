@@ -6,7 +6,7 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "make autojobs=true",
+            "command": "make ",
             "args": [],
             "group": "build",
             "problemMatcher": [
@@ -16,7 +16,7 @@
 		{
             "label": "build_dbg",
             "type": "shell",
-            "command": "make autojobs=true config=dbg",
+            "command": "make  config=dbg",
             "args": [],
             "group": "build",
             "problemMatcher": [
@@ -63,7 +63,7 @@
         {
             "label": "test_",
             "type": "shell",
-            "command": "make test autojobs=true",
+            "command": "make test ",
             "args": [],
             "group": "build",
             "dependsOn": "build",
@@ -74,7 +74,7 @@
         {
             "label": "test_dbg",
             "type": "shell",
-            "command": "make test autojobs=true config=dbg",
+            "command": "make test  config=dbg",
             "args": [],
             "group": "build",
             "dependsOn": "build_dbg",

@@ -46,8 +46,12 @@ private:
         struct match_result{
             size_t begin;
             size_t end;
+
+            size_t size()const{
+                return end - begin;
+            }
         };
-        virtual match_result match(std::u32string_view str, bool line_begin) = 0;
+        virtual match_result match(std::u32string_view str, bool line_begin)const = 0;
 
         enum class operation{
             nothing,
@@ -60,7 +64,7 @@ private:
         // plain pointer to avoid circular references
         state* state_to_push = nullptr;
 
-        std::shared_ptr<attributes> style;
+        std::shared_ptr<const attributes> style;
 
         struct parse_result{
             std::shared_ptr<rule> rule_;
@@ -77,12 +81,12 @@ private:
         regex_rule(std::u32string_view regex_str) :
                 regex(regex_str.data(), regex_str.size(), srell::regex_constants::optimize)
         {}
-        match_result match(std::u32string_view str, bool line_begin)override;
+        match_result match(std::u32string_view str, bool line_begin)const override;
     };
 
     struct state{
-        std::vector<std::shared_ptr<rule>> rules;
-        std::shared_ptr<attributes> style;
+        std::vector<std::shared_ptr<const rule>> rules;
+        std::shared_ptr<const attributes> style;
 
         struct parse_result{
             std::shared_ptr<state> state_;

@@ -34,7 +34,7 @@ struct attributes{
 
 struct line_span{
     size_t length = 0;
-    std::shared_ptr<attributes> attrs;
+    std::shared_ptr<const attributes> attrs;
 };
 
 class syntax_highlighter{
