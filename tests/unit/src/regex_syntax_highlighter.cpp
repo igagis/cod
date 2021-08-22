@@ -7,6 +7,8 @@
 
 #include <cod/syntax_highlight/regex_syntax_highlighter.hpp>
 
+using namespace std::string_literals;
+
 namespace{
 std::string to_markup(const std::u32string& str, utki::span<cod::line_span> spans){
     std::stringstream ss;
@@ -72,9 +74,10 @@ tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
     suite.add(
         "crash_1",
         [](){
-            cod::regex_syntax_highlighter highlighter(treeml::read(papki::fs_file("data/regex_syntax_highlighter/xml.3ml")));
+            auto dir = "data/regex_syntax_highlighter/crash_1/"s;
+            cod::regex_syntax_highlighter highlighter(treeml::read(papki::fs_file(dir + "xml.3ml")));
 
-            auto text = utki::to_utf32(utki::make_string(papki::fs_file("data/regex_syntax_highlighter/LICENSE_GPL3").load()));
+            auto text = utki::to_utf32(utki::make_string(papki::fs_file(dir + "LICENSE_GPL3").load()));
 
             auto lines = utki::split(
                     std::u32string_view(text),
