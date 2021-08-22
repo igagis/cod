@@ -87,6 +87,9 @@ void regex_syntax_highlighter::parsing_context::parse_rules(const treeml::forest
 }
 
 void regex_syntax_highlighter::parsing_context::parse_states(const treeml::forest& desc){
+    if(!desc.empty()){
+        this->initial_state = desc.front().value.to_string();
+    }
     for(const auto& s : desc){
         if(this->states.find(s.value.to_string()) != this->states.end()){
             std::stringstream ss;
@@ -229,9 +232,12 @@ regex_syntax_highlighter::regex_syntax_highlighter(const treeml::forest& spec){
         }
     }
 
+    this->initial_state = c.get_state(c.initial_state);
+
     // set state -> rules and state -> styles references
     for(const auto& n : c.states){
         ASSERT(n.second.state_)
+        this->states.push_back(n.second.state_);
         auto& state_ = *n.second.state_;
         const auto& parsed = n.second;
         state_.rules = utki::linq(parsed.rules).select([&](const auto& m) -> std::shared_ptr<const rule>{
@@ -258,7 +264,6 @@ regex_syntax_highlighter::regex_syntax_highlighter(const treeml::forest& spec){
         }
     }
 
-    this->initial_state = c.get_state("initial");
     this->reset();
 }
 
@@ -299,7 +304,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
             }
 
             if(closest_match.begin == 0){
-                // there can be no closer match, so exit early
+                // there can be no other match closer than 0 chars away, so exit early
                 break;
             }
         }
@@ -331,7 +336,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
                 }
                 break;
             default:
-                ASSERT(false)
+                ASSERT(false, [&](auto&o){o << "opeartion = " << unsigned(match_rule->operation_);})
             case rule::operation::nothing:
                 break;
         }

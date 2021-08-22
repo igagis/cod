@@ -54,7 +54,7 @@ tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
         "correctness",
         {
             {"<", "(0)<"},
-            {"<tag>bla bla</tag>", "(0)<(1)tag(0)>(1)bla bla(0)<(1)/tag(0)>"},
+            {"<tag>bla bla</tag>", "(0)<(1)tag>bla bla(0)<(1)/tag>"},
         },
         [](const auto& p){
             cod::regex_syntax_highlighter highlighter(treeml::read(papki::fs_file("../../highlight/xml.3ml")));

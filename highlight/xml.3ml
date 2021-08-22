@@ -7,44 +7,80 @@ styles{
         color{0xff808080}
     }
 
+    tag{
+        color{0xff00ff00}
+    }
+
+/*
     quoted_string{
         color{0xff800080}
         style{bold_italic}
         underline{true}
         stroke{true}
     }
+*/
 }
 
 rules{
+/*
+    skip_id{
+        regex{"\w*"}
+    }
+
+    pop{
+        regex{""}
+        pop
+    }
+*/
+    tag_start{
+        regex{"<"}
+        style{angle_bracket}
+//        push{tag}
+    }
+
+    // TODO: remove
+/*
     angle_bracket{
         regex{"[<>]{1}"}
         style{angle_bracket}
     }
-
+*/
+/*
     quote{
         regex{"\""}
         push{quoted_string}
     }
-
+*/
+/*
     closing_quote{
 //        regex{"\""}
         pop
     }
-
+*/
+/*
     escape_sequence{
 //        regex{"\\[rnt\"]"}
         style{quoted_string}
     }
+*/
 }
 
 states{
-    initial{
+    text{
         style{text}
-        rules{angle_bracket quote}
+        rules{tag_start}
     }
+/*
+    tag{
+        style{tag}
+        rules{skip_id}
+    }
+*/
 
+/*
     quoted_string{
         style{quoted_string}
         rules{closing_quote}
     }
+    */
 }

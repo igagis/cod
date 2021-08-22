@@ -41,9 +41,7 @@ private:
     struct state;
 
     struct rule{
-        virtual ~rule(){
-            
-        }
+        virtual ~rule(){}
 
         struct match_result{
             size_t begin;
@@ -63,7 +61,7 @@ private:
 
         operation operation_ = operation::nothing;
 
-        // plain pointer to avoid circular references
+        // plain pointer to avoid circular references in case state refers a rule which pushes the same state
         state* state_to_push = nullptr;
 
         std::shared_ptr<const attributes> style;
@@ -103,6 +101,7 @@ private:
         std::map<std::string, std::shared_ptr<attributes>> styles;
         std::map<std::string, rule::parse_result> rules;
         std::map<std::string, state::parse_result> states;
+        std::string initial_state;
 
         void parse_styles(const treeml::forest& styles);
         void parse_rules(const treeml::forest& desc);
@@ -113,7 +112,9 @@ private:
         std::shared_ptr<rule> get_rule(const std::string& name);
     };
 
-    // highlighter state
+    // need to keep strong pointers to all states, because rules hold only plain pointer to the state_to_push
+    std::vector<std::shared_ptr<state>> states;
+    
     std::shared_ptr<state> initial_state;
     std::vector<std::reference_wrapper<state>> state_stack;
 };
