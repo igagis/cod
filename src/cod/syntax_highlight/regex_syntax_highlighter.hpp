@@ -41,7 +41,9 @@ private:
     struct state;
 
     struct rule{
-        virtual ~rule(){}
+        virtual ~rule(){
+            
+        }
 
         struct match_result{
             size_t begin;

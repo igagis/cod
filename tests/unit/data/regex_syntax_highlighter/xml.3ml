@@ -1,0 +1,50 @@
+styles{
+    angle_bracket{
+        color{0xffff0000}
+    }
+
+    text{
+        color{0xff808080}
+    }
+
+    quoted_string{
+        color{0xff800080}
+        style{bold_italic}
+        underline{true}
+        stroke{true}
+    }
+}
+
+rules{
+    angle_bracket{
+        regex{"[<>]{1}"}
+        style{angle_bracket}
+    }
+
+    quote{
+        regex{"\""}
+        push{quoted_string}
+    }
+
+    closing_quote{
+//        regex{"\""}
+        pop
+    }
+
+    escape_sequence{
+//        regex{"\\[rnt\"]"}
+        style{quoted_string}
+    }
+}
+
+states{
+    initial{
+        style{text}
+        rules{angle_bracket quote}
+    }
+
+    quoted_string{
+        style{quoted_string}
+        rules{closing_quote}
+    }
+}
