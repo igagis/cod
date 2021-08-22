@@ -286,7 +286,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
     std::u32string_view view(str);
 
     while(!view.empty()){
-        rule::match_result closest_match{
+        rule::match_result match{
             .begin = view.size(),
             .end = 0
         };
@@ -298,12 +298,12 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
         for(const auto& r : this->state_stack.back().get().rules){
             auto m = r->match(view, line_begin);
 
-            if(m.begin < closest_match.begin){
-                closest_match = m;
+            if(m.begin < match.begin){
+                match = m;
                 match_rule = r.get();
             }
 
-            if(closest_match.begin == 0){
+            if(match.begin == 0){
                 // there can be no other match closer than 0 chars away, so exit early
                 break;
             }
@@ -318,10 +318,10 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
 
         ASSERT(match_rule)
 
-        if(closest_match.begin != 0){
+        if(match.begin != 0){
             // extend current span and move the current position to the beginning of the match
-            ret.back().length += closest_match.begin;
-            view = view.substr(closest_match.begin);
+            ret.back().length += match.begin;
+            view = view.substr(match.begin);
         }
 
         switch(match_rule->operation_){
@@ -346,25 +346,32 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
             ret.pop_back();
         }
 
-        auto size = closest_match.size();
+        auto size = match.size();
         view = view.substr(size);
 
+        std::shared_ptr<const attributes> style;
         if(match_rule->style){
+            style = match_rule->style;
+        }else{
+            style = this->state_stack.back().get().style;
+        }
+
+        if(ret.back().attrs != style){
             ret.push_back(line_span{
                 .length = size,
-                .attrs = match_rule->style
+                .attrs = style
             });
-            if(!view.empty()){
+        }else{
+            ret.back().length += size;
+        }
+
+        if(!view.empty()){
+            if(ret.back().attrs != this->state_stack.back().get().style){
                 ret.push_back(line_span{
                     .length = 0,
                     .attrs = this->state_stack.back().get().style
                 });
             }
-        }else{
-            ret.push_back(line_span{
-                .length = size,
-                .attrs = this->state_stack.back().get().style
-            });
         }
 
         line_begin = false;

@@ -22,20 +22,20 @@ styles{
 }
 
 rules{
-/*
+    /*
     skip_id{
-        regex{"\w*"}
-    }
+        regex{"[^\s]*"}
+    }*/
 
     pop{
         regex{""}
         pop
     }
-*/
+
     tag_start{
         regex{"<"}
         style{angle_bracket}
-//        push{tag}
+        push{tag}
     }
 
     // TODO: remove
@@ -70,12 +70,11 @@ states{
         style{text}
         rules{tag_start}
     }
-/*
+
     tag{
         style{tag}
-        rules{skip_id}
+        rules{pop}
     }
-*/
 
 /*
     quoted_string{
