@@ -1,6 +1,14 @@
 styles{
+    error{
+        color{0xff0000ff}
+    }
+
     angle_bracket{
         color{0xffff0000}
+    }
+
+    attr_equals{
+        color{0xffff8080}
     }
 
     text{
@@ -13,6 +21,11 @@ styles{
 
     attr_name{
         color{0xff008080}
+        style{bold_italic}
+    }
+
+    attr_doublequote{
+        color{0xff8080ff}
     }
 
     attr_value{
@@ -21,10 +34,12 @@ styles{
 }
 
 rules{
+/*
     pop{
         regex{""}
         pop
     }
+*/
 
     tag_start{
         regex{"<"}
@@ -35,6 +50,7 @@ rules{
     tag_name_end{
         regex{"\s"}
         pop
+        push{attrs}
     }
 
     tag_end{
@@ -43,9 +59,35 @@ rules{
         pop
     }
 
-    attr_value{
-        regex{"[^\s]+"}
-        style{attr_value}
+    attr_name{
+        regex{"[^\s]{1}"}
+        push{attr_name}
+    }
+    attr_name_unexpected{
+        regex{"[\s>]+"}
+        push{error}
+    }
+    attr_name_end{
+        regex{"="}
+        style{attr_equals}
+        pop
+        push{attr_value_start}
+    }
+
+    attr_value_start_doublequote_unexpected{
+        regex{""}
+        push{error}
+    }
+    attr_value_start_doublequote{
+        regex{"\""}
+        style{attr_doublequote}
+        pop
+        push{attr_value}
+    }
+    attr_value_end{
+        regex{"\""}
+        style{attr_doublequote}
+        pop
     }
 }
 
@@ -62,6 +104,28 @@ states{
 
     attrs{
         style{text}
-        rules{attr_value}
+        rules{tag_end attr_name}
+    }
+
+    attr_name{
+        style{attr_name}
+        rules{attr_name_end attr_name_unexpected}
+    }
+
+    attr_value_start{
+        style{text}
+        rules{
+            attr_value_start_doublequote
+            attr_value_start_doublequote_unexpected
+        }
+    }
+
+    attr_value{
+        style{attr_value}
+        rules{attr_value_end}
+    }
+
+    error{
+        style{error}
     }
 }
