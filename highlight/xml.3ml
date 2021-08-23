@@ -101,6 +101,13 @@ rules{
         style{attr_doublequote}
         pop
     }
+/*
+    bla_bla{
+        preprocess
+        regex{"bla(qwf)f%(234)e"}
+        push{text}
+    }
+*/
 }
 
 states{
