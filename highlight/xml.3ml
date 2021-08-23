@@ -11,22 +11,16 @@ styles{
         color{0xff00ff00}
     }
 
-/*
-    quoted_string{
-        color{0xff800080}
-        style{bold_italic}
-        underline{true}
-        stroke{true}
+    attr_name{
+        color{0xff008080}
     }
-*/
+
+    attr_value{
+        color{0xff00ffff}
+    }
 }
 
 rules{
-    /*
-    skip_id{
-        regex{"[^\s]*"}
-    }*/
-
     pop{
         regex{""}
         pop
@@ -35,34 +29,24 @@ rules{
     tag_start{
         regex{"<"}
         style{angle_bracket}
-        push{tag}
+        push{tag_name}
     }
 
-    // TODO: remove
-/*
-    angle_bracket{
-        regex{"[<>]{1}"}
-        style{angle_bracket}
-    }
-*/
-/*
-    quote{
-        regex{"\""}
-        push{quoted_string}
-    }
-*/
-/*
-    closing_quote{
-//        regex{"\""}
+    tag_name_end{
+        regex{"\s"}
         pop
     }
-*/
-/*
-    escape_sequence{
-//        regex{"\\[rnt\"]"}
-        style{quoted_string}
+
+    tag_end{
+        regex{">"}
+        style{angle_bracket}
+        pop
     }
-*/
+
+    attr_value{
+        regex{"[^\s]+"}
+        style{attr_value}
+    }
 }
 
 states{
@@ -71,15 +55,13 @@ states{
         rules{tag_start}
     }
 
-    tag{
+    tag_name{
         style{tag}
-        rules{pop}
+        rules{tag_name_end tag_end}
     }
 
-/*
-    quoted_string{
-        style{quoted_string}
-        rules{closing_quote}
+    attrs{
+        style{text}
+        rules{attr_value}
     }
-    */
 }

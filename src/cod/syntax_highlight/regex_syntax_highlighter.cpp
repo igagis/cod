@@ -170,7 +170,6 @@ regex_syntax_highlighter::rule::parse_result regex_syntax_highlighter::rule::par
     parse_result ret;
 
     std::u32string regex;
-    operation operation_ = operation::nothing;
 
     for(const auto& n : desc){
         if(n.value == "style"){
@@ -178,10 +177,15 @@ regex_syntax_highlighter::rule::parse_result regex_syntax_highlighter::rule::par
         }else if(n.value == "regex"){
             regex = utki::to_utf32(treeml::crawler(n.children).get().value.to_string());
         }else if(n.value == "push"){
-            ret.state_to_push = treeml::crawler(n.children).get().value.to_string();
-            operation_ = operation::push;
+            ret.operations.push_back({
+                operation::type::push,
+                treeml::crawler(n.children).get().value.to_string()
+            });
         }else if(n.value == "pop"){
-            operation_ = operation::pop;
+            ret.operations.push_back({
+                operation::type::pop,
+                std::string()
+            });
         }else{
             std::stringstream ss;
             ss << "unknown rule keyword: " << n.value;
@@ -190,7 +194,6 @@ regex_syntax_highlighter::rule::parse_result regex_syntax_highlighter::rule::par
     }
 
     ret.rule_ = std::make_shared<regex_rule>(regex);
-    ret.rule_->operation_ = operation_;
 
     return ret;
 }
@@ -259,8 +262,12 @@ regex_syntax_highlighter::regex_syntax_highlighter(const treeml::forest& spec){
             rule_.style = c.get_style(parsed.style);
         }
 
-        if(rule_.operation_ == rule::operation::push){
-            rule_.state_to_push = c.get_state(parsed.state_to_push).get();
+        for(const auto& o : parsed.operations){
+            auto op = std::get<rule::operation::type>(o);
+            rule_.operations.push_back({
+                op,
+                op == rule::operation::type::push ? c.get_state(std::get<std::string>(o)).get() : nullptr
+            });
         }
     }
 
@@ -324,21 +331,22 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
             view = view.substr(match.begin);
         }
 
-        switch(match_rule->operation_){
-            case rule::operation::push:
-                ASSERT(match_rule->state_to_push)
-                this->state_stack.push_back(*match_rule->state_to_push);
-                break;
-            case rule::operation::pop:
-                // we must not pop the initial state, so check that more than one state is currently in the stack
-                if(this->state_stack.size() > 1){
-                    this->state_stack.pop_back();
-                }
-                break;
-            default:
-                ASSERT(false, [&](auto&o){o << "opeartion = " << unsigned(match_rule->operation_);})
-            case rule::operation::nothing:
-                break;
+        for(const auto& op : match_rule->operations){
+            switch(op.type_){
+                case rule::operation::type::push:
+                    ASSERT(op.state_to_push)
+                    this->state_stack.push_back(*op.state_to_push);
+                    break;
+                case rule::operation::type::pop:
+                    // we must not pop the initial state, so check that more than one state is currently in the stack
+                    if(this->state_stack.size() > 1){
+                        this->state_stack.pop_back();
+                    }
+                    break;
+                default:
+                    ASSERT(false, [&](auto&o){o << "opeartion = " << unsigned(op.type_);})
+                    break;
+            }
         }
 
         ASSERT(!ret.empty())

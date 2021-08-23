@@ -53,21 +53,24 @@ private:
         };
         virtual match_result match(std::u32string_view str, bool line_begin)const = 0;
 
-        enum class operation{
-            nothing,
-            push,
-            pop
+        struct operation{
+            enum class type{
+                push,
+                pop
+            };
+            type type_;
+
+            // plain pointer to avoid circular references in case state refers a rule which pushes the same state
+            state* state_to_push = nullptr;
         };
 
-        operation operation_ = operation::nothing;
-
-        // plain pointer to avoid circular references in case state refers a rule which pushes the same state
-        state* state_to_push = nullptr;
+        std::vector<operation> operations;
 
         std::shared_ptr<const attributes> style;
 
         struct parse_result{
             std::shared_ptr<rule> rule_;
+            std::vector<std::tuple<operation::type, std::string>> operations;
             std::string style;
             std::string state_to_push;
         };
