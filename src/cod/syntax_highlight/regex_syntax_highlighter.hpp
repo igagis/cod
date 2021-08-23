@@ -29,15 +29,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace cod{
 
-class regex_syntax_highlighter : public syntax_highlighter{
+class regex_syntax_highlighter_model{
 public:
-    regex_syntax_highlighter(const treeml::forest& spec);
+    regex_syntax_highlighter_model(const treeml::forest& spec);
 
-    void reset()override;
-
-    std::vector<line_span> highlight(std::u32string_view str)override;
-
-private:
     struct state;
 
     struct rule{
@@ -116,10 +111,24 @@ private:
     };
 
     // need to keep strong pointers to all states, because rules hold only plain pointer to the state_to_push
-    std::vector<std::shared_ptr<state>> states;
+    std::vector<std::shared_ptr<const state>> states;
     
-    std::shared_ptr<state> initial_state;
-    std::vector<std::reference_wrapper<state>> state_stack;
+    std::shared_ptr<const state> initial_state;
+};
+
+class regex_syntax_highlighter : public syntax_highlighter{
+    const std::shared_ptr<const regex_syntax_highlighter_model> model;
+public:
+    regex_syntax_highlighter(
+            std::shared_ptr<const regex_syntax_highlighter_model> model
+        );
+
+    void reset()override;
+
+    std::vector<line_span> highlight(std::u32string_view str)override;
+
+private:    
+    std::vector<std::reference_wrapper<const regex_syntax_highlighter_model::state>> state_stack;
 };
 
 }

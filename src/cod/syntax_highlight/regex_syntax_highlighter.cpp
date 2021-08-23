@@ -62,7 +62,7 @@ std::shared_ptr<attributes> parse_style(const treeml::forest& style){
 }
 }
 
-void regex_syntax_highlighter::parsing_context::parse_styles(const treeml::forest& styles){
+void regex_syntax_highlighter_model::parsing_context::parse_styles(const treeml::forest& styles){
     for(const auto& s : styles){
         if(this->styles.find(s.value.to_string()) != this->styles.end()){
             std::stringstream ss;
@@ -74,7 +74,7 @@ void regex_syntax_highlighter::parsing_context::parse_styles(const treeml::fores
     }
 }
 
-void regex_syntax_highlighter::parsing_context::parse_rules(const treeml::forest& desc){
+void regex_syntax_highlighter_model::parsing_context::parse_rules(const treeml::forest& desc){
     for(const auto& m : desc){
         if(this->rules.find(m.value.to_string()) != this->rules.end()){
             std::stringstream ss;
@@ -86,7 +86,7 @@ void regex_syntax_highlighter::parsing_context::parse_rules(const treeml::forest
     }
 }
 
-void regex_syntax_highlighter::parsing_context::parse_states(const treeml::forest& desc){
+void regex_syntax_highlighter_model::parsing_context::parse_states(const treeml::forest& desc){
     if(!desc.empty()){
         this->initial_state = desc.front().value.to_string();
     }
@@ -102,7 +102,7 @@ void regex_syntax_highlighter::parsing_context::parse_states(const treeml::fores
 }
 
 std::shared_ptr<attributes>
-regex_syntax_highlighter::parsing_context::get_style(const std::string& name)
+regex_syntax_highlighter_model::parsing_context::get_style(const std::string& name)
 {
     auto i = this->styles.find(name);
     if(i == this->styles.end()){
@@ -114,8 +114,8 @@ regex_syntax_highlighter::parsing_context::get_style(const std::string& name)
     return i->second;
 }
 
-std::shared_ptr<regex_syntax_highlighter::state>
-regex_syntax_highlighter::parsing_context::get_state(const std::string& name)
+std::shared_ptr<regex_syntax_highlighter_model::state>
+regex_syntax_highlighter_model::parsing_context::get_state(const std::string& name)
 {
     auto i = this->states.find(name);
     if(i == this->states.end()){
@@ -127,8 +127,8 @@ regex_syntax_highlighter::parsing_context::get_state(const std::string& name)
     return i->second.state_;
 }
 
-std::shared_ptr<regex_syntax_highlighter::rule>
-regex_syntax_highlighter::parsing_context::get_rule(const std::string& name)
+std::shared_ptr<regex_syntax_highlighter_model::rule>
+regex_syntax_highlighter_model::parsing_context::get_rule(const std::string& name)
 {
     auto i = this->rules.find(name);
     if(i == this->rules.end()){
@@ -139,8 +139,8 @@ regex_syntax_highlighter::parsing_context::get_rule(const std::string& name)
     return i->second.rule_;
 }
 
-regex_syntax_highlighter::rule::match_result
-regex_syntax_highlighter::regex_rule::match(
+regex_syntax_highlighter_model::rule::match_result
+regex_syntax_highlighter_model::regex_rule::match(
         std::u32string_view str,
         bool line_begin
     )const
@@ -166,7 +166,7 @@ regex_syntax_highlighter::regex_rule::match(
     };
 }
 
-regex_syntax_highlighter::rule::parse_result regex_syntax_highlighter::rule::parse(const treeml::forest& desc){
+regex_syntax_highlighter_model::rule::parse_result regex_syntax_highlighter_model::rule::parse(const treeml::forest& desc){
     parse_result ret;
 
     std::u32string regex;
@@ -198,7 +198,7 @@ regex_syntax_highlighter::rule::parse_result regex_syntax_highlighter::rule::par
     return ret;
 }
 
-regex_syntax_highlighter::state::parse_result regex_syntax_highlighter::state::parse(const treeml::forest& desc){
+regex_syntax_highlighter_model::state::parse_result regex_syntax_highlighter_model::state::parse(const treeml::forest& desc){
     parse_result ret;
 
     ret.state_ = std::make_shared<state>();
@@ -218,7 +218,7 @@ regex_syntax_highlighter::state::parse_result regex_syntax_highlighter::state::p
     return ret;
 }
 
-regex_syntax_highlighter::regex_syntax_highlighter(const treeml::forest& spec){
+regex_syntax_highlighter_model::regex_syntax_highlighter_model(const treeml::forest& spec){
     parsing_context c;
 
     for(const auto& n : spec){
@@ -270,14 +270,22 @@ regex_syntax_highlighter::regex_syntax_highlighter(const treeml::forest& spec){
             });
         }
     }
+}
 
+regex_syntax_highlighter::regex_syntax_highlighter(
+        std::shared_ptr<const regex_syntax_highlighter_model> model
+    ) :
+        model(std::move(model))
+{
+    ASSERT(this->model)
     this->reset();
 }
 
 void regex_syntax_highlighter::reset(){
     this->state_stack.clear();
-    ASSERT(this->initial_state);
-    this->state_stack.push_back(*this->initial_state);
+    ASSERT(this->model)
+    ASSERT(this->model->initial_state);
+    this->state_stack.push_back(*this->model->initial_state);
 }
 
 std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view str){
@@ -293,11 +301,11 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
     std::u32string_view view(str);
 
     while(!view.empty()){
-        rule::match_result match{
+        regex_syntax_highlighter_model::rule::match_result match{
             .begin = view.size(),
             .end = 0
         };
-        const rule* match_rule = nullptr;
+        const regex_syntax_highlighter_model::rule* match_rule = nullptr;
 
         // go through all rules of the current state to find the match closest to current
         // position in the text line
@@ -333,11 +341,11 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
 
         for(const auto& op : match_rule->operations){
             switch(op.type_){
-                case rule::operation::type::push:
+                case regex_syntax_highlighter_model::rule::operation::type::push:
                     ASSERT(op.state_to_push)
                     this->state_stack.push_back(*op.state_to_push);
                     break;
-                case rule::operation::type::pop:
+                case regex_syntax_highlighter_model::rule::operation::type::pop:
                     // we must not pop the initial state, so check that more than one state is currently in the stack
                     if(this->state_stack.size() > 1){
                         this->state_stack.pop_back();

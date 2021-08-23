@@ -46,7 +46,11 @@ tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
     suite.add(
         "parse",
         [](){
-            cod::regex_syntax_highlighter sh(treeml::read(papki::fs_file("../../highlight/xml.3ml")));
+            cod::regex_syntax_highlighter sh(
+                    std::make_shared<cod::regex_syntax_highlighter_model>(
+                            treeml::read(papki::fs_file("../../highlight/xml.3ml"))
+                        )
+                );
         }
     );
 
@@ -57,7 +61,11 @@ tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
             {"<tag>bla bla</tag>", "(0)<(1)tag>bla bla(0)<(1)/tag>"},
         },
         [](const auto& p){
-            cod::regex_syntax_highlighter highlighter(treeml::read(papki::fs_file("../../highlight/xml.3ml")));
+            cod::regex_syntax_highlighter highlighter(
+                    std::make_shared<cod::regex_syntax_highlighter_model>(
+                            treeml::read(papki::fs_file("../../highlight/xml.3ml"))
+                        )
+                );
 
             auto in = utki::to_utf32(p.first);
 
@@ -75,7 +83,11 @@ tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
         "crash_1",
         [](){
             auto dir = "data/regex_syntax_highlighter/crash_1/"s;
-            cod::regex_syntax_highlighter highlighter(treeml::read(papki::fs_file(dir + "xml.3ml")));
+            cod::regex_syntax_highlighter highlighter(
+                    std::make_shared<cod::regex_syntax_highlighter_model>(
+                            treeml::read(papki::fs_file(dir + "xml.3ml"))
+                        )
+                );
 
             auto text = utki::to_utf32(utki::make_string(papki::fs_file(dir + "LICENSE_GPL3").load()));
 

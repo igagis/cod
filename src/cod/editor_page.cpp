@@ -36,7 +36,11 @@ editor_page::editor_page(std::shared_ptr<morda::context> context, const treeml::
 	//       later need to implement proper system
 	this->text_change_handler = [
 			this,
-			hl = std::make_shared<cod::regex_syntax_highlighter>(treeml::read(papki::fs_file("highlight/xml.3ml")))
+			hl = std::make_shared<cod::regex_syntax_highlighter>(
+					std::make_shared<cod::regex_syntax_highlighter_model>(
+							treeml::read(papki::fs_file("highlight/xml.3ml"))
+						)
+				)
 		]
 	(morda::text_widget& w)
 	{
