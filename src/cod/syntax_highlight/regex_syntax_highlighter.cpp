@@ -28,8 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 namespace{
-std::shared_ptr<attributes> parse_style(const treeml::forest& style){
-    auto ret = std::make_shared<attributes>();
+std::shared_ptr<font_style> parse_style(const treeml::forest& style){
+    auto ret = std::make_shared<font_style>();
     for(const auto& n : style){
         if(n.value == "color"){
             ret->color = treeml::crawler(n.children).get().value.to_uint32();
@@ -106,7 +106,7 @@ void regex_syntax_highlighter_model::parsing_context::parse_states(const treeml:
     }
 }
 
-std::shared_ptr<attributes>
+std::shared_ptr<font_style>
 regex_syntax_highlighter_model::parsing_context::get_style(const std::string& name)
 {
     auto i = this->styles.find(name);
@@ -368,7 +368,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
         auto size = match.size();
         view = view.substr(size);
 
-        std::shared_ptr<const attributes> style;
+        std::shared_ptr<const font_style> style;
         if(match_rule->style){
             style = match_rule->style;
         }else{

@@ -61,7 +61,7 @@ public:
 
         std::vector<operation> operations;
 
-        std::shared_ptr<const attributes> style;
+        std::shared_ptr<const font_style> style;
 
         struct parse_result{
             std::shared_ptr<rule> rule_;
@@ -84,7 +84,7 @@ public:
 
     struct state{
         std::vector<std::shared_ptr<const rule>> rules;
-        std::shared_ptr<const attributes> style;
+        std::shared_ptr<const font_style> style;
 
         struct parse_result{
             std::shared_ptr<state> state_;
@@ -96,7 +96,7 @@ public:
 
     // this struct is only used when parsing highlighter rules
     struct parsing_context{
-        std::map<std::string, std::shared_ptr<attributes>> styles;
+        std::map<std::string, std::shared_ptr<font_style>> styles;
         std::map<std::string, rule::parse_result> rules;
 
         // needs to preserve order
@@ -108,7 +108,7 @@ public:
         void parse_rules(const treeml::forest& desc);
         void parse_states(const treeml::forest& desc);
 
-        std::shared_ptr<attributes> get_style(const std::string& name);
+        std::shared_ptr<font_style> get_style(const std::string& name);
         std::shared_ptr<state> get_state(const std::string& name);
         std::shared_ptr<rule> get_rule(const std::string& name);
     };

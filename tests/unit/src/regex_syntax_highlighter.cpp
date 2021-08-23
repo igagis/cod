@@ -14,9 +14,9 @@ std::string to_markup(const std::u32string& str, utki::span<cod::line_span> span
     std::stringstream ss;
 
     size_t cur_free_style_num = 0;
-    std::map<const cod::attributes*, std::string> style_names;
+    std::map<const cod::font_style*, std::string> style_names;
 
-    auto get_style_name = [&](const std::shared_ptr<const cod::attributes>& s) -> const std::string&{
+    auto get_style_name = [&](const std::shared_ptr<const cod::font_style>& s) -> const std::string&{
         auto i = style_names.find(s.get());
         if(i == style_names.end()){
             std::stringstream ss;

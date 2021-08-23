@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace cod{
 
-struct attributes{
+struct font_style{
     morda::res::font::style style = morda::res::font::style::normal;
     bool underline = false;
     bool stroke = false;
@@ -34,7 +34,7 @@ struct attributes{
 
 struct line_span{
     size_t length = 0;
-    std::shared_ptr<const attributes> attrs;
+    std::shared_ptr<const font_style> attrs;
 };
 
 class syntax_highlighter{

@@ -222,7 +222,7 @@ class code_edit :
 
 	void on_character_input(const std::u32string& unicode, morda::key key)override;
 
-	std::shared_ptr<attributes> text_style = std::make_shared<attributes>(attributes{color: 0xffb0b0b0});
+	std::shared_ptr<font_style> text_style = std::make_shared<font_style>(font_style{color: 0xffb0b0b0});
 
 	void notify_text_change();
 
