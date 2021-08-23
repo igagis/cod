@@ -59,6 +59,18 @@ rules{
         pop
     }
 
+    tag_close{
+        regex{"/>"}
+        style{angle_bracket}
+        pop
+    }
+
+    closing_tag_start{
+        regex{"</"}
+        style{angle_bracket}
+        push{closing_tag_name}
+    }
+
     attr_name{
         regex{"[^\s]{1}"}
         push{attr_name}
@@ -94,17 +106,22 @@ rules{
 states{
     text{
         style{text}
-        rules{tag_start}
+        rules{closing_tag_start tag_start}
     }
 
     tag_name{
         style{tag}
-        rules{tag_name_end tag_end}
+        rules{tag_name_end tag_end tag_close}
+    }
+
+    closing_tag_name{
+        style{tag}
+        rules{tag_end}
     }
 
     attrs{
         style{text}
-        rules{tag_end attr_name}
+        rules{tag_end tag_close attr_name}
     }
 
     attr_name{
