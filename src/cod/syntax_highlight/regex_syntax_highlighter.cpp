@@ -91,13 +91,18 @@ void regex_syntax_highlighter_model::parsing_context::parse_states(const treeml:
         this->initial_state = desc.front().value.to_string();
     }
     for(const auto& s : desc){
-        if(this->states.find(s.value.to_string()) != this->states.end()){
+        if(std::find_if(
+                this->states.begin(),
+                this->states.end(),
+                [&](const auto& v){return v.first == s.value.to_string();}
+            ) != this->states.end())
+        {
             std::stringstream ss;
             ss << "state with name '" << s.value.to_string() << "' already exists";
             throw std::invalid_argument(ss.str());
         }
 
-        this->states.insert(std::make_pair(s.value.to_string(), state::parse(s.children)));
+        this->states.push_back(std::make_pair(s.value.to_string(), state::parse(s.children)));
     }
 }
 
@@ -117,7 +122,7 @@ regex_syntax_highlighter_model::parsing_context::get_style(const std::string& na
 std::shared_ptr<regex_syntax_highlighter_model::state>
 regex_syntax_highlighter_model::parsing_context::get_state(const std::string& name)
 {
-    auto i = this->states.find(name);
+    auto i = std::find_if(this->states.begin(), this->states.end(), [&](const auto& v){return v.first == name;});
     if(i == this->states.end()){
         std::stringstream ss;
         ss << "state not found: " << name;
@@ -235,8 +240,6 @@ regex_syntax_highlighter_model::regex_syntax_highlighter_model(const treeml::for
         }
     }
 
-    this->initial_state = c.get_state(c.initial_state);
-
     // set state -> rules and state -> styles references
     for(const auto& n : c.states){
         ASSERT(n.second.state_)
@@ -284,8 +287,8 @@ regex_syntax_highlighter::regex_syntax_highlighter(
 void regex_syntax_highlighter::reset(){
     this->state_stack.clear();
     ASSERT(this->model)
-    ASSERT(this->model->initial_state);
-    this->state_stack.push_back(*this->model->initial_state);
+    ASSERT(!this->model->states.empty());
+    this->state_stack.push_back(*this->model->states.front());
 }
 
 std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view str){

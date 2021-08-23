@@ -98,7 +98,10 @@ public:
     struct parsing_context{
         std::map<std::string, std::shared_ptr<attributes>> styles;
         std::map<std::string, rule::parse_result> rules;
-        std::map<std::string, state::parse_result> states;
+
+        // needs to preserve order
+        std::vector<std::pair<std::string, state::parse_result>> states;
+
         std::string initial_state;
 
         void parse_styles(const treeml::forest& styles);
@@ -112,8 +115,6 @@ public:
 
     // need to keep strong pointers to all states, because rules hold only plain pointer to the state_to_push
     std::vector<std::shared_ptr<const state>> states;
-    
-    std::shared_ptr<const state> initial_state;
 };
 
 class regex_syntax_highlighter : public syntax_highlighter{
