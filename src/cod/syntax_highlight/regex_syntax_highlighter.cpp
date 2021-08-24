@@ -156,8 +156,8 @@ struct parsing_context{
 };
 }
 
-regex_syntax_highlighter_model::rule::match_result
-regex_syntax_highlighter_model::regex_rule::match(
+regex_syntax_highlighter_model::matcher::match_result
+regex_syntax_highlighter_model::regex_matcher::match(
         std::u32string_view str,
         bool line_begin
     )const
@@ -197,14 +197,15 @@ regex_syntax_highlighter_model::regex_rule::match(
 
 regex_syntax_highlighter_model::rule::parse_result regex_syntax_highlighter_model::rule::parse(const treeml::forest& desc){
     parse_result ret;
-
-    std::u32string regex;
+    ret.rule_ = std::make_shared<rule>();
 
     for(const auto& n : desc){
         if(n.value == "style"){
             ret.style = treeml::crawler(n.children).get().value.to_string();
         }else if(n.value == "regex"){
-            regex = utki::to_utf32(treeml::crawler(n.children).get().value.to_string());
+            ret.rule_->matcher_ = std::make_shared<regex_syntax_highlighter_model::regex_matcher>(
+                    utki::to_utf32(treeml::crawler(n.children).get().value.to_string())
+                );
         }else if(n.value == "push"){
             ret.operations.push_back({
                 operation::type::push,
@@ -221,8 +222,6 @@ regex_syntax_highlighter_model::rule::parse_result regex_syntax_highlighter_mode
             throw std::invalid_argument(ss.str());
         }
     }
-
-    ret.rule_ = std::make_shared<regex_rule>(regex);
 
     return ret;
 }
@@ -332,7 +331,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
     std::u32string_view view(str);
 
     while(!view.empty()){
-        regex_syntax_highlighter_model::rule::match_result match{
+        regex_syntax_highlighter_model::matcher::match_result match{
             .begin = view.size(),
             .end = 0
         };
@@ -343,20 +342,21 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
         ASSERT(!this->state_stack.empty())
         for(const auto& r : this->state_stack.back().state.get().rules){
             const regex_syntax_highlighter_model::matcher* matcher;
-            if(r->is_preprocessed){
+            ASSERT(r->matcher_)
+            if(r->matcher_->is_preprocessed){
                 auto& cache = this->state_stack.back().preprocessed_rules_cache;
                 auto i = std::find_if(cache.begin(), cache.end(), [&](const auto& e){return e.first == r.get();});
                 if(i == cache.end()){
                     cache.push_back(std::make_pair(
                             r.get(),
-                            r->preprocess(this->state_stack.back().capture_groups)
+                            r->matcher_->preprocess(this->state_stack.back().capture_groups)
                         ));
                     matcher = cache.back().second.get();
                 }else{
                     matcher = i->second.get();
                 }
             }else{
-                matcher = r.get();
+                matcher = r->matcher_.get();
             }
 
             auto m = matcher->match(view, line_begin);
@@ -450,7 +450,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
 }
 
 std::shared_ptr<const regex_syntax_highlighter_model::matcher>
-regex_syntax_highlighter_model::ppregex_rule::preprocess(utki::span<const std::string> capture_groups)const
+regex_syntax_highlighter_model::ppregex_matcher::preprocess(utki::span<const std::string> capture_groups)const
 {
     // TODO:
     ASSERT(false)

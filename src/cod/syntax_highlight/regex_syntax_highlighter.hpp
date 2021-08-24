@@ -37,6 +37,12 @@ public:
 
     class matcher{
     public:
+        const bool is_preprocessed;
+
+        matcher(bool is_preprocessed = false) :
+                is_preprocessed(is_preprocessed)
+        {}
+
         virtual ~matcher(){}
 
         struct match_result{
@@ -50,21 +56,15 @@ public:
             }
         };
         virtual match_result match(std::u32string_view str, bool line_begin)const = 0;
-    };
-
-    struct rule : public matcher{
-        const bool is_preprocessed;
-
-    protected:
-        rule(bool is_preprocessed = false) :
-                is_preprocessed(is_preprocessed)
-        {}
-
-    public:
 
         virtual std::shared_ptr<const matcher> preprocess(utki::span<const std::string> capture_groups)const{
             return nullptr;
         }
+    };
+
+    struct rule{
+    public:
+        std::shared_ptr<const matcher> matcher_;
 
         struct operation{
             enum class type{
@@ -90,23 +90,23 @@ public:
         static parse_result parse(const treeml::forest& spec);
     };
 
-    class regex_rule : public rule{
+    class regex_matcher : public matcher{
         srell::u32regex regex;
 
     public:
-        regex_rule(std::u32string_view regex_str) :
+        regex_matcher(std::u32string_view regex_str) :
                 regex(regex_str.data(), regex_str.size(), srell::regex_constants::optimize)
         {}
         match_result match(std::u32string_view str, bool line_begin)const override;
     };
 
-    // preprocessed regex rule
-    class ppregex_rule : public rule{
+    // preprocessed regex matcher
+    class ppregex_matcher : public matcher{
         std::u32string regex_str;
 
     public:
-        ppregex_rule(std::u32string&& regex_str) :
-                rule(true), // true = preprocessed
+        ppregex_matcher(std::u32string&& regex_str) :
+                matcher(true), // true = preprocessed
                 regex_str(std::move(regex_str))
         {}
 
