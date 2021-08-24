@@ -34,7 +34,7 @@ struct font_style{
 
 struct line_span{
     size_t length = 0;
-    std::shared_ptr<const font_style> attrs;
+    std::shared_ptr<const font_style> style;
 };
 
 class syntax_highlighter{

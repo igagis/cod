@@ -32,7 +32,7 @@ std::string to_markup(const std::u32string& str, utki::span<cod::line_span> span
     for(const auto& s : spans){
         tst::check_le(s.length, v.size(), SL);
 
-        ss << get_style_name(s.attrs);
+        ss << get_style_name(s.style);
         ss << utki::to_utf8(v.substr(0, s.length));
         v = v.substr(s.length);
     }

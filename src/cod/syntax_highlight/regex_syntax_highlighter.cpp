@@ -340,7 +340,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
     // start with one span of length 0
     ret.push_back(line_span{
         .length = 0,
-        .attrs = this->state_stack.back().state.get().style
+        .style = this->state_stack.back().state.get().style
     });
 
     bool line_begin = true;
@@ -439,20 +439,20 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
             style = this->state_stack.back().state.get().style;
         }
 
-        if(ret.back().attrs != style){
+        if(ret.back().style != style){
             ret.push_back(line_span{
-                .length = size,
-                .attrs = style
+                length: size,
+                style: style
             });
         }else{
             ret.back().length += size;
         }
 
         if(!view.empty()){
-            if(ret.back().attrs != this->state_stack.back().state.get().style){
+            if(ret.back().style != this->state_stack.back().state.get().style){
                 ret.push_back(line_span{
-                    .length = 0,
-                    .attrs = this->state_stack.back().state.get().style
+                    length: 0,
+                    style: this->state_stack.back().state.get().style
                 });
             }
         }

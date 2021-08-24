@@ -118,7 +118,10 @@ void code_edit::set_text(std::u32string&& text){
 			return line{
 				.str = std::move(s),
 				.spans = {
-					line_span{length: size, attrs: this->text_style}
+					line_span{
+						.length = size,
+						.style = this->text_style
+					}
 				}
 			};
 		}).get();
@@ -205,7 +208,7 @@ void code_edit::line_widget::render(const morda::matrix4& matrix)const{
 	size_t cur_char_pos = 0;
 	size_t cur_char_index = 0;
 	for(const auto& s : l.spans){
-		const auto& font = this->owner.get_font().get(s.attrs->style);
+		const auto& font = this->owner.get_font().get(s.style->style);
 
 		morda::matrix4 matr(matrix);
 		matr.translate(
@@ -214,7 +217,7 @@ void code_edit::line_widget::render(const morda::matrix4& matrix)const{
 			);
 		auto res = font.render(
 				matr,
-				morda::color_to_vec4f(s.attrs->color),
+				morda::color_to_vec4f(s.style->color),
 				std::u32string_view(str.c_str() + cur_char_index, s.length),
 				this->owner.settings.tab_size,
 				cur_char_pos
@@ -673,7 +676,7 @@ void code_edit::line::append(line&& l){
 code_edit::line code_edit::line::cut_tail(size_t pos){
 	if(pos >= this->size()){
 		return line{
-			spans: {line_span{ attrs: this->spans.back().attrs }}
+			spans: {line_span{ style: this->spans.back().style }}
 		};
 	}
 
