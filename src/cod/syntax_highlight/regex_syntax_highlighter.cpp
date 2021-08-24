@@ -341,22 +341,20 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
         // position in the text line
         ASSERT(!this->state_stack.empty())
         for(const auto& r : this->state_stack.back().state.get().rules){
-            const regex_syntax_highlighter_model::matcher* matcher;
-            ASSERT(r->matcher_)
-            if(r->matcher_->is_preprocessed){
+            auto matcher = r->matcher_.get();
+            ASSERT(matcher)
+            if(matcher->is_preprocessed){
                 auto& cache = this->state_stack.back().preprocessed_rules_cache;
-                auto i = std::find_if(cache.begin(), cache.end(), [&](const auto& e){return e.first == r.get();});
+                auto i = std::find_if(cache.begin(), cache.end(), [&](const auto& e){return e.first == matcher;});
                 if(i == cache.end()){
                     cache.push_back(std::make_pair(
-                            r.get(),
-                            r->matcher_->preprocess(this->state_stack.back().capture_groups)
+                            matcher,
+                            matcher->preprocess(this->state_stack.back().capture_groups)
                         ));
                     matcher = cache.back().second.get();
                 }else{
                     matcher = i->second.get();
                 }
-            }else{
-                matcher = r->matcher_.get();
             }
 
             auto m = matcher->match(view, line_begin);

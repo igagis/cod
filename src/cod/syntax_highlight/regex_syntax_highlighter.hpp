@@ -151,7 +151,7 @@ private:
         std::reference_wrapper<const regex_syntax_highlighter_model::state> state;
         std::vector<std::string> capture_groups;
         std::vector<std::pair<
-                const regex_syntax_highlighter_model::rule*,
+                const regex_syntax_highlighter_model::matcher*,
                 std::shared_ptr<const regex_syntax_highlighter_model::matcher>
             >> preprocessed_rules_cache;
     };
