@@ -109,8 +109,12 @@ public:
 
     std::vector<line_span> highlight(std::u32string_view str)override;
 
-private:    
-    std::vector<std::reference_wrapper<const regex_syntax_highlighter_model::state>> state_stack;
+private:
+    struct state_frame{
+        std::reference_wrapper<const regex_syntax_highlighter_model::state> state;
+        std::vector<std::string> capture_groups;
+    };
+    std::vector<state_frame> state_stack;
 };
 
 }

@@ -300,7 +300,11 @@ void regex_syntax_highlighter::reset(){
     this->state_stack.clear();
     ASSERT(this->model)
     ASSERT(!this->model->states.empty());
-    this->state_stack.push_back(*this->model->states.front());
+    this->state_stack.push_back(
+            state_frame{
+                .state = *this->model->states.front()
+            }
+        );
 }
 
 std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view str){
@@ -309,7 +313,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
     // start with one span of length 0
     ret.push_back(line_span{
         .length = 0,
-        .attrs = this->state_stack.back().get().style
+        .attrs = this->state_stack.back().state.get().style
     });
 
     bool line_begin = true;
@@ -325,7 +329,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
         // go through all rules of the current state to find the match closest to current
         // position in the text line
         ASSERT(!this->state_stack.empty())
-        for(const auto& r : this->state_stack.back().get().rules){
+        for(const auto& r : this->state_stack.back().state.get().rules){
             auto m = r->match(view, line_begin);
 
             if(m.begin < match.begin){
@@ -358,7 +362,11 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
             switch(op.type_){
                 case regex_syntax_highlighter_model::rule::operation::type::push:
                     ASSERT(op.state_to_push)
-                    this->state_stack.push_back(*op.state_to_push);
+                    this->state_stack.push_back(
+                            state_frame{
+                                .state = *op.state_to_push
+                            }
+                        );
                     break;
                 case regex_syntax_highlighter_model::rule::operation::type::pop:
                     // we must not pop the initial state, so check that more than one state is currently in the stack
@@ -384,7 +392,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
         if(match_rule->style){
             style = match_rule->style;
         }else{
-            style = this->state_stack.back().get().style;
+            style = this->state_stack.back().state.get().style;
         }
 
         if(ret.back().attrs != style){
@@ -397,10 +405,10 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
         }
 
         if(!view.empty()){
-            if(ret.back().attrs != this->state_stack.back().get().style){
+            if(ret.back().attrs != this->state_stack.back().state.get().style){
                 ret.push_back(line_span{
                     .length = 0,
-                    .attrs = this->state_stack.back().get().style
+                    .attrs = this->state_stack.back().state.get().style
                 });
             }
         }
