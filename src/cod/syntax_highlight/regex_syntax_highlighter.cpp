@@ -177,6 +177,18 @@ regex_syntax_highlighter_model::regex_rule::match(
     }
 
     ASSERT(!m.empty())
+
+    std::vector<std::string> capture_groups;
+
+    ASSERT(m.size() >= 1)
+    for(size_t i = 1; i != m.size(); ++i){
+        if(!m[i].matched){
+            capture_groups.push_back(std::string());
+        }else{
+            capture_groups.push_back(std::string(m[i].first, m[i].second));
+        }
+    }
+
     return match_result{
         .begin = size_t(std::distance(str.cbegin(), m[0].first)),
         .end = size_t(std::distance(str.cbegin(), m[0].second))
@@ -364,7 +376,8 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
                     ASSERT(op.state_to_push)
                     this->state_stack.push_back(
                             state_frame{
-                                .state = *op.state_to_push
+                                .state = *op.state_to_push,
+                                .capture_groups = std::move(match.capture_groups)
                             }
                         );
                     break;

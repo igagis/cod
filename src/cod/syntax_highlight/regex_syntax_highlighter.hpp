@@ -42,6 +42,8 @@ public:
             size_t begin;
             size_t end;
 
+            std::vector<std::string> capture_groups;
+
             size_t size()const{
                 return end - begin;
             }
