@@ -35,16 +35,9 @@ public:
 
     struct state;
 
-    struct rule{
-        const bool is_preprocessed;
-
-    protected:
-        rule(bool is_preprocessed = false) :
-                is_preprocessed(is_preprocessed)
-        {}
-
+    class matcher{
     public:
-        virtual ~rule(){}
+        virtual ~matcher(){}
 
         struct match_result{
             size_t begin;
@@ -57,8 +50,19 @@ public:
             }
         };
         virtual match_result match(std::u32string_view str, bool line_begin)const = 0;
+    };
 
-        virtual std::shared_ptr<const rule> preprocess(utki::span<const std::string> capture_groups)const{
+    struct rule : public matcher{
+        const bool is_preprocessed;
+
+    protected:
+        rule(bool is_preprocessed = false) :
+                is_preprocessed(is_preprocessed)
+        {}
+
+    public:
+
+        virtual std::shared_ptr<const matcher> preprocess(utki::span<const std::string> capture_groups)const{
             return nullptr;
         }
 
@@ -112,7 +116,7 @@ public:
             return {};
         }
 
-        std::shared_ptr<const rule> preprocess(utki::span<const std::string> capture_groups)const override;
+        std::shared_ptr<const matcher> preprocess(utki::span<const std::string> capture_groups)const override;
     };
 
     struct state{
@@ -148,7 +152,7 @@ private:
         std::vector<std::string> capture_groups;
         std::vector<std::pair<
                 const regex_syntax_highlighter_model::rule*,
-                std::shared_ptr<const regex_syntax_highlighter_model::rule>
+                std::shared_ptr<const regex_syntax_highlighter_model::matcher>
             >> preprocessed_rules_cache;
     };
     std::vector<state_frame> state_stack;

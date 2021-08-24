@@ -342,7 +342,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
         // position in the text line
         ASSERT(!this->state_stack.empty())
         for(const auto& r : this->state_stack.back().state.get().rules){
-            const regex_syntax_highlighter_model::rule* rule;
+            const regex_syntax_highlighter_model::matcher* matcher;
             if(r->is_preprocessed){
                 auto& cache = this->state_stack.back().preprocessed_rules_cache;
                 auto i = std::find_if(cache.begin(), cache.end(), [&](const auto& e){return e.first == r.get();});
@@ -351,19 +351,19 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
                             r.get(),
                             r->preprocess(this->state_stack.back().capture_groups)
                         ));
-                    rule = cache.back().second.get();
+                    matcher = cache.back().second.get();
                 }else{
-                    rule = i->second.get();
+                    matcher = i->second.get();
                 }
             }else{
-                rule = r.get();
+                matcher = r.get();
             }
 
-            auto m = rule->match(view, line_begin);
+            auto m = matcher->match(view, line_begin);
 
             if(m.begin < match.begin){
                 match = m;
-                match_rule = rule;
+                match_rule = r.get();
             }
 
             if(match.begin == 0){
@@ -449,7 +449,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
     return ret;
 }
 
-std::shared_ptr<const regex_syntax_highlighter_model::rule>
+std::shared_ptr<const regex_syntax_highlighter_model::matcher>
 regex_syntax_highlighter_model::ppregex_rule::preprocess(utki::span<const std::string> capture_groups)const
 {
     // TODO:
