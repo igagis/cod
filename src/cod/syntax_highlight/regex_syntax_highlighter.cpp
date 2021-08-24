@@ -457,6 +457,8 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
 regex_syntax_highlighter_model::ppregex_matcher::ppregex_matcher(std::string_view regex_str) :
         matcher(true) // true = preprocessed
 {
+    // prepare preprocessed regex model
+
     utki::string_parser p(regex_str);
 
     std::string str;
