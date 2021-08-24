@@ -179,14 +179,20 @@ regex_syntax_highlighter_model::regex_matcher::match(
 
     ASSERT(!m.empty())
 
-    std::vector<std::u32string> capture_groups;
+    std::vector<match_result::capture_group> capture_groups;
 
     ASSERT(m.size() >= 1)
     for(size_t i = 1; i != m.size(); ++i){
         if(!m[i].matched){
-            capture_groups.push_back(std::u32string());
+            capture_groups.push_back(match_result::capture_group{
+                    .str = std::u32string(),
+                    .gap = 0
+                });
         }else{
-            capture_groups.push_back(std::u32string(m[i].first, m[i].second));
+            capture_groups.push_back(match_result::capture_group{
+                    .str = std::u32string(m[i].first, m[i].second),
+                    .gap = 0
+                });
         }
     }
 
@@ -514,14 +520,14 @@ regex_syntax_highlighter_model::ppregex_matcher::ppregex_matcher(std::string_vie
 }
 
 std::shared_ptr<const regex_syntax_highlighter_model::matcher>
-regex_syntax_highlighter_model::ppregex_matcher::preprocess(utki::span<const std::u32string> capture_groups)const
+regex_syntax_highlighter_model::ppregex_matcher::preprocess(utki::span<const match_result::capture_group> capture_groups)const
 {
     std::u32string regex_str;
     for(const auto& p : this->regex_parts){
         regex_str.append(p.str);
 
         if(p.group_num < capture_groups.size()){
-            regex_str.append(capture_groups[p.group_num]);
+            regex_str.append(capture_groups[p.group_num].str);
         }
     }
 

@@ -45,7 +45,7 @@ rules{
         regex{"<(\w*)\s"}
         push{text}
         push{attrs}
-        style{angle_bracket}
+        style{angle_bracket tag}
     }
 
     closing_tag{
