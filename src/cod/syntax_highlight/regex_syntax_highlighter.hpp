@@ -94,25 +94,6 @@ public:
         static parse_result parse(const treeml::forest& spec);
     };
 
-    // this struct is only used when parsing highlighter rules
-    struct parsing_context{
-        std::map<std::string, std::shared_ptr<font_style>> styles;
-        std::map<std::string, rule::parse_result> rules;
-
-        // needs to preserve order
-        std::vector<std::pair<std::string, state::parse_result>> states;
-
-        std::string initial_state;
-
-        void parse_styles(const treeml::forest& styles);
-        void parse_rules(const treeml::forest& desc);
-        void parse_states(const treeml::forest& desc);
-
-        std::shared_ptr<font_style> get_style(const std::string& name);
-        std::shared_ptr<state> get_state(const std::string& name);
-        std::shared_ptr<rule> get_rule(const std::string& name);
-    };
-
     // need to keep strong pointers to all states, because rules hold only plain pointer to the state_to_push
     std::vector<std::shared_ptr<const state>> states;
 };

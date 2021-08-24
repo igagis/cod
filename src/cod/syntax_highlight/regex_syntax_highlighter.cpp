@@ -62,86 +62,98 @@ std::shared_ptr<font_style> parse_style(const treeml::forest& style){
 }
 }
 
-void regex_syntax_highlighter_model::parsing_context::parse_styles(const treeml::forest& styles){
-    for(const auto& s : styles){
-        if(this->styles.find(s.value.to_string()) != this->styles.end()){
+namespace{
+struct parsing_context{
+    std::map<std::string, std::shared_ptr<font_style>> styles;
+    std::map<std::string, regex_syntax_highlighter_model::rule::parse_result> rules;
+
+    // needs to preserve order
+    std::vector<std::pair<std::string, regex_syntax_highlighter_model::state::parse_result>> states;
+
+    std::string initial_state;
+
+    void parse_styles(const treeml::forest& styles){
+        for(const auto& s : styles){
+            if(this->styles.find(s.value.to_string()) != this->styles.end()){
+                std::stringstream ss;
+                ss << "style with name '" << s.value.to_string() << "' already exists";
+                throw std::invalid_argument(ss.str());
+            }
+
+            this->styles.insert(std::make_pair(s.value.to_string(), parse_style(s.children)));
+        }
+    }
+
+    void parse_rules(const treeml::forest& desc){
+        for(const auto& m : desc){
+            if(this->rules.find(m.value.to_string()) != this->rules.end()){
+                std::stringstream ss;
+                ss << "rule with name '" << m.value.to_string() << "' already exists";
+                throw std::invalid_argument(ss.str());
+            }
+
+            this->rules.insert(std::make_pair(
+                    m.value.to_string(),
+                    regex_syntax_highlighter_model::rule::parse(m.children)
+                ));
+        }
+    }
+
+    void parse_states(const treeml::forest& desc){
+        if(!desc.empty()){
+            this->initial_state = desc.front().value.to_string();
+        }
+        for(const auto& s : desc){
+            if(std::find_if(
+                    this->states.begin(),
+                    this->states.end(),
+                    [&](const auto& v){return v.first == s.value.to_string();}
+                ) != this->states.end())
+            {
+                std::stringstream ss;
+                ss << "state with name '" << s.value.to_string() << "' already exists";
+                throw std::invalid_argument(ss.str());
+            }
+
+            this->states.push_back(std::make_pair(
+                    s.value.to_string(),
+                    regex_syntax_highlighter_model::state::parse(s.children)
+                ));
+        }
+    }
+
+    std::shared_ptr<font_style> get_style(const std::string& name){
+        auto i = this->styles.find(name);
+        if(i == this->styles.end()){
             std::stringstream ss;
-            ss << "style with name '" << s.value.to_string() << "' already exists";
+            ss << "style '" << name << "' not found";
             throw std::invalid_argument(ss.str());
         }
-
-        this->styles.insert(std::make_pair(s.value.to_string(), parse_style(s.children)));
+        ASSERT(i->second)
+        return i->second;
     }
-}
 
-void regex_syntax_highlighter_model::parsing_context::parse_rules(const treeml::forest& desc){
-    for(const auto& m : desc){
-        if(this->rules.find(m.value.to_string()) != this->rules.end()){
+    std::shared_ptr<regex_syntax_highlighter_model::state> get_state(const std::string& name){
+        auto i = std::find_if(this->states.begin(), this->states.end(), [&](const auto& v){return v.first == name;});
+        if(i == this->states.end()){
             std::stringstream ss;
-            ss << "rule with name '" << m.value.to_string() << "' already exists";
+            ss << "state not found: " << name;
             throw std::invalid_argument(ss.str());
         }
-
-        this->rules.insert(std::make_pair(m.value.to_string(), rule::parse(m.children)));
+        ASSERT(i->second.state_)
+        return i->second.state_;
     }
-}
 
-void regex_syntax_highlighter_model::parsing_context::parse_states(const treeml::forest& desc){
-    if(!desc.empty()){
-        this->initial_state = desc.front().value.to_string();
-    }
-    for(const auto& s : desc){
-        if(std::find_if(
-                this->states.begin(),
-                this->states.end(),
-                [&](const auto& v){return v.first == s.value.to_string();}
-            ) != this->states.end())
-        {
+    std::shared_ptr<regex_syntax_highlighter_model::rule> get_rule(const std::string& name){
+        auto i = this->rules.find(name);
+        if(i == this->rules.end()){
             std::stringstream ss;
-            ss << "state with name '" << s.value.to_string() << "' already exists";
+            ss << "rule '" << name << "' not found";
             throw std::invalid_argument(ss.str());
         }
-
-        this->states.push_back(std::make_pair(s.value.to_string(), state::parse(s.children)));
+        return i->second.rule_;
     }
-}
-
-std::shared_ptr<font_style>
-regex_syntax_highlighter_model::parsing_context::get_style(const std::string& name)
-{
-    auto i = this->styles.find(name);
-    if(i == this->styles.end()){
-        std::stringstream ss;
-        ss << "style '" << name << "' not found";
-        throw std::invalid_argument(ss.str());
-    }
-    ASSERT(i->second)
-    return i->second;
-}
-
-std::shared_ptr<regex_syntax_highlighter_model::state>
-regex_syntax_highlighter_model::parsing_context::get_state(const std::string& name)
-{
-    auto i = std::find_if(this->states.begin(), this->states.end(), [&](const auto& v){return v.first == name;});
-    if(i == this->states.end()){
-        std::stringstream ss;
-        ss << "state not found: " << name;
-        throw std::invalid_argument(ss.str());
-    }
-    ASSERT(i->second.state_)
-    return i->second.state_;
-}
-
-std::shared_ptr<regex_syntax_highlighter_model::rule>
-regex_syntax_highlighter_model::parsing_context::get_rule(const std::string& name)
-{
-    auto i = this->rules.find(name);
-    if(i == this->rules.end()){
-        std::stringstream ss;
-        ss << "rule '" << name << "' not found";
-        throw std::invalid_argument(ss.str());
-    }
-    return i->second.rule_;
+};
 }
 
 regex_syntax_highlighter_model::rule::match_result
