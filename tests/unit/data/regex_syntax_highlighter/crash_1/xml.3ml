@@ -27,12 +27,12 @@ rules{
     }
 
     closing_quote{
-//        regex{"\""}
+        regex{"\""}
         pop
     }
 
     escape_sequence{
-//        regex{"\\[rnt\"]"}
+        regex{"\\[rnt\"]"}
         style{quoted_string}
     }
 }

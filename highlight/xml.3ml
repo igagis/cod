@@ -101,12 +101,11 @@ rules{
         style{attr_doublequote}
         pop
     }
-/*
+
     bla_bla{
-        ppregex{"bla(qwf)f%(234)e"}
+        ppregex{"bla(qwf)f${1}e"}
         push{text}
     }
-*/
 }
 
 states{

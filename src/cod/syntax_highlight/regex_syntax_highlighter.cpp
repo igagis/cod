@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "regex_syntax_highlighter.hpp"
 
 #include <utki/linq.hpp>
+#include <utki/string.hpp>
 
 #include <treeml/crawler.hpp>
 
@@ -206,6 +207,10 @@ regex_syntax_highlighter_model::rule::parse_result regex_syntax_highlighter_mode
             ret.rule_->matcher_ = std::make_shared<regex_syntax_highlighter_model::regex_matcher>(
                     utki::to_utf32(treeml::crawler(n.children).get().value.to_string())
                 );
+        }else if(n.value == "ppregex"){
+            ret.rule_->matcher_ = std::make_shared<regex_syntax_highlighter_model::ppregex_matcher>(
+                    treeml::crawler(n.children).get().value.to_string()
+                );
         }else if(n.value == "push"){
             ret.operations.push_back({
                 operation::type::push,
@@ -222,6 +227,8 @@ regex_syntax_highlighter_model::rule::parse_result regex_syntax_highlighter_mode
             throw std::invalid_argument(ss.str());
         }
     }
+
+    ASSERT(ret.rule_->matcher_, [&](auto&o){o << treeml::to_string(desc);})
 
     return ret;
 }
@@ -445,6 +452,55 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
     }
 
     return ret;
+}
+
+regex_syntax_highlighter_model::ppregex_matcher::ppregex_matcher(std::string_view regex_str) :
+        matcher(true) // true = preprocessed
+{
+    utki::string_parser p(regex_str);
+
+    std::string str;
+    while(true){
+        auto w = p.read_chars_until('$');
+
+        str.append(w);
+
+        if(p.empty()){
+            this->regex_tail = utki::to_utf32(str);
+            break;
+        }
+
+        ASSERT(!p.empty())
+        ASSERT(p.peek_char() == '$')
+        p.read_char(); // skip '$'
+
+        switch(p.peek_char()){
+            case '$':
+                // escaped dollar sign
+                p.read_char(); // skip second '$'
+                str.append("$");
+                continue;
+            case '{':
+                // capture group reference
+                p.read_char(); // skip '{'
+                {
+                    auto num = p.read_number<unsigned>();
+                    if(p.empty() || p.read_char() != '}'){
+                        throw std::invalid_argument("preprocessed regex capture group reference syntax error: missing closing '}'");
+                    }
+                    this->regex_parts.push_back(regex_part{
+                        .str = utki::to_utf32(str),
+                        .group_num = num
+                    });
+                    str.clear();
+                }
+                break;
+            default:
+                // append skipped '$'
+                str.append("$");
+                continue;
+        }
+    }
 }
 
 std::shared_ptr<const regex_syntax_highlighter_model::matcher>

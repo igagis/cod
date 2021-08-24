@@ -102,13 +102,15 @@ public:
 
     // preprocessed regex matcher
     class ppregex_matcher : public matcher{
-        std::u32string regex_str;
+        struct regex_part{
+            std::u32string str;
+            unsigned group_num;
+        };
+        std::vector<regex_part> regex_parts;
+        std::u32string regex_tail;
 
     public:
-        ppregex_matcher(std::u32string&& regex_str) :
-                matcher(true), // true = preprocessed
-                regex_str(std::move(regex_str))
-        {}
+        ppregex_matcher(std::string_view regex);
 
         match_result match(std::u32string_view str, bool line_begin)const override{
             // this method is not supposed to be ever called
