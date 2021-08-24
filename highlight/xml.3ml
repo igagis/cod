@@ -103,8 +103,7 @@ rules{
     }
 /*
     bla_bla{
-        preprocess
-        regex{"bla(qwf)f%(234)e"}
+        ppregex{"bla(qwf)f%(234)e"}
         push{text}
     }
 */

@@ -36,6 +36,14 @@ public:
     struct state;
 
     struct rule{
+        const bool is_preprocessed;
+
+    protected:
+        rule(bool is_preprocessed = false) :
+                is_preprocessed(is_preprocessed)
+        {}
+
+    public:
         virtual ~rule(){}
 
         struct match_result{
@@ -49,6 +57,10 @@ public:
             }
         };
         virtual match_result match(std::u32string_view str, bool line_begin)const = 0;
+
+        virtual std::shared_ptr<const rule> preprocess(utki::span<const std::string> capture_groups)const{
+            return nullptr;
+        }
 
         struct operation{
             enum class type{
@@ -84,6 +96,25 @@ public:
         match_result match(std::u32string_view str, bool line_begin)const override;
     };
 
+    // preprocessed regex rule
+    class ppregex_rule : public rule{
+        std::u32string regex_str;
+
+    public:
+        ppregex_rule(std::u32string&& regex_str) :
+                rule(true), // true = preprocessed
+                regex_str(std::move(regex_str))
+        {}
+
+        match_result match(std::u32string_view str, bool line_begin)const override{
+            // this method is not supposed to be ever called
+            ASSERT(false)
+            return {};
+        }
+
+        std::shared_ptr<const rule> preprocess(utki::span<const std::string> capture_groups)const override;
+    };
+
     struct state{
         std::vector<std::shared_ptr<const rule>> rules;
         std::shared_ptr<const font_style> style;
@@ -115,6 +146,10 @@ private:
     struct state_frame{
         std::reference_wrapper<const regex_syntax_highlighter_model::state> state;
         std::vector<std::string> capture_groups;
+        std::vector<std::pair<
+                const regex_syntax_highlighter_model::rule*,
+                std::shared_ptr<const regex_syntax_highlighter_model::rule>
+            >> preprocessed_rules_cache;
     };
     std::vector<state_frame> state_stack;
 };
