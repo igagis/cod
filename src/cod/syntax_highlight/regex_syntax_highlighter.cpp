@@ -229,7 +229,9 @@ regex_syntax_highlighter_model::rule::parse_result regex_syntax_highlighter_mode
         }
     }
 
-    ASSERT(ret.rule_->matcher_, [&](auto&o){o << treeml::to_string(desc);})
+    if(!ret.rule_->matcher_){
+        throw std::invalid_argument("rule does not define any mtcher");
+    }
 
     return ret;
 }
@@ -488,6 +490,11 @@ regex_syntax_highlighter_model::ppregex_matcher::ppregex_matcher(std::string_vie
                 p.read_char(); // skip '{'
                 {
                     auto num = p.read_number<unsigned>();
+                    if(num == 0){
+                        throw std::invalid_argument("invalid capture group number: 0");
+                    }
+                    ASSERT(num >= 1)
+                    --num;
                     if(p.empty() || p.read_char() != '}'){
                         throw std::invalid_argument("preprocessed regex capture group reference syntax error: missing closing '}'");
                     }
@@ -511,11 +518,11 @@ regex_syntax_highlighter_model::ppregex_matcher::preprocess(utki::span<const std
 {
     std::u32string regex_str;
     for(const auto& p : this->regex_parts){
-        if(p.group_num >= capture_groups.size()){
-            throw std::logic_error("preprocessed matcher references absent capture group");
-        }
         regex_str.append(p.str);
-        regex_str.append(capture_groups[p.group_num]);
+
+        if(p.group_num < capture_groups.size()){
+            regex_str.append(capture_groups[p.group_num]);
+        }
     }
 
     regex_str.append(this->regex_tail);
