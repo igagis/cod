@@ -58,7 +58,7 @@ tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
         "correctness",
         {
             {"<", "(0)<"},
-            {"<tag>bla bla</tag>", "(0)<(1)tag>bla bla(0)<(1)/tag>"},
+            {"<tag>bla bla</tag>", "(0)<(1)tag(0)>(2)bla bla(0)</(1)tag(0)>"},
         },
         [](const auto& p){
             cod::regex_syntax_highlighter highlighter(
