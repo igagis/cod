@@ -491,7 +491,7 @@ regex_syntax_highlighter_model::ppregex_matcher::ppregex_matcher(std::string_vie
                 {
                     auto num = p.read_number<unsigned>();
                     if(num == 0){
-                        throw std::invalid_argument("invalid capture group number: 0");
+                        throw std::invalid_argument("invalid capture group number: 0, numbering starts from 1");
                     }
                     ASSERT(num >= 1)
                     --num;
