@@ -50,8 +50,8 @@ public:
             size_t size;
 
             struct capture_group{
-                std::u32string str;
-                size_t gap;
+                size_t offset;
+                size_t size;
             };
             std::vector<capture_group> capture_groups;
         };

@@ -185,13 +185,13 @@ regex_syntax_highlighter_model::regex_matcher::match(
     for(size_t i = 1; i != m.size(); ++i){
         if(!m[i].matched){
             capture_groups.push_back(match_result::capture_group{
-                    .str = std::u32string(),
-                    .gap = 0
+                    offset: size_t(std::distance(m[0].first, m[0].second)),
+                    size: 0
                 });
         }else{
             capture_groups.push_back(match_result::capture_group{
-                    .str = std::u32string(m[i].first, m[i].second),
-                    .gap = 0
+                    offset: size_t(std::distance(m[0].first, m[i].first)),
+                    size: size_t(std::distance(m[i].first, m[i].second))
                 });
         }
     }
@@ -407,8 +407,11 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
                     ASSERT(op.state_to_push)
                     this->state_stack.push_back(
                             state_frame{
-                                .state = *op.state_to_push,
-                                .capture_groups = utki::linq(match.capture_groups).select([](const auto& p){return p.str;}).get()
+                                state: *op.state_to_push,
+                                capture_groups: utki::linq(match.capture_groups)
+                                        .select([&](const auto& p){
+                                            return std::u32string(view.substr(p.offset, p.size));
+                                        }).get()
                             }
                         );
                     break;
