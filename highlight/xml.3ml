@@ -48,6 +48,12 @@ rules{
         style{angle_bracket tag}
     }
 
+    tag_no_attrs{
+        regex{"<(\w*)>"}
+        push{text}
+        style{angle_bracket tag}
+    }
+
     closing_tag{
         ppregex{"</${1}>"}
         style{angle_bracket}
@@ -127,7 +133,7 @@ rules{
 states{
     text{
         style{text}
-        rules{closing_tag tag}
+        rules{closing_tag tag_no_attrs tag}
     }
 /*
     tag_name{

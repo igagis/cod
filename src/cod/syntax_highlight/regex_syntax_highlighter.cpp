@@ -433,7 +433,6 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
         }
 
         auto size = match.size;
-        view = view.substr(size);
 
         std::shared_ptr<const font_style> style;
         if(match_rule->style){
@@ -450,6 +449,8 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
         }else{
             ret.back().length += size;
         }
+
+        view = view.substr(size);
 
         if(!view.empty()){
             if(ret.back().style != this->state_stack.back().state.get().style){
