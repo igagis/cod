@@ -51,13 +51,13 @@ public:
 
             struct capture_group{
                 size_t offset;
-                size_t size;
+                std::u32string str;
             };
             std::vector<capture_group> capture_groups;
         };
         virtual match_result match(std::u32string_view str, bool line_begin)const = 0;
 
-        virtual std::shared_ptr<const matcher> preprocess(utki::span<const std::u32string> capture_groups)const{
+        virtual std::shared_ptr<const matcher> preprocess(utki::span<const match_result::capture_group> capture_groups)const{
             return nullptr;
         }
     };
@@ -118,7 +118,7 @@ public:
             return {};
         }
 
-        std::shared_ptr<const matcher> preprocess(utki::span<const std::u32string> capture_groups)const override;
+        std::shared_ptr<const matcher> preprocess(utki::span<const match_result::capture_group> capture_groups)const override;
     };
 
     struct state{
@@ -151,7 +151,7 @@ public:
 private:
     struct state_frame{
         std::reference_wrapper<const regex_syntax_highlighter_model::state> state;
-        std::vector<std::u32string> capture_groups;
+        std::vector<regex_syntax_highlighter_model::matcher::match_result::capture_group> capture_groups;
         std::vector<std::pair<
                 const regex_syntax_highlighter_model::matcher*,
                 std::shared_ptr<const regex_syntax_highlighter_model::matcher>

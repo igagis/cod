@@ -186,12 +186,12 @@ regex_syntax_highlighter_model::regex_matcher::match(
         if(!m[i].matched){
             capture_groups.push_back(match_result::capture_group{
                     offset: size_t(std::distance(m[0].first, m[0].second)),
-                    size: 0
+                    str: std::u32string()
                 });
         }else{
             capture_groups.push_back(match_result::capture_group{
                     offset: size_t(std::distance(m[0].first, m[i].first)),
-                    size: size_t(std::distance(m[i].first, m[i].second))
+                    str: std::u32string(m[i].first, m[i].second)
                 });
         }
     }
@@ -410,10 +410,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
                     this->state_stack.push_back(
                             state_frame{
                                 state: *op.state_to_push,
-                                capture_groups: utki::linq(std::move(match.capture_groups))
-                                        .select([&](const auto& p){
-                                            return std::u32string(view.substr(p.offset, p.size));
-                                        }).get()
+                                capture_groups: std::move(match.capture_groups)
                             }
                         );
                     break;
@@ -526,14 +523,14 @@ regex_syntax_highlighter_model::ppregex_matcher::ppregex_matcher(std::string_vie
 }
 
 std::shared_ptr<const regex_syntax_highlighter_model::matcher>
-regex_syntax_highlighter_model::ppregex_matcher::preprocess(utki::span<const std::u32string> capture_groups)const
+regex_syntax_highlighter_model::ppregex_matcher::preprocess(utki::span<const match_result::capture_group> capture_groups)const
 {
     std::u32string regex_str;
     for(const auto& p : this->regex_parts){
         regex_str.append(p.str);
 
         if(p.group_num < capture_groups.size()){
-            regex_str.append(capture_groups[p.group_num]);
+            regex_str.append(capture_groups[p.group_num].str);
         }
     }
 
