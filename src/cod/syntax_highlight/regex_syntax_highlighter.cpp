@@ -408,7 +408,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
                     this->state_stack.push_back(
                             state_frame{
                                 state: *op.state_to_push,
-                                capture_groups: utki::linq(match.capture_groups)
+                                capture_groups: utki::linq(std::move(match.capture_groups))
                                         .select([&](const auto& p){
                                             return std::u32string(view.substr(p.offset, p.size));
                                         }).get()
