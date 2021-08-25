@@ -336,14 +336,53 @@ void regex_syntax_highlighter::reset(){
         );
 }
 
-std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view str){
-    std::vector<line_span> ret;
+namespace{
+class line_span_container{
+    std::vector<line_span> spans;
+public:
+    line_span_container(std::shared_ptr<const font_style> initial_style) :
+            spans{line_span{
+                length: 0,
+                style: initial_style
+            }}
+    {}
 
-    // start with one span of length 0
-    ret.push_back(line_span{
-        .length = 0,
-        .style = this->state_stack.back().state.get().style
-    });
+    void push(const std::shared_ptr<const font_style>& style, size_t length){
+        ASSERT(!this->spans.empty())
+
+        auto& last_span = this->spans.back();
+
+        if(last_span.style == style){
+            last_span.length += length;
+            return;
+        }
+
+        if(last_span.length == 0){
+            last_span.style = style;
+            last_span.length = length;
+            return;
+        }
+
+        this->spans.push_back(line_span{
+            length: length,
+            style: style
+        });
+    }
+
+    void push(size_t length){
+        ASSERT(!this->spans.empty())
+        auto& last_span = this->spans.back();
+        last_span.length += length;
+    }
+
+    std::vector<line_span> reset(){
+        return std::move(this->spans);
+    }
+};
+}
+
+std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view str){
+    line_span_container spans(this->state_stack.back().state.get().style);
 
     bool line_begin = true;
     std::u32string_view view(str);
@@ -390,8 +429,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
 
         if(!match_rule){
             // no rule has matched, extend current span to the end of the line an exit
-            ASSERT(!ret.empty())
-            ret.back().length += view.size();
+            spans.push(view.size());
             break;
         }
 
@@ -399,7 +437,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
 
         if(match.begin != 0){
             // extend current span and move the current position to the beginning of the match
-            ret.back().length += match.begin;
+            spans.push(match.begin);
             view = view.substr(match.begin);
         }
 
@@ -426,11 +464,6 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
             }
         }
 
-        ASSERT(!ret.empty())
-        if(ret.back().length == 0){
-            ret.pop_back();
-        }
-
         auto size = match.size;
 
         std::shared_ptr<const font_style> style;
@@ -440,30 +473,18 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
             style = this->state_stack.back().state.get().style;
         }
 
-        if(ret.back().style != style){
-            ret.push_back(line_span{
-                length: size,
-                style: style
-            });
-        }else{
-            ret.back().length += size;
-        }
+        spans.push(style, size);
 
         view = view.substr(size);
 
         if(!view.empty()){
-            if(ret.back().style != this->state_stack.back().state.get().style){
-                ret.push_back(line_span{
-                    length: 0,
-                    style: this->state_stack.back().state.get().style
-                });
-            }
+            spans.push(this->state_stack.back().state.get().style, 0);
         }
 
         line_begin = false;
     }
 
-    return ret;
+    return spans.reset();
 }
 
 regex_syntax_highlighter_model::ppregex_matcher::ppregex_matcher(std::string_view regex_str) :
