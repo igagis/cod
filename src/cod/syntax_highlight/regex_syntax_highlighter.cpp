@@ -123,7 +123,7 @@ struct parsing_context{
         }
     }
 
-    std::shared_ptr<font_style> get_style(const std::string& name){
+    std::shared_ptr<const font_style> get_style(const std::string& name){
         auto i = this->styles.find(name);
         if(i == this->styles.end()){
             std::stringstream ss;
@@ -209,7 +209,9 @@ regex_syntax_highlighter_model::rule::parse_result regex_syntax_highlighter_mode
 
     for(const auto& n : desc){
         if(n.value == "style"){
-            ret.style = treeml::crawler(n.children).get().value.to_string();
+            ret.styles = utki::linq(n.children).select([](const auto& p){
+                return p.value.to_string();
+            }).get();
         }else if(n.value == "regex"){
             ret.rule_->matcher_ = std::make_shared<regex_syntax_highlighter_model::regex_matcher>(
                     utki::to_utf32(treeml::crawler(n.children).get().value.to_string())
@@ -300,9 +302,9 @@ regex_syntax_highlighter_model::regex_syntax_highlighter_model(const treeml::for
         const auto& parsed = n.second;
 
         // rule can have no style, then it inherits style from pushed state
-        if(!parsed.style.empty()){
-            rule_.style = c.get_style(parsed.style);
-        }
+        rule_.styles = utki::linq(parsed.styles).select([&](const auto& p){
+            return c.get_style(p);
+        }).get();
 
         for(const auto& o : parsed.operations){
             auto op = std::get<rule::operation::type>(o);
@@ -435,8 +437,8 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
         auto size = match.size;
 
         std::shared_ptr<const font_style> style;
-        if(match_rule->style){
-            style = match_rule->style;
+        if(!match_rule->styles.empty()){
+            style = match_rule->styles.front();
         }else{
             style = this->state_stack.back().state.get().style;
         }

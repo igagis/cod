@@ -79,12 +79,12 @@ public:
 
         std::vector<operation> operations;
 
-        std::shared_ptr<const font_style> style;
+        std::vector<std::shared_ptr<const font_style>> styles;
 
         struct parse_result{
             std::shared_ptr<rule> rule_;
             std::vector<std::tuple<operation::type, std::string>> operations;
-            std::string style;
+            std::vector<std::string> styles;
             std::string state_to_push;
         };
         static parse_result parse(const treeml::forest& spec);
