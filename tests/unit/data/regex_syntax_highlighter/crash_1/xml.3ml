@@ -18,7 +18,7 @@ styles{
 rules{
     angle_bracket{
         regex{"[<>]{1}"}
-        style{angle_bracket}
+        styles{angle_bracket}
     }
 
     quote{
@@ -33,7 +33,7 @@ rules{
 
     escape_sequence{
         regex{"\\[rnt\"]"}
-        style{quoted_string}
+        styles{quoted_string}
     }
 }
 
