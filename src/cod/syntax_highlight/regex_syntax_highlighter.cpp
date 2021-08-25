@@ -173,7 +173,7 @@ regex_syntax_highlighter_model::regex_matcher::match(
     if(!srell::regex_search(str.begin(), str.end(), m, this->regex, regex_flags)){
         return match_result{
             .begin = str.size(),
-            .end = 0
+            .size = 1
         };
     }
 
@@ -198,7 +198,7 @@ regex_syntax_highlighter_model::regex_matcher::match(
 
     return match_result{
         .begin = size_t(std::distance(str.cbegin(), m[0].first)),
-        .end = size_t(std::distance(str.cbegin(), m[0].second)),
+        .size = size_t(std::distance(m[0].first, m[0].second)),
         .capture_groups = std::move(capture_groups)
     };
 }
@@ -349,7 +349,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
     while(!view.empty()){
         regex_syntax_highlighter_model::matcher::match_result match{
             .begin = view.size(),
-            .end = 0
+            .size = 1
         };
         const regex_syntax_highlighter_model::rule* match_rule = nullptr;
 
@@ -429,7 +429,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
             ret.pop_back();
         }
 
-        auto size = match.size();
+        auto size = match.size;
         view = view.substr(size);
 
         std::shared_ptr<const font_style> style;

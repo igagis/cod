@@ -47,17 +47,13 @@ public:
 
         struct match_result{
             size_t begin;
-            size_t end;
+            size_t size;
 
             struct capture_group{
                 std::u32string str;
                 size_t gap;
             };
             std::vector<capture_group> capture_groups;
-
-            size_t size()const{
-                return end - begin;
-            }
         };
         virtual match_result match(std::u32string_view str, bool line_begin)const = 0;
 
