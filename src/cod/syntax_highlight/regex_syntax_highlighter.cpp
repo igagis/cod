@@ -466,14 +466,12 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
 
         auto size = match.size;
 
-        std::shared_ptr<const font_style> style;
-        if(!match_rule->styles.empty()){
-            style = match_rule->styles.front();
+        if(match_rule->styles.empty()){
+            spans.push(this->state_stack.back().state.get().style, size);
         }else{
-            style = this->state_stack.back().state.get().style;
+            auto style = match_rule->styles.front(); // unmatched style
+            spans.push(style, size);
         }
-
-        spans.push(style, size);
 
         view = view.substr(size);
 
