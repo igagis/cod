@@ -208,7 +208,7 @@ regex_syntax_highlighter_model::rule::parse_result regex_syntax_highlighter_mode
     ret.rule_ = std::make_shared<rule>();
 
     for(const auto& n : desc){
-        if(n.value == "style"){
+        if(n.value == "styles"){
             ret.styles = utki::linq(n.children).select([](const auto& p){
                 return p.value.to_string();
             }).get();
