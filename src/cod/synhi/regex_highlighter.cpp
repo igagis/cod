@@ -415,22 +415,24 @@ std::vector<line_span> regex_highlighter::highlight(std::u32string_view str){
             }
         }
 
+        const auto& state_style = this->state_stack.back().state.get().style;
+
         if(!match_rule){
             // no rule has matched, extend current span to the end of the line an exit early
-            spans.push(this->state_stack.back().state.get().style, view.size());
+            spans.push(state_style, view.size());
             break;
         }
 
         ASSERT(match_rule)
 
         // extend current span and move the current position to the beginning of the match
-        spans.push(this->state_stack.back().state.get().style, match.begin);
+        spans.push(state_style, match.begin);
         view = view.substr(match.begin);
 
         auto size = match.size;
 
         if(match_rule->styles.empty()){
-            spans.push(this->state_stack.back().state.get().style, size);
+            spans.push(state_style, size);
         }else{
             const auto& styles = match_rule->styles;
             ASSERT(!styles.empty())
@@ -491,7 +493,17 @@ std::vector<line_span> regex_highlighter::highlight(std::u32string_view str){
         line_begin = false;
     }
 
-    return spans.reset();
+    auto ret = spans.reset();
+
+    if(ret.empty()){
+        ASSERT(!this->state_stack.empty())
+        ret.push_back(line_span{
+            length: 0,
+            style: this->state_stack.back().state.get().style
+        });
+    }
+
+    return ret;
 }
 
 regex_highlighter_model::ppregex_matcher::ppregex_matcher(std::string_view regex_str) :

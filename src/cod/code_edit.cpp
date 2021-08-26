@@ -630,6 +630,7 @@ void code_edit::line::extend_span(size_t at_char_index, size_t by_length){
 		}
 	}
 	// extend last span if adding chars to the end of the string
+	ASSERT(!this->spans.empty())
 	this->spans.back().length += by_length;
 }
 
