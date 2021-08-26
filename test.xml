@@ -1,1 +1,7 @@
 <tag>bla bla</tag>
+<tag2>
+    <tag3 attr1="val1">
+        <tag4 />
+        <tag5/>
+    </tag3>
+</tag2>

@@ -428,7 +428,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
         }
 
         if(!match_rule){
-            // no rule has matched, extend current span to the end of the line an exit
+            // no rule has matched, extend current span to the end of the line an exit early
             spans.push(view.size());
             break;
         }
@@ -476,6 +476,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
 
         view = view.substr(size);
 
+        // apply rule operations
         for(const auto& op : match_rule->operations){
             switch(op.type_){
                 case regex_syntax_highlighter_model::rule::operation::type::push:
