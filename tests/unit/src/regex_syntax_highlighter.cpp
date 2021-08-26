@@ -2,6 +2,7 @@
 #include <tst/check.hpp>
 
 #include <utki/unicode.hpp>
+#include <utki/string.hpp>
 
 #include <papki/fs_file.hpp>
 
@@ -28,13 +29,20 @@ std::string to_markup(const std::u32string& str, utki::span<cod::line_span> span
         return i->second;
     };
 
-    std::u32string_view v(str);
-    for(const auto& s : spans){
-        tst::check_le(s.length, v.size(), SL);
+    auto lines = utki::split(std::u32string_view(str), U'\n');
+    for(auto l = lines.begin(); l != lines.end(); ++l){
+        if(l != lines.begin()){
+            ss << "\n";
+        }
+        
+        std::u32string_view v(*l);
+        for(const auto& s : spans){
+            tst::check_le(s.length, v.size(), SL);
 
-        ss << get_style_name(s.style);
-        ss << utki::to_utf8(v.substr(0, s.length));
-        v = v.substr(s.length);
+            ss << get_style_name(s.style);
+            ss << utki::to_utf8(v.substr(0, s.length));
+            v = v.substr(s.length);
+        }
     }
 
     return ss.str();
