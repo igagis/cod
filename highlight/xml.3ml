@@ -47,6 +47,11 @@ rules{
         styles{angle_bracket tag}
     }
 
+    tag_no_attrs_closed{
+        regex{"<(\w*)/>"}
+        styles{angle_bracket tag}
+    }
+
     closing_tag{
         ppregex{"</(${1})>"}
         styles{angle_bracket tag}
@@ -63,15 +68,16 @@ rules{
         regex{"/>"}
         styles{angle_bracket}
         pop
+        pop
     }
 
     attr_name{
-        regex{"[^\s]{1}"}
+        regex{"\w{1}"}
         push{attr_name}
         styles{attr_name}
     }
     attr_name_unexpected{
-        regex{"[\s>]+"}
+        regex{"[^\w]+"}
         push{error}
         styles{error}
     }
@@ -102,7 +108,12 @@ rules{
 states{
     text{
         style{text}
-        rules{closing_tag tag_no_attrs tag}
+        rules{
+            closing_tag
+            tag_no_attrs
+            tag_no_attrs_closed
+            tag
+        }
     }
 
     attrs{

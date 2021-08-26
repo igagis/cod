@@ -50,6 +50,7 @@ public:
             size_t size;
 
             struct capture_group{
+                bool matched;
                 size_t offset;
                 std::u32string str;
             };

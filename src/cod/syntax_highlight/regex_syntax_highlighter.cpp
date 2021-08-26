@@ -185,11 +185,12 @@ regex_syntax_highlighter_model::regex_matcher::match(
     for(size_t i = 1; i != m.size(); ++i){
         if(!m[i].matched){
             capture_groups.push_back(match_result::capture_group{
-                    offset: size_t(std::distance(m[0].first, m[0].second)),
-                    str: std::u32string()
+                    matched: false,
+                    offset: size_t(std::distance(m[0].first, m[0].second))
                 });
         }else{
             capture_groups.push_back(match_result::capture_group{
+                    matched: true,
                     offset: size_t(std::distance(m[0].first, m[i].first)),
                     str: std::u32string(m[i].first, m[i].second)
                 });
@@ -340,39 +341,26 @@ namespace{
 class line_span_container{
     std::vector<line_span> spans;
 public:
-    line_span_container(std::shared_ptr<const font_style> initial_style) :
-            spans{line_span{
-                length: 0,
-                style: initial_style
-            }}
-    {}
-
     void push(const std::shared_ptr<const font_style>& style, size_t length){
-        ASSERT(!this->spans.empty())
-
-        auto& last_span = this->spans.back();
-
-        if(last_span.style == style){
-            last_span.length += length;
+        if(length == 0){
             return;
         }
 
-        if(last_span.length == 0){
-            last_span.style = style;
-            last_span.length = length;
-            return;
+        if(!this->spans.empty()){
+            auto& prev = this->spans.back();
+
+            ASSERT(prev.length != 0) // we don't push spans of 0 length, so there should be no such spans
+
+            if(prev.style == style){
+                prev.length += length;
+                return;
+            }
         }
 
         this->spans.push_back(line_span{
             length: length,
             style: style
         });
-    }
-
-    void push(size_t length){
-        ASSERT(!this->spans.empty())
-        auto& last_span = this->spans.back();
-        last_span.length += length;
     }
 
     std::vector<line_span> reset(){
@@ -382,7 +370,7 @@ public:
 }
 
 std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view str){
-    line_span_container spans(this->state_stack.back().state.get().style);
+    line_span_container spans;
 
     bool line_begin = true;
     std::u32string_view view(str);
@@ -429,14 +417,14 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
 
         if(!match_rule){
             // no rule has matched, extend current span to the end of the line an exit early
-            spans.push(view.size());
+            spans.push(this->state_stack.back().state.get().style, view.size());
             break;
         }
 
         ASSERT(match_rule)
 
         // extend current span and move the current position to the beginning of the match
-        spans.push(match.begin);
+        spans.push(this->state_stack.back().state.get().style, match.begin);
         view = view.substr(match.begin);
 
         auto size = match.size;
@@ -447,31 +435,31 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
             const auto& styles = match_rule->styles;
             ASSERT(!styles.empty())
 
-            // start with the ungrouped style
-            spans.push(styles[0], 0);
+            const auto& ungrouped_style = styles[0];
 
             size_t offset = 0;
             for(size_t i = 0; i != match.capture_groups.size(); ++i){
                 const auto& g = match.capture_groups[i];
-                if(g.offset >= offset){
-                    ASSERT(g.offset + g.str.size() <= size)
-
-                    spans.push(g.offset - offset); // extend current span to start of group sub-match
-
-                    size_t group_num = i + 1;
-                    if(group_num >= styles.size()){
-                        group_num = 0;
-                    }
-                    ASSERT(group_num < styles.size())
-                    spans.push(styles[group_num], g.str.size());
-
-                    offset = g.offset + g.str.size();
+                if(!g.matched || g.offset < offset){
+                    continue;
                 }
+
+                ASSERT(g.offset + g.str.size() <= size)
+
+                spans.push(ungrouped_style, g.offset - offset);
+
+                size_t group_num = i + 1;
+                if(group_num >= styles.size()){
+                    group_num = 0;
+                }
+                ASSERT(group_num < styles.size())
+                spans.push(styles[group_num], g.str.size());
+
+                offset = g.offset + g.str.size();
             }
             ASSERT(offset <= size)
 
-            // push ungrouped style for the remaining part of the match
-            spans.push(styles[0], size - offset);
+            spans.push(ungrouped_style, size - offset);
         }
 
         view = view.substr(size);
@@ -498,11 +486,6 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
                     ASSERT(false, [&](auto&o){o << "opeartion = " << unsigned(op.type_);})
                     break;
             }
-        }
-
-        if(!view.empty()){
-            // at the end of matched string put the style of current state
-            spans.push(this->state_stack.back().state.get().style, 0);
         }
 
         line_begin = false;
