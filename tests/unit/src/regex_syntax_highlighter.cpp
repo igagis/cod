@@ -55,19 +55,19 @@ tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
     );
 
     suite.add<std::pair<std::string, std::string>>(
-        "correctness",
+        "xml",
         {
             {"<", "(0)<"},
             {"<tag>bla bla</tag>", "(0)<(1)tag(0)>(2)bla bla(0)</(1)tag(0)>"},
             {"<tag/>", "(0)<(1)tag(0)/>"},
             {"<tag><tag1 /></tag>", "(0)<(1)tag(0)><(1)tag1(0) /></(1)tag(0)>"}
         },
-        [](const auto& p){
-            cod::regex_syntax_highlighter highlighter(
-                    std::make_shared<cod::regex_syntax_highlighter_model>(
-                            treeml::read(papki::fs_file("../../highlight/xml.3ml"))
-                        )
-                );
+        [model = std::make_shared<cod::regex_syntax_highlighter_model>(
+                treeml::read(papki::fs_file("../../highlight/xml.3ml"))
+            )]
+        (const auto& p)
+        {
+            cod::regex_syntax_highlighter highlighter(model);
 
             auto in = utki::to_utf32(p.first);
 
