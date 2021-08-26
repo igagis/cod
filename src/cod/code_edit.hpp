@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <morda/updateable.hpp>
 
-#include "syntax_highlight/syntax_highlighter.hpp"
+#include "synhi/syntax_highlighter.hpp"
 
 namespace cod{
 

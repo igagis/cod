@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "editor_page.hpp"
 
-#include "syntax_highlight/regex_syntax_highlighter.hpp"
+#include "synhi/regex_syntax_highlighter.hpp"
 
 #include <papki/fs_file.hpp>
 
