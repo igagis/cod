@@ -23,15 +23,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <srell.hpp>
 
-#include "syntax_highlighter.hpp"
+#include "highlighter.hpp"
 
 #include <treeml/tree.hpp>
 
-namespace cod{
+namespace synhi{
 
-class regex_syntax_highlighter_model{
+class regex_highlighter_model{
 public:
-    regex_syntax_highlighter_model(const treeml::forest& spec);
+    regex_highlighter_model(const treeml::forest& spec);
 
     struct state;
 
@@ -138,11 +138,11 @@ public:
     std::vector<std::shared_ptr<const state>> states;
 };
 
-class regex_syntax_highlighter : public syntax_highlighter{
-    const std::shared_ptr<const regex_syntax_highlighter_model> model;
+class regex_highlighter : public highlighter{
+    const std::shared_ptr<const regex_highlighter_model> model;
 public:
-    regex_syntax_highlighter(
-            std::shared_ptr<const regex_syntax_highlighter_model> model
+    regex_highlighter(
+            std::shared_ptr<const regex_highlighter_model> model
         );
 
     void reset()override;
@@ -151,11 +151,11 @@ public:
 
 private:
     struct state_frame{
-        std::reference_wrapper<const regex_syntax_highlighter_model::state> state;
-        std::vector<regex_syntax_highlighter_model::matcher::match_result::capture_group> capture_groups;
+        std::reference_wrapper<const regex_highlighter_model::state> state;
+        std::vector<regex_highlighter_model::matcher::match_result::capture_group> capture_groups;
         std::vector<std::pair<
-                const regex_syntax_highlighter_model::matcher*,
-                std::shared_ptr<const regex_syntax_highlighter_model::matcher>
+                const regex_highlighter_model::matcher*,
+                std::shared_ptr<const regex_highlighter_model::matcher>
             >> preprocessed_rules_cache;
     };
     std::vector<state_frame> state_stack;

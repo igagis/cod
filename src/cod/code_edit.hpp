@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <morda/updateable.hpp>
 
-#include "synhi/syntax_highlighter.hpp"
+#include "synhi/highlighter.hpp"
 
 namespace cod{
 
@@ -76,7 +76,7 @@ class code_edit :
 
 	struct line{
 		std::u32string str;
-		std::vector<line_span> spans;
+		std::vector<synhi::line_span> spans;
 
 		size_t size()const noexcept{
 			return this->str.size();
@@ -222,7 +222,7 @@ class code_edit :
 
 	void on_character_input(const std::u32string& unicode, morda::key key)override;
 
-	std::shared_ptr<font_style> text_style = std::make_shared<font_style>(font_style{color: 0xffb0b0b0});
+	std::shared_ptr<synhi::font_style> text_style = std::make_shared<synhi::font_style>(synhi::font_style{color: 0xffb0b0b0});
 
 	void notify_text_change();
 

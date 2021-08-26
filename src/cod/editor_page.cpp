@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "editor_page.hpp"
 
-#include "synhi/regex_syntax_highlighter.hpp"
+#include "synhi/regex_highlighter.hpp"
 
 #include <papki/fs_file.hpp>
 
@@ -36,8 +36,8 @@ editor_page::editor_page(std::shared_ptr<morda::context> context, const treeml::
 	//       later need to implement proper system
 	this->text_change_handler = [
 			this,
-			hl = std::make_shared<cod::regex_syntax_highlighter>(
-					std::make_shared<cod::regex_syntax_highlighter_model>(
+			hl = std::make_shared<synhi::regex_highlighter>(
+					std::make_shared<synhi::regex_highlighter_model>(
 							treeml::read(papki::fs_file("highlight/xml.3ml"))
 						)
 				)

@@ -19,14 +19,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* ================ LICENSE END ================ */
 
-#include "regex_syntax_highlighter.hpp"
+#include "regex_highlighter.hpp"
 
 #include <utki/linq.hpp>
 #include <utki/string.hpp>
 
 #include <treeml/crawler.hpp>
 
-using namespace cod;
+using namespace synhi;
 
 namespace{
 std::shared_ptr<font_style> parse_style(const treeml::forest& style){
@@ -66,10 +66,10 @@ std::shared_ptr<font_style> parse_style(const treeml::forest& style){
 namespace{
 struct parsing_context{
     std::map<std::string, std::shared_ptr<font_style>> styles;
-    std::map<std::string, regex_syntax_highlighter_model::rule::parse_result> rules;
+    std::map<std::string, regex_highlighter_model::rule::parse_result> rules;
 
     // needs to preserve order
-    std::vector<std::pair<std::string, regex_syntax_highlighter_model::state::parse_result>> states;
+    std::vector<std::pair<std::string, regex_highlighter_model::state::parse_result>> states;
 
     std::string initial_state;
 
@@ -95,7 +95,7 @@ struct parsing_context{
 
             this->rules.insert(std::make_pair(
                     m.value.to_string(),
-                    regex_syntax_highlighter_model::rule::parse(m.children)
+                    regex_highlighter_model::rule::parse(m.children)
                 ));
         }
     }
@@ -118,7 +118,7 @@ struct parsing_context{
 
             this->states.push_back(std::make_pair(
                     s.value.to_string(),
-                    regex_syntax_highlighter_model::state::parse(s.children)
+                    regex_highlighter_model::state::parse(s.children)
                 ));
         }
     }
@@ -134,7 +134,7 @@ struct parsing_context{
         return i->second;
     }
 
-    std::shared_ptr<regex_syntax_highlighter_model::state> get_state(const std::string& name){
+    std::shared_ptr<regex_highlighter_model::state> get_state(const std::string& name){
         auto i = std::find_if(this->states.begin(), this->states.end(), [&](const auto& v){return v.first == name;});
         if(i == this->states.end()){
             std::stringstream ss;
@@ -145,7 +145,7 @@ struct parsing_context{
         return i->second.state_;
     }
 
-    std::shared_ptr<regex_syntax_highlighter_model::rule> get_rule(const std::string& name){
+    std::shared_ptr<regex_highlighter_model::rule> get_rule(const std::string& name){
         auto i = this->rules.find(name);
         if(i == this->rules.end()){
             std::stringstream ss;
@@ -157,8 +157,8 @@ struct parsing_context{
 };
 }
 
-regex_syntax_highlighter_model::matcher::match_result
-regex_syntax_highlighter_model::regex_matcher::match(
+regex_highlighter_model::matcher::match_result
+regex_highlighter_model::regex_matcher::match(
         std::u32string_view str,
         bool line_begin
     )const
@@ -204,7 +204,7 @@ regex_syntax_highlighter_model::regex_matcher::match(
     };
 }
 
-regex_syntax_highlighter_model::rule::parse_result regex_syntax_highlighter_model::rule::parse(const treeml::forest& desc){
+regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse(const treeml::forest& desc){
     parse_result ret;
     ret.rule_ = std::make_shared<rule>();
 
@@ -214,11 +214,11 @@ regex_syntax_highlighter_model::rule::parse_result regex_syntax_highlighter_mode
                 return p.value.to_string();
             }).get();
         }else if(n.value == "regex"){
-            ret.rule_->matcher_ = std::make_shared<regex_syntax_highlighter_model::regex_matcher>(
+            ret.rule_->matcher_ = std::make_shared<regex_highlighter_model::regex_matcher>(
                     utki::to_utf32(treeml::crawler(n.children).get().value.to_string())
                 );
         }else if(n.value == "ppregex"){
-            ret.rule_->matcher_ = std::make_shared<regex_syntax_highlighter_model::ppregex_matcher>(
+            ret.rule_->matcher_ = std::make_shared<regex_highlighter_model::ppregex_matcher>(
                     treeml::crawler(n.children).get().value.to_string()
                 );
         }else if(n.value == "push"){
@@ -245,7 +245,7 @@ regex_syntax_highlighter_model::rule::parse_result regex_syntax_highlighter_mode
     return ret;
 }
 
-regex_syntax_highlighter_model::state::parse_result regex_syntax_highlighter_model::state::parse(const treeml::forest& desc){
+regex_highlighter_model::state::parse_result regex_highlighter_model::state::parse(const treeml::forest& desc){
     parse_result ret;
 
     ret.state_ = std::make_shared<state>();
@@ -265,7 +265,7 @@ regex_syntax_highlighter_model::state::parse_result regex_syntax_highlighter_mod
     return ret;
 }
 
-regex_syntax_highlighter_model::regex_syntax_highlighter_model(const treeml::forest& spec){
+regex_highlighter_model::regex_highlighter_model(const treeml::forest& spec){
     parsing_context c;
 
     for(const auto& n : spec){
@@ -317,8 +317,8 @@ regex_syntax_highlighter_model::regex_syntax_highlighter_model(const treeml::for
     }
 }
 
-regex_syntax_highlighter::regex_syntax_highlighter(
-        std::shared_ptr<const regex_syntax_highlighter_model> model
+regex_highlighter::regex_highlighter(
+        std::shared_ptr<const regex_highlighter_model> model
     ) :
         model(std::move(model))
 {
@@ -326,7 +326,7 @@ regex_syntax_highlighter::regex_syntax_highlighter(
     this->reset();
 }
 
-void regex_syntax_highlighter::reset(){
+void regex_highlighter::reset(){
     this->state_stack.clear();
     ASSERT(this->model)
     ASSERT(!this->model->states.empty());
@@ -369,18 +369,18 @@ public:
 };
 }
 
-std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view str){
+std::vector<line_span> regex_highlighter::highlight(std::u32string_view str){
     line_span_container spans;
 
     bool line_begin = true;
     std::u32string_view view(str);
 
     while(!view.empty()){
-        regex_syntax_highlighter_model::matcher::match_result match{
+        regex_highlighter_model::matcher::match_result match{
             .begin = view.size(),
             .size = 1
         };
-        const regex_syntax_highlighter_model::rule* match_rule = nullptr;
+        const regex_highlighter_model::rule* match_rule = nullptr;
 
         // go through all rules of the current state to find the match closest to current
         // position in the text line
@@ -467,7 +467,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
         // apply rule operations
         for(const auto& op : match_rule->operations){
             switch(op.type_){
-                case regex_syntax_highlighter_model::rule::operation::type::push:
+                case regex_highlighter_model::rule::operation::type::push:
                     ASSERT(op.state_to_push)
                     this->state_stack.push_back(
                             state_frame{
@@ -476,7 +476,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
                             }
                         );
                     break;
-                case regex_syntax_highlighter_model::rule::operation::type::pop:
+                case regex_highlighter_model::rule::operation::type::pop:
                     // we must not pop the initial state, so check that more than one state is currently in the stack
                     if(this->state_stack.size() > 1){
                         this->state_stack.pop_back();
@@ -494,7 +494,7 @@ std::vector<line_span> regex_syntax_highlighter::highlight(std::u32string_view s
     return spans.reset();
 }
 
-regex_syntax_highlighter_model::ppregex_matcher::ppregex_matcher(std::string_view regex_str) :
+regex_highlighter_model::ppregex_matcher::ppregex_matcher(std::string_view regex_str) :
         matcher(true) // true = preprocessed
 {
     // prepare preprocessed regex model
@@ -550,8 +550,8 @@ regex_syntax_highlighter_model::ppregex_matcher::ppregex_matcher(std::string_vie
     }
 }
 
-std::shared_ptr<const regex_syntax_highlighter_model::matcher>
-regex_syntax_highlighter_model::ppregex_matcher::preprocess(utki::span<const match_result::capture_group> capture_groups)const
+std::shared_ptr<const regex_highlighter_model::matcher>
+regex_highlighter_model::ppregex_matcher::preprocess(utki::span<const match_result::capture_group> capture_groups)const
 {
     std::u32string regex_str;
     for(const auto& p : this->regex_parts){

@@ -6,18 +6,18 @@
 
 #include <papki/fs_file.hpp>
 
-#include <cod/synhi/regex_syntax_highlighter.hpp>
+#include <cod/synhi/regex_highlighter.hpp>
 
 using namespace std::string_literals;
 
 namespace{
-std::string to_markup(const std::u32string& str, utki::span<cod::line_span> spans){
+std::string to_markup(const std::u32string& str, utki::span<synhi::line_span> spans){
     std::stringstream ss;
 
     size_t cur_free_style_num = 0;
-    std::map<const cod::font_style*, std::string> style_names;
+    std::map<const synhi::font_style*, std::string> style_names;
 
-    auto get_style_name = [&](const std::shared_ptr<const cod::font_style>& s) -> const std::string&{
+    auto get_style_name = [&](const std::shared_ptr<const synhi::font_style>& s) -> const std::string&{
         auto i = style_names.find(s.get());
         if(i == style_names.end()){
             std::stringstream ss;
@@ -50,12 +50,12 @@ std::string to_markup(const std::u32string& str, utki::span<cod::line_span> span
 }
 
 namespace{
-tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
+tst::set set("regex_highlighter", [](tst::suite& suite){
     suite.add(
         "parse",
         [](){
-            cod::regex_syntax_highlighter sh(
-                    std::make_shared<cod::regex_syntax_highlighter_model>(
+            synhi::regex_highlighter sh(
+                    std::make_shared<synhi::regex_highlighter_model>(
                             treeml::read(papki::fs_file("../../highlight/xml.3ml"))
                         )
                 );
@@ -70,12 +70,12 @@ tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
             {"<tag/>", "(0)<(1)tag(0)/>"},
             {"<tag><tag1 /></tag>", "(0)<(1)tag(0)><(1)tag1(0) /></(1)tag(0)>"}
         },
-        [model = std::make_shared<cod::regex_syntax_highlighter_model>(
+        [model = std::make_shared<synhi::regex_highlighter_model>(
                 treeml::read(papki::fs_file("../../highlight/xml.3ml"))
             )]
         (const auto& p)
         {
-            cod::regex_syntax_highlighter highlighter(model);
+            synhi::regex_highlighter highlighter(model);
 
             auto in = utki::to_utf32(p.first);
 
@@ -92,9 +92,9 @@ tst::set set("regex_syntax_highlighter", [](tst::suite& suite){
     suite.add(
         "crash_1",
         [](){
-            auto dir = "data/regex_syntax_highlighter/crash_1/"s;
-            cod::regex_syntax_highlighter highlighter(
-                    std::make_shared<cod::regex_syntax_highlighter_model>(
+            auto dir = "data/synhi/crash_1/"s;
+            synhi::regex_highlighter highlighter(
+                    std::make_shared<synhi::regex_highlighter_model>(
                             treeml::read(papki::fs_file(dir + "xml.3ml"))
                         )
                 );

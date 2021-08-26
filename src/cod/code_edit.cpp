@@ -118,7 +118,7 @@ void code_edit::set_text(std::u32string&& text){
 			return line{
 				.str = std::move(s),
 				.spans = {
-					line_span{
+					synhi::line_span{
 						.length = size,
 						.style = this->text_style
 					}
@@ -676,7 +676,7 @@ void code_edit::line::append(line&& l){
 code_edit::line code_edit::line::cut_tail(size_t pos){
 	if(pos >= this->size()){
 		return line{
-			spans: {line_span{ style: this->spans.back().style }}
+			spans: {synhi::line_span{ style: this->spans.back().style }}
 		};
 	}
 
@@ -689,7 +689,7 @@ code_edit::line code_edit::line::cut_tail(size_t pos){
 		cur_span_end += i->length;
 		if(pos < cur_span_end){
 			size_t to_end = cur_span_end - pos;
-			ret.spans.push_back(line_span(*i));
+			ret.spans.push_back(synhi::line_span(*i));
 			ret.spans.back().length = to_end;
 			i->length -= to_end;
 			// LOG("this->spans.size() = " << this->spans.size() << std::endl)

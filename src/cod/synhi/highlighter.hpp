@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <morda/res/font.hpp>
 
-namespace cod{
+namespace synhi{
 
 struct font_style{
     morda::res::font::style style = morda::res::font::style::normal;
@@ -37,13 +37,13 @@ struct line_span{
     std::shared_ptr<const font_style> style;
 };
 
-class syntax_highlighter{
+class highlighter{
 public:
     virtual std::vector<line_span> highlight(std::u32string_view str) = 0;
 
     virtual void reset() = 0;
 
-    virtual ~syntax_highlighter(){}
+    virtual ~highlighter(){}
 };
 
 }
