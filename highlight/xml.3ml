@@ -34,13 +34,6 @@ styles{
 }
 
 rules{
-/*
-    pop{
-        regex{""}
-        pop
-    }
-*/
-
     tag{
         regex{"<(\w*)\s"}
         push{text}
@@ -55,25 +48,11 @@ rules{
     }
 
     closing_tag{
-        ppregex{"</${1}>"}
-        styles{angle_bracket}
+        ppregex{"</(${1})>"}
+        styles{angle_bracket tag}
         pop
     }
 
-/*
-    tag_start{
-        regex{"<"}
-        styles{angle_bracket}
-        push{tag_name}
-    }
-*/
-/*
-    tag_name_end{
-        regex{"\s"}
-        pop
-        push{attrs}
-    }
-*/
     tag_end{
         regex{">"}
         styles{angle_bracket}
@@ -86,19 +65,15 @@ rules{
         pop
     }
 
-    closing_tag_start{
-        regex{"</"}
-        styles{angle_bracket}
-        push{closing_tag_name}
-    }
-
     attr_name{
         regex{"[^\s]{1}"}
         push{attr_name}
+        styles{attr_name}
     }
     attr_name_unexpected{
         regex{"[\s>]+"}
         push{error}
+        styles{error}
     }
     attr_name_end{
         regex{"="}
@@ -122,28 +97,12 @@ rules{
         styles{attr_doublequote}
         pop
     }
-/*
-    bla_bla{
-        ppregex{"bla(qwf)f${1}e"}
-        push{text}
-    }
-*/
 }
 
 states{
     text{
         style{text}
         rules{closing_tag tag_no_attrs tag}
-    }
-/*
-    tag_name{
-        style{tag}
-        rules{tag_name_end tag_end tag_close}
-    }
-*/
-    closing_tag_name{
-        style{tag}
-        rules{tag_end}
     }
 
     attrs{
