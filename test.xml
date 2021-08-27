@@ -8,5 +8,8 @@
         Hello world!
         <tag attr="val"/>
         <tag attr='val'/>
+        <!-- comment
+        bla bla -->
     </tag3>
+    <!-- comment -->
 </tag2>
