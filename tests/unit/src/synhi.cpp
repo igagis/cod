@@ -3,6 +3,7 @@
 
 #include <utki/unicode.hpp>
 #include <utki/string.hpp>
+#include <utki/linq.hpp>
 
 #include <papki/fs_file.hpp>
 
@@ -11,7 +12,14 @@
 using namespace std::string_literals;
 
 namespace{
-std::string to_markup(const std::u32string& str, utki::span<synhi::line_span> spans){
+struct line{
+    std::u32string str;
+    std::vector<synhi::line_span> spans;
+};
+}
+
+namespace{
+std::string to_markup(utki::span<const line> lines){
     std::stringstream ss;
 
     size_t cur_free_style_num = 0;
@@ -29,14 +37,13 @@ std::string to_markup(const std::u32string& str, utki::span<synhi::line_span> sp
         return i->second;
     };
 
-    auto lines = utki::split(std::u32string_view(str), U'\n');
     for(auto l = lines.begin(); l != lines.end(); ++l){
         if(l != lines.begin()){
             ss << "\n";
         }
         
-        std::u32string_view v(*l);
-        for(const auto& s : spans){
+        std::u32string_view v(l->str);
+        for(const auto& s : l->spans){
             tst::check_le(s.length, v.size(), SL);
 
             ss << get_style_name(s.style);
@@ -69,7 +76,16 @@ tst::set set("regex_highlighter", [](tst::suite& suite){
             {"<tag>bla bla</tag>", "(0)<(1)tag(0)>(2)bla bla(0)</(1)tag(0)>"},
             {"<tag/>", "(0)<(1)tag(0)/>"},
             {"<tag><tag1 /></tag>", "(0)<(1)tag(0)><(1)tag1(0) /></(1)tag(0)>"},
-            {"<tag><!--<tag1 />--></tag>", "(0)<(1)tag(0)>(2)<!--<tag1 />-->(0)</(1)tag(0)>"}
+            {"<tag><!--<tag1 />--></tag>", "(0)<(1)tag(0)>(2)<!--<tag1 />-->(0)</(1)tag(0)>"},
+            {
+   R"qwertyuiop(<tag>
+                    <tag1
+                        attr1="qwe" />
+                </tag>)qwertyuiop",
+   R"qwertyuiop((0)<(1)tag(0)>
+(2)                    <tag1
+(2)                        attr1="qwe" />
+(2)                (0)</(1)tag(0)>)qwertyuiop"}
         },
         [model = std::make_shared<synhi::regex_highlighter_model>(
                 treeml::read(papki::fs_file("../../highlight/xml.3ml"))
@@ -80,10 +96,15 @@ tst::set set("regex_highlighter", [](tst::suite& suite){
 
             auto in = utki::to_utf32(p.first);
 
-            auto res = highlighter.highlight(in);
+            auto lines = utki::linq(utki::split(in, U'\n')).select([&](const auto& p){
+                return line{
+                    str: p,
+                    spans: highlighter.highlight(p)
+                };
+            }).get();
 
             tst::check_eq(
-                    to_markup(in, res),
+                    to_markup(lines),
                     p.second,
                     SL
                 );
