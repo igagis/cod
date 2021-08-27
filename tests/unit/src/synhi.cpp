@@ -68,7 +68,8 @@ tst::set set("regex_highlighter", [](tst::suite& suite){
             {"<", "(0)<"},
             {"<tag>bla bla</tag>", "(0)<(1)tag(0)>(2)bla bla(0)</(1)tag(0)>"},
             {"<tag/>", "(0)<(1)tag(0)/>"},
-            {"<tag><tag1 /></tag>", "(0)<(1)tag(0)><(1)tag1(0) /></(1)tag(0)>"}
+            {"<tag><tag1 /></tag>", "(0)<(1)tag(0)><(1)tag1(0) /></(1)tag(0)>"},
+            {"<tag><!--<tag1 />--></tag>", "(0)<(1)tag(0)>(2)<!--<tag1 />-->(0)</(1)tag(0)>"}
         },
         [model = std::make_shared<synhi::regex_highlighter_model>(
                 treeml::read(papki::fs_file("../../highlight/xml.3ml"))
