@@ -77,6 +77,8 @@ tst::set set("regex_highlighter", [](tst::suite& suite){
             {"<tag/>", "(0)<(1)tag(0)/>"},
             {"<tag><tag1 /></tag>", "(0)<(1)tag(0)><(1)tag1(2) (0)/></(1)tag(0)>"},
             {"<tag><!--<tag1 />--></tag>", "(0)<(1)tag(0)>(2)<!--<tag1 />-->(0)</(1)tag(0)>"},
+            {"<tag attr=\"val\"/>", "(0)<(1)tag(2) (3)attr(4)=(5)\"(6)val(5)\"(0)/>"},
+            {"<tag attr='val'/>", "(0)<(1)tag(2) (3)attr(4)=(5)'(6)val(5)'(0)/>"},
             {
    R"qwertyuiop(<tag>
                     <tag1

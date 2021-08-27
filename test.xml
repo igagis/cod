@@ -5,5 +5,8 @@
         <tag5/>
         <tag6
 />
+        Hello world!
+        <tag attr="val"/>
+        <tag attr='val'/>
     </tag3>
 </tag2>
