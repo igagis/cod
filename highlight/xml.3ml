@@ -40,7 +40,7 @@ styles{
 
 rules{
     tag{
-        regex{"<(\w*)\s"}
+        regex{"<(\w*)\b"}
         push{text}
         push{attrs}
         styles{angle_bracket tag}

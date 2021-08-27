@@ -3,5 +3,7 @@
     <tag3 attr1="val1">
         <tag4 />
         <tag5/>
+        <tag6
+/>
     </tag3>
 </tag2>
