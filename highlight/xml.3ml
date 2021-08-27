@@ -21,7 +21,7 @@ styles{
 
     attr_name{
         color{0xff00ffff}
-        style{bold}
+        style{italic}
     }
 
     attr_doublequote{
@@ -30,11 +30,15 @@ styles{
 
     attr_value{
         color{0xffb0ffff}
-        style{bold}
     }
 
     comment{
         color{0xff808080}
+    }
+
+    entity_ref{
+        color{0xffffb0ff}
+        style{bold}
     }
 }
 
@@ -130,6 +134,11 @@ rules{
         regex{"-->"}
         pop
     }
+
+    entity_ref{
+        regex{"&(lt|gt|apos|amp|quot);"}
+        styles{entity_ref}
+    }
 }
 
 states{
@@ -141,6 +150,7 @@ states{
             tag_no_attrs_closed
             tag
             comment_start
+            entity_ref
         }
     }
 
@@ -151,12 +161,19 @@ states{
 
     attrs{
         style{text}
-        rules{tag_end tag_close attr_name}
+        rules{
+            tag_end
+            tag_close
+            attr_name
+        }
     }
 
     attr_name{
         style{attr_name}
-        rules{attr_name_end attr_name_unexpected}
+        rules{
+            attr_name_end
+            attr_name_unexpected
+        }
     }
 
     attr_value_start{
@@ -170,12 +187,18 @@ states{
 
     attr_value_doublequote{
         style{attr_value}
-        rules{attr_value_doublequote_end}
+        rules{
+            attr_value_doublequote_end
+            entity_ref
+        }
     }
 
     attr_value_singlequote{
         style{attr_value}
-        rules{attr_value_singlequote_end}
+        rules{
+            attr_value_singlequote_end
+            entity_ref
+        }
     }
 
     error{

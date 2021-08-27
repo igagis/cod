@@ -10,6 +10,10 @@
         <tag attr='val'/>
         <!-- comment
         bla bla -->
+
+        Entity &lt; reference &gt;
+        <tag attr="&amp; bla bla &quot; bla bla &apos; bla" />
+        <tag attr='&amp; bla bla &quot; bla bla &apos; bla' />
     </tag3>
     <!-- comment -->
 </tag2>
