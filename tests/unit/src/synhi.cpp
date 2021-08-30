@@ -7,7 +7,7 @@
 
 #include <papki/fs_file.hpp>
 
-#include <cod/synhi/regex_highlighter.hpp>
+#include <cod/src/synhi/regex_highlighter.hpp>
 
 using namespace std::string_literals;
 
