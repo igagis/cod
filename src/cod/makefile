@@ -4,7 +4,7 @@ include prorab-license.mk
 
 this_name := cod
 
-this_srcs += $(call prorab-src-dir,cod)
+this_srcs += $(call prorab-src-dir,src)
 
 $(eval $(call prorab-config, ../../config))
 
@@ -15,7 +15,7 @@ this_ldlibs += -lmordavokne-opengl -lmorda -ltreeml -lpapki -lclargs -lutki -rdy
 $(eval $(prorab-build-app))
 
 this_run_name := $(this_name)
-this_test_cmd := cd .. && $(prorab_this_name)
+this_test_cmd := cd ../.. && $(prorab_this_name)
 this_test_deps := $(prorab_this_name)
 this_test_ld_path := $(prorab_space)
 $(eval $(prorab-run))
