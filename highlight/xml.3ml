@@ -12,7 +12,7 @@ styles{
     }
 
     text{
-        color{0xffd0d0d0}
+        color{0xffe0e0e0}
     }
 
     tag{
