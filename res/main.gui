@@ -7,12 +7,19 @@
 		}
 	}
 
-	@tabbed_book{
-		id{tabbed_book}
+	@tiling_area{
+		id{tiling_area}
 		layout{
 			weight{5}
-			// dx{fill}
 			dy{fill}
+		}
+
+		@tabbed_book{
+			id{tabbed_book}
+			layout{
+				weight{1}
+				dy{fill}
+			}
 		}
 	}
 }

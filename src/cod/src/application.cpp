@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <papki/fs_file.hpp>
 
+#include "tiling_area.hpp"
 #include "editor_page.hpp"
 
 using namespace cod;
@@ -88,6 +89,7 @@ application::application(command_line_arguments&& cla) :
 	
 	this->gui.context->inflater.register_widget<code_edit>("code_edit");
 	this->gui.context->inflater.register_widget<file_tree>("file_tree");
+	this->gui.context->inflater.register_widget<tiling_area>("tiling_area");
 
 	this->gui.context->loader.mount_res_pack(*this->get_res_file("res/"));
 	

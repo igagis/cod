@@ -8,7 +8,7 @@
             "name": "(gdb) cod",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/src/out/dbg/cod",
+            "program": "${workspaceFolder}/src/cod/out/dbg/cod",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
