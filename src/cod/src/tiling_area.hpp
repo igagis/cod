@@ -35,9 +35,7 @@ public:
     tiling_area(std::shared_ptr<morda::context> c, const treeml::forest& desc);
 
     void push_back(std::shared_ptr<widget> w);
-
-    void lay_out()override;
-
+    
     void on_resize()override;
 
     morda::vector2 measure(const morda::vector2& quotum)const override;

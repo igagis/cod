@@ -39,20 +39,8 @@ void tiling_area::push_back(std::shared_ptr<widget> w){
     this->update_draggers();
 }
 
-void tiling_area::lay_out(){
-    std::cout << "this rect = " << this->rect() << "\n";
-    std::cout << "content rect = " << this->content->rect() << "\n";
-    if(this->content->rect().d != this->rect().d){
-        this->content->resize(this->rect().d);
-    }
-    if(this->content->is_layout_invalid()){
-        this->content->lay_out();
-    }
-}
-
 void tiling_area::on_resize(){
-    this->morda::container::on_resize();
-
+    this->content->resize(this->rect().d); // resize() will do lay_out()
     this->update_draggers();
 }
 
