@@ -42,8 +42,6 @@ public:
 
     morda::vector2 measure(const morda::vector2& quotum)const override;
 
-    // TODO: override layout and measure
-
 private:
     void update_draggers();
 };

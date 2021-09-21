@@ -27,7 +27,18 @@ tiling_area::tiling_area(std::shared_ptr<morda::context> c, const treeml::forest
         morda::widget(std::move(c), desc),
         morda::container(this->context, treeml::forest())
 {
-    this->content = std::make_shared<morda::linear_container>(this->context, treeml::forest(), false);
+    bool is_vertical = false;
+    for(const auto& p : desc){
+        if(!morda::is_property(p)){
+            continue;
+        }
+
+        if(p.value == "vertical"){
+            is_vertical = morda::get_property_value(p).to_bool();
+        }
+    }
+
+    this->content = std::make_shared<morda::linear_container>(this->context, treeml::forest(), is_vertical);
     this->morda::container::push_back(this->content);
     this->content->move_to({0, 0});
 

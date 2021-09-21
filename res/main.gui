@@ -1,4 +1,4 @@
-@row{
+@tiling_area{
 	@file_tree{
 		id{file_tree}
 		layout{
