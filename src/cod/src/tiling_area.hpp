@@ -22,15 +22,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <morda/widgets/container.hpp>
-#include <morda/widgets/group/linear_container.hpp>
+#include <morda/widgets/base/oriented_widget.hpp>
 
 namespace cod{
 
 class tiling_area :
         virtual public morda::widget,
+        public morda::oriented_widget,
         private morda::container
 {
-    std::shared_ptr<morda::linear_container> content;
+    std::shared_ptr<morda::container> content;
 public:
     tiling_area(std::shared_ptr<morda::context> c, const treeml::forest& desc);
 

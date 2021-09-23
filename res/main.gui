@@ -1,6 +1,8 @@
 @tiling_area{
 	@file_tree{
 		id{file_tree}
+		x{0} y{0}
+		dx{300} dy{800}
 		layout{
 			weight{2}
 			dx{0} dy{fill}
