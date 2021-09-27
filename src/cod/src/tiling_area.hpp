@@ -31,8 +31,8 @@ class tiling_area :
         public morda::oriented_widget,
         private morda::container
 {
-    morda::real min_tile_size;
-    morda::real dragger_size;
+    const morda::real min_tile_size;
+    const morda::real dragger_size;
 
     std::shared_ptr<morda::container> content;
 public:
@@ -45,7 +45,7 @@ public:
     morda::vector2 measure(const morda::vector2& quotum)const override;
 
 private:
-    void update_draggers();
+    
 };
 
 }

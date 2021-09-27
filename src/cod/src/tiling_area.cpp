@@ -51,17 +51,14 @@ tiling_area::tiling_area(std::shared_ptr<morda::context> c, const treeml::forest
 
 void tiling_area::push_back(std::shared_ptr<widget> w){
     this->content->push_back(std::move(w));
-    this->update_draggers();
 }
 
 void tiling_area::lay_out(){
-    this->content->resize(this->rect().d);
-    this->morda::container::lay_out();
-    this->update_draggers();
-}
+    // TODO: arrange tiles
 
-void tiling_area::update_draggers(){
-    // TODO:
+    this->content->resize(this->rect().d);
+
+    // TODO: lay out draggers
 }
 
 morda::vector2 tiling_area::measure(const morda::vector2& quotum)const{
