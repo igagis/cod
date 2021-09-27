@@ -54,9 +54,22 @@ void tiling_area::push_back(std::shared_ptr<widget> w){
 }
 
 void tiling_area::lay_out(){
+    // calculate current length of all tiles
+    morda::real length = 0;
+
+    for(const auto& t : this->content->children()){
+        auto l = t->rect().d[this->get_long_index()];
+        using std::max;
+        l = max(l, this->min_tile_size);
+        length += l;
+    }
+
+    const auto& new_dims = this->rect().d;
+
+
     // TODO: arrange tiles
 
-    this->content->resize(this->rect().d);
+    this->content->resize(new_dims);
 
     // TODO: lay out draggers
 }
