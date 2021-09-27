@@ -31,6 +31,9 @@ class tiling_area :
         public morda::oriented_widget,
         private morda::container
 {
+    morda::real min_tile_size;
+    morda::real dragger_size;
+
     std::shared_ptr<morda::container> content;
 public:
     tiling_area(std::shared_ptr<morda::context> c, const treeml::forest& desc);
@@ -38,8 +41,6 @@ public:
     void push_back(std::shared_ptr<widget> w);
 
     void lay_out()override;
-
-    void on_resize()override;
 
     morda::vector2 measure(const morda::vector2& quotum)const override;
 

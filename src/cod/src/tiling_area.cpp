@@ -21,12 +21,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "tiling_area.hpp"
 
+#include <morda/context.hpp>
+
 using namespace cod;
 
 tiling_area::tiling_area(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
         morda::widget(std::move(c), desc),
         morda::oriented_widget(this->context, treeml::forest(), false),
-        morda::container(this->context, treeml::forest())
+        morda::container(this->context, treeml::forest()),
+        min_tile_size(this->context->units.dp_to_px(50)),
+        dragger_size(this->context->units.dp_to_px(3))
 {
     for(const auto& p : desc){
         if(!morda::is_property(p)){
@@ -51,12 +55,8 @@ void tiling_area::push_back(std::shared_ptr<widget> w){
 }
 
 void tiling_area::lay_out(){
-    this->morda::container::lay_out();
-    this->update_draggers();
-}
-
-void tiling_area::on_resize(){
     this->content->resize(this->rect().d);
+    this->morda::container::lay_out();
     this->update_draggers();
 }
 

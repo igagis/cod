@@ -11,6 +11,8 @@
 
 	@tiling_area{
 		id{tiling_area}
+		x{300} y{0}
+		dx{600} dy{800}
 		layout{
 			weight{5}
 			dy{fill}
@@ -18,6 +20,8 @@
 
 		@tabbed_book{
 			id{tabbed_book}
+			x{0} y{0}
+			dx{600} dy{800}
 			layout{
 				weight{1}
 				dx{0} dy{fill}
