@@ -448,21 +448,34 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 		return true;
 	}
 
-	if(event.button != morda::mouse_button::left){
-		return false;
-	}
-	
-	if(event.is_down){
-		this->cursors.clear();
+	std::cout << "button = " << unsigned(event.button) << std::endl;
 
-		this->cursors.push_back(cursor(*this, this->mouse_pos_to_glyph_pos(event.pos)));
-		this->mouse_selection = true;
+	morda::real scroll_direction = 1;
+	switch(event.button){
+		case morda::mouse_button::left:
+			if(event.is_down){
+				this->cursors.clear();
 
-		this->focus();
-		this->start_cursor_blinking();
-	}else{
-		this->mouse_selection = false;
-		return true;
+				this->cursors.push_back(cursor(*this, this->mouse_pos_to_glyph_pos(event.pos)));
+				this->mouse_selection = true;
+
+				this->focus();
+				this->start_cursor_blinking();
+			}else{
+				this->mouse_selection = false;
+			}
+			break;
+		case morda::mouse_button::wheel_up:
+			scroll_direction = -1;
+		case morda::mouse_button::wheel_down:
+			if(event.is_down){
+				this->list->scroll_by(
+						scroll_direction * this->font_info.glyph_dims.y() * 3
+					);
+			}
+			break;
+		default:
+			return false;
 	}
 	
 	return true;
