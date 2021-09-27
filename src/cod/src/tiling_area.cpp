@@ -25,12 +25,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
+namespace{
+const morda::real minimal_tile_size_dp = 100;
+const morda::real dragger_size_dp = 5;
+}
+
 tiling_area::tiling_area(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
         morda::widget(std::move(c), desc),
         morda::oriented_widget(this->context, treeml::forest(), false),
         morda::container(this->context, treeml::forest()),
-        min_tile_size(this->context->units.dp_to_px(50)),
-        dragger_size(this->context->units.dp_to_px(3))
+        min_tile_size(this->context->units.dp_to_px(minimal_tile_size_dp)),
+        dragger_size(this->context->units.dp_to_px(dragger_size_dp))
 {
     for(const auto& p : desc){
         if(!morda::is_property(p)){
@@ -54,26 +59,70 @@ void tiling_area::push_back(std::shared_ptr<widget> w){
 }
 
 void tiling_area::lay_out(){
+    auto long_index = this->get_long_index();
+    auto trans_index = this->get_trans_index();
+
+    using std::max;
+
     // calculate current length of all tiles
     morda::real length = 0;
 
-    for(const auto& t : this->content->children()){
-        auto l = t->rect().d[this->get_long_index()];
-        using std::max;
-        l = max(l, this->min_tile_size);
-        length += l;
+    for(const auto& t : *this->content){
+        length += max(t->rect().d[long_index], this->min_tile_size);
     }
 
-    const auto& new_dims = this->rect().d;
+    const auto& content_dims = this->rect().d;
 
+    using std::round;
+
+    // arrange tiles
+    if(content_dims[long_index] >= length){
+        morda::vector2 pos{0, 0};
+        for(auto& t : *this->content){
+            morda::real tile_length = max(t->rect().d[long_index], this->min_tile_size);
+
+            morda::vector2 dims;
+            dims[trans_index] = content_dims[trans_index];
+            dims[long_index] = content_dims[long_index] * (tile_length / length);
+            dims = round(dims);
+
+            t->resize(dims);
+            t->move_to(pos);
+            pos[long_index] += dims[long_index];
+        }
+    }else{
+        morda::real left_length = content_dims[long_index];
+
+        morda::vector2 pos{0, 0};
+
+        for(auto& t : *this->content){
+            morda::real tile_length = max(t->rect().d[long_index], this->min_tile_size);
+
+            morda::vector2 dims;
+            dims[trans_index] = content_dims[trans_index];
+            dims[long_index] = left_length * (tile_length / length);
+            if(dims[long_index] <= this->min_tile_size){
+                dims[long_index] = this->min_tile_size;
+            }
+            length -= tile_length;
+            left_length -= dims[long_index];
+            dims = round(dims);
+
+            t->resize(dims);
+            t->move_to(pos);
+            pos[long_index] += dims[long_index];
+        }
+    }
 
     // TODO: arrange tiles
 
-    this->content->resize(new_dims);
+    this->content->resize(content_dims);
 
     // TODO: lay out draggers
 }
 
 morda::vector2 tiling_area::measure(const morda::vector2& quotum)const{
+    // TODO:
+
     return this->content->measure(quotum);
 }

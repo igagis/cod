@@ -1,8 +1,9 @@
 @tiling_area{
+	dx{1000}
 	@file_tree{
 		id{file_tree}
 		x{0} y{0}
-		dx{300} dy{800}
+		dx{200} dy{800}
 		layout{
 			weight{2}
 			dx{0} dy{fill}
@@ -11,8 +12,7 @@
 
 	@tiling_area{
 		id{tiling_area}
-		x{300} y{0}
-		dx{600} dy{800}
+		dx{600}
 		layout{
 			weight{5}
 			dy{fill}
@@ -20,8 +20,7 @@
 
 		@tabbed_book{
 			id{tabbed_book}
-			x{0} y{0}
-			dx{600} dy{800}
+			dx{0}
 			layout{
 				weight{1}
 				dx{0} dy{fill}
