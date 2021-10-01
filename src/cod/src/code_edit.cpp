@@ -475,10 +475,11 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 					);
 			}
 			break;
-		case morda::mouse_button::wheel_right:
+		case morda::mouse_button::wheel_left:
+			std::cout << "right" << std::endl;
 			scroll_direction = -1;
 			[[fallthrough]];
-		case morda::mouse_button::wheel_left:
+		case morda::mouse_button::wheel_right:
 			if(event.is_down){
 				this->scroll_area->set_scroll_pos(
 					this->scroll_area->get_scroll_pos() + morda::vector2{
