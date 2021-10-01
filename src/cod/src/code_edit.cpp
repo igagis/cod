@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <utki/linq.hpp>
 
 #include <morda/widgets/label/text.hpp>
-#include <morda/widgets/base/fraction_widget.hpp>
+#include <morda/widgets/base/fraction_band_widget.hpp>
 
 using namespace cod;
 
@@ -79,7 +79,7 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& de
 	this->list = utki::make_shared_from(this->get_widget_as<morda::list_widget>("lines"));
 	this->list->set_provider(this->lines_provider);
 
-	auto& vs = this->get_widget_as<morda::fraction_widget>("vertical_scroll");
+	auto& vs = this->get_widget_as<morda::fraction_band_widget>("vertical_scroll");
 
 	vs.fraction_change_handler =
 			[lw = utki::make_weak(this->list)](morda::fraction_widget& fw){
@@ -88,26 +88,28 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& de
 				}
 			};
 
-	this->list->scroll_change_handler = [vs = utki::make_weak_from(vs)](morda::list_widget& lw){
-		if(auto s = vs.lock()){
+	this->list->scroll_change_handler = [sw = utki::make_weak_from(vs)](morda::list_widget& lw){
+		if(auto s = sw.lock()){
 			s->set_fraction(lw.get_scroll_factor(), false);
+			s->set_band_fraction(lw.get_scroll_band());
 		}
 	};
 	
 	this->scroll_area = utki::make_shared_from(this->get_widget_as<morda::scroll_area>("scroll_area"));
 
-	auto& hs = this->get_widget_as<morda::fraction_widget>("horizontal_scroll");
+	auto& hs = this->get_widget_as<morda::fraction_band_widget>("horizontal_scroll");
 	
 	hs.fraction_change_handler =
-			[lw = utki::make_weak(this->scroll_area)](morda::fraction_widget& fw){
-				if(auto w = lw.lock()){
-					w->set_scroll_factor(fw.fraction());
+			[saw = utki::make_weak(this->scroll_area)](morda::fraction_widget& fw){
+				if(auto sa = saw.lock()){
+					sa->set_scroll_factor(fw.fraction());
 				}
 			};
 	
-	this->scroll_area->scroll_change_handler = [hs = utki::make_weak_from(hs)](morda::scroll_area& sa){
-		if(auto s = hs.lock()){
+	this->scroll_area->scroll_change_handler = [sw = utki::make_weak_from(hs)](morda::scroll_area& sa){
+		if(auto s = sw.lock()){
 			s->set_fraction(sa.get_scroll_factor().x(), false);
+			s->set_band_fraction(sa.get_visible_area_fraction().x());
 		}
 	};
 }
