@@ -476,7 +476,6 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 			}
 			break;
 		case morda::mouse_button::wheel_left:
-			std::cout << "right" << std::endl;
 			scroll_direction = -1;
 			[[fallthrough]];
 		case morda::mouse_button::wheel_right:
