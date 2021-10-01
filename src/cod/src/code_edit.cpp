@@ -448,8 +448,6 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event){
 		return true;
 	}
 
-	std::cout << "button = " << unsigned(event.button) << std::endl;
-
 	morda::real scroll_direction = 1;
 	switch(event.button){
 		case morda::mouse_button::left:
