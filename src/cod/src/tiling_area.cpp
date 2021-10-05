@@ -30,6 +30,15 @@ const morda::real minimal_tile_size_dp = 100;
 const morda::real dragger_size_dp = 5;
 }
 
+namespace{
+class dragger : public morda::widget{
+public:
+    dragger(std::shared_ptr<morda::context> c) :
+            morda::widget(std::move(c), treeml::forest())
+    {}
+};
+}
+
 tiling_area::tiling_area(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
         morda::widget(std::move(c), desc),
         morda::oriented_widget(this->context, treeml::forest(), false),
@@ -114,11 +123,28 @@ void tiling_area::lay_out(){
         }
     }
 
-    // TODO: arrange tiles
-
     this->content->resize(content_dims);
 
-    // TODO: lay out draggers
+    // lay out draggers
+
+    // check number of existing draggers
+
+    ASSERT(this->size() >= 1)
+
+    auto num_draggers = this->content->size() == 0 ? 0 : this->content->size() - 1;
+
+    // remove redundant draggers
+    while(this->size() - 1 > num_draggers){
+        this->pop_back();
+    }
+
+    // add missing draggers
+    while(this->size() - 1 < num_draggers){
+        std::cout << "num_draggers = " << num_draggers << " this->size() = " << this->size() << std::endl;
+        this->push_back(std::make_shared<dragger>(this->context));
+    }
+
+    // TODO:
 }
 
 morda::vector2 tiling_area::measure(const morda::vector2& quotum)const{
