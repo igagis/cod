@@ -141,7 +141,21 @@ void tiling_area::lay_out(){
 }
 
 morda::vector2 tiling_area::measure(const morda::vector2& quotum)const{
-    // TODO:
+    auto long_index = this->get_long_index();
 
-    return this->content_container->measure(quotum);
+    morda::vector2 ret;
+
+    for(size_t i = 0; i != quotum.size(); ++i){
+        if(quotum[i] < 0){
+            ret[i] = min_tile_size;
+
+            if(i == long_index){
+                ret[i] *= this->content_container->size();
+            }
+        }else{
+            ret[i] = quotum[i];
+        }
+    }
+
+    return ret;
 }
