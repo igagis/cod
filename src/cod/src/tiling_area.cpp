@@ -64,8 +64,6 @@ tiling_area::tiling_area(std::shared_ptr<morda::context> c, const treeml::forest
 }
 
 void tiling_area::lay_out(){
-    std::cout << "rect = " << this->rect() << std::endl;
-
     auto long_index = this->get_long_index();
     auto trans_index = this->get_trans_index();
 
@@ -88,13 +86,13 @@ void tiling_area::lay_out(){
         for(auto& t : *this->content_container){
             morda::real tile_length = max(t->rect().d[long_index], this->min_tile_size);
 
+            ASSERT(tiles_length > 0)
+
             morda::vector2 dims;
             dims[trans_index] = content_dims[trans_index];
             dims[long_index] = content_dims[long_index] * (tile_length / tiles_length);
             dims = round(dims);
-            std::cout << "dims = " << dims << std::endl;
             t->resize(dims);
-            ASSERT(!t->is_layout_dirty())
             t->move_to(pos);
             pos[long_index] += dims[long_index];
         }
@@ -105,6 +103,8 @@ void tiling_area::lay_out(){
 
         for(auto& t : *this->content_container){
             morda::real tile_length = max(t->rect().d[long_index], this->min_tile_size);
+
+            ASSERT(tiles_length > 0)
 
             morda::vector2 dims;
             dims[trans_index] = content_dims[trans_index];

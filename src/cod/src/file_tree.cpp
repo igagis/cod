@@ -170,20 +170,6 @@ std::shared_ptr<morda::widget> file_tree::file_tree_provider::get_widget(utki::s
 					dy{fill}
 				}
 			}
-			@mouse_proxy{
-				id{mp}
-				layout{
-					dx{fill}
-					dy{fill}
-				}
-			}
-			@resize_proxy{
-				id{rp}
-				layout{
-					dx{fill}
-					dy{fill}
-				}
-			}
 			@color{
 				id{bg}
 				layout{
@@ -214,23 +200,12 @@ std::shared_ptr<morda::widget> file_tree::file_tree_provider::get_widget(utki::s
 			index = utki::make_vector(index)
 		](morda::click_proxy& cp)
 	{
-		std::cout << "click" << std::endl;
 		if(this->owner.cursor_index == index){
 			return;
 		}
 		this->owner.cursor_index = index;
 		this->notify_item_changed();
 		this->owner.notify_file_select();
-	};
-
-	w->get_widget_as<morda::resize_proxy>("rp").resize_handler = [cp = utki::make_shared_from(cp)](morda::resize_proxy& rp){
-		std::cout << "rp.rect() = " << rp.rect() << ", cp->rect() = " << cp->rect() << std::endl;
-		std::cout << "parent->rect() = " << rp.parent()->rect() << std::endl;
-	};
-
-	w->get_widget_as<morda::mouse_proxy>("mp").mouse_move_handler = [](morda::mouse_proxy& mp, const morda::mouse_move_event& e){
-		std::cout << "mp.rect() = " << mp.rect() << " e.pos = " << e.pos  << " parent->dims = " << mp.parent()->rect().d << std::endl;
-		return false;
 	};
 
 	return w;
@@ -278,6 +253,5 @@ file_tree::file_tree(std::shared_ptr<morda::context> c, const treeml::forest& de
 
 	this->provider = std::make_shared<file_tree_provider>(*this);
 
-	std::cout << "tv.rect = " << tv.rect() << std::endl;
 	tv.set_provider(this->provider);
 }

@@ -46,6 +46,11 @@ public:
 
     morda::vector2 measure(const morda::vector2& quotum)const override;
 
+    // override in order to avoid invalidation of layout when children list changes
+    void on_children_change()override{
+        // do nothing
+    }
+
 private:
     
 };
