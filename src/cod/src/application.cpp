@@ -101,6 +101,8 @@ application::application(command_line_arguments&& cla) :
 
 	auto& ft = c->get_widget_as<file_tree>("file_tree");
 	ft.file_select_handler = [tb = utki::make_shared_from(tb)](std::string file_name){
+		std::cout << "file = " << file_name << '\n';
+
 		if(papki::is_dir(file_name)){
 			return;
 		}
@@ -115,8 +117,6 @@ application::application(command_line_arguments&& cla) :
 				inflate_tab(tb, f.not_dir()),
 				p
 			);
-		
-		// std::cout << "file = " << file_name << '\n';
 	};
 	
 	this->gui.set_root(std::move(c));

@@ -197,6 +197,7 @@ std::shared_ptr<morda::widget> file_tree::file_tree_provider::get_widget(utki::s
 			index = utki::make_vector(index)
 		](morda::click_proxy& cp)
 	{
+		std::cout << "click" << std::endl;
 		if(this->owner.cursor_index == index){
 			return;
 		}
@@ -250,5 +251,6 @@ file_tree::file_tree(std::shared_ptr<morda::context> c, const treeml::forest& de
 
 	this->provider = std::make_shared<file_tree_provider>(*this);
 
+	std::cout << "tv.rect = " << tv.rect() << std::endl;
 	tv.set_provider(this->provider);
 }

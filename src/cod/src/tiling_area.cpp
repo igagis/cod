@@ -64,16 +64,18 @@ tiling_area::tiling_area(std::shared_ptr<morda::context> c, const treeml::forest
 }
 
 void tiling_area::lay_out(){
+    std::cout << "rect = " << this->rect() << std::endl;
+
     auto long_index = this->get_long_index();
     auto trans_index = this->get_trans_index();
 
     using std::max;
 
     // calculate current length of all tiles
-    morda::real length = 0;
+    morda::real tiles_length = 0;
 
     for(const auto& t : *this->content_container){
-        length += max(t->rect().d[long_index], this->min_tile_size);
+        tiles_length += max(t->rect().d[long_index], this->min_tile_size);
     }
 
     const auto& content_dims = this->rect().d;
@@ -81,17 +83,18 @@ void tiling_area::lay_out(){
     using std::round;
 
     // arrange tiles
-    if(content_dims[long_index] >= length){
+    if(content_dims[long_index] >= tiles_length){
         morda::vector2 pos{0, 0};
         for(auto& t : *this->content_container){
             morda::real tile_length = max(t->rect().d[long_index], this->min_tile_size);
 
             morda::vector2 dims;
             dims[trans_index] = content_dims[trans_index];
-            dims[long_index] = content_dims[long_index] * (tile_length / length);
+            dims[long_index] = content_dims[long_index] * (tile_length / tiles_length);
             dims = round(dims);
-
+            std::cout << "dims = " << dims << std::endl;
             t->resize(dims);
+            ASSERT(!t->is_layout_dirty())
             t->move_to(pos);
             pos[long_index] += dims[long_index];
         }
@@ -105,11 +108,11 @@ void tiling_area::lay_out(){
 
             morda::vector2 dims;
             dims[trans_index] = content_dims[trans_index];
-            dims[long_index] = left_length * (tile_length / length);
+            dims[long_index] = left_length * (tile_length / tiles_length);
             if(dims[long_index] <= this->min_tile_size){
                 dims[long_index] = this->min_tile_size;
             }
-            length -= tile_length;
+            tiles_length -= tile_length;
             left_length -= dims[long_index];
             dims = round(dims);
 
@@ -147,7 +150,7 @@ morda::vector2 tiling_area::measure(const morda::vector2& quotum)const{
 
     for(size_t i = 0; i != quotum.size(); ++i){
         if(quotum[i] < 0){
-            ret[i] = min_tile_size;
+            ret[i] = this->min_tile_size;
 
             if(i == long_index){
                 ret[i] *= this->content_container->size();
