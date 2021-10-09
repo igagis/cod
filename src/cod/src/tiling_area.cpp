@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tiling_area.hpp"
 
 #include <morda/context.hpp>
+#include <morda/widgets/label/color.hpp>
 
 using namespace cod;
 
@@ -31,11 +32,34 @@ const morda::real dragger_size_dp = 5;
 }
 
 namespace{
-class dragger : public morda::widget{
+class dragger : public morda::color{
 public:
     dragger(std::shared_ptr<morda::context> c) :
-            morda::widget(std::move(c), treeml::forest())
-    {}
+            morda::widget(std::move(c), treeml::forest()),
+            morda::color(this->context, treeml::forest())
+    {
+        this->set_color(0xff00ff00);
+    }
+
+    bool on_mouse_button(const morda::mouse_button_event& e)override{
+        // TODO:
+        return false;
+    }
+
+    bool on_mouse_move(const morda::mouse_move_event& e)override{
+        // TODO:
+        return false;
+    }
+
+    void on_hover_change(unsigned pointer_id)override{
+        // TODO:
+    }
+
+    void render(const morda::matrix4& matrix)const override{
+        if(this->is_hovered()){
+            this->morda::color::render(matrix);
+        }
+    }
 };
 }
 
@@ -140,7 +164,26 @@ void tiling_area::lay_out(){
         this->push_back(std::make_shared<dragger>(this->context));
     }
 
-    // TODO:
+    morda::vector2 dragger_dims;
+    dragger_dims[long_index] = this->dragger_size;
+    dragger_dims[trans_index] = this->rect().d[trans_index];
+
+    for(auto i = std::next(this->begin()); i != this->end(); ++i){
+        auto index = size_t(std::distance(this->begin(), i)) - 1;
+
+        ASSERT(index < this->content().size())
+
+        const auto& tile = *this->content().children()[index];
+
+        auto& dragger = *(*i);
+
+        dragger.resize(dragger_dims);
+
+        morda::vector2 dragger_pos;
+        dragger_pos[trans_index] = morda::real(0);
+        dragger_pos[long_index] = round(tile.rect().x2_y2()[long_index] - this->dragger_size / 2);
+        dragger.move_to(dragger_pos);
+    }
 }
 
 morda::vector2 tiling_area::measure(const morda::vector2& quotum)const{
