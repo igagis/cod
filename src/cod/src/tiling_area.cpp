@@ -33,26 +33,49 @@ const morda::real dragger_size_dp = 5;
 
 namespace{
 class dragger : public morda::color{
+    bool grabbed = false;
+    morda::vector2 grab_point;
+
+    tiling_area& owner;
 public:
-    dragger(std::shared_ptr<morda::context> c) :
+    std::shared_ptr<morda::widget> prev_widget;
+    std::shared_ptr<morda::widget> next_widget;
+
+    dragger(std::shared_ptr<morda::context> c, tiling_area& owner) :
             morda::widget(std::move(c), treeml::forest()),
-            morda::color(this->context, treeml::forest())
+            morda::color(this->context, treeml::forest()),
+            owner(owner)
     {
         this->set_color(0xff00ff00);
     }
 
     bool on_mouse_button(const morda::mouse_button_event& e)override{
-        // TODO:
-        return false;
+        if(e.button != morda::mouse_button::left){
+            return false;
+        }
+
+        this->grabbed = e.is_down;
+        this->grab_point = e.pos;
+        
+        return true;
     }
 
     bool on_mouse_move(const morda::mouse_move_event& e)override{
-        // TODO:
-        return false;
-    }
+        if(!this->grabbed){
+            return false;
+        }
 
-    void on_hover_change(unsigned pointer_id)override{
+        auto delta = e.pos - this->grab_point;
+
+        auto trans_index = this->owner.is_vertical() ? 0 : 1;
+
+        delta[trans_index] = morda::real(0);
+
+        this->move_by(delta);
+
         // TODO:
+        
+        return false;
     }
 
     void render(const morda::matrix4& matrix)const override{
@@ -161,7 +184,7 @@ void tiling_area::lay_out(){
 
     // add missing draggers
     while(this->size() - 1 < num_draggers){
-        this->push_back(std::make_shared<dragger>(this->context));
+        this->push_back(std::make_shared<dragger>(this->context, *this));
     }
 
     morda::vector2 dragger_dims;
@@ -173,15 +196,16 @@ void tiling_area::lay_out(){
 
         ASSERT(index < this->content().size())
 
-        const auto& tile = *this->content().children()[index];
+        auto& dragger = dynamic_cast<::dragger &>(*(*i));
 
-        auto& dragger = *(*i);
+        dragger.prev_widget = this->content().children()[index];
+        dragger.next_widget = this->content().children()[index + 1];
 
         dragger.resize(dragger_dims);
 
         morda::vector2 dragger_pos;
         dragger_pos[trans_index] = morda::real(0);
-        dragger_pos[long_index] = round(tile.rect().x2_y2()[long_index] - this->dragger_size / 2);
+        dragger_pos[long_index] = round(dragger.next_widget->rect().p[long_index] - this->dragger_size / 2);
         dragger.move_to(dragger_pos);
     }
 }
