@@ -67,6 +67,7 @@ public:
 
         auto delta = e.pos - this->grab_point;
 
+        // TODO: use this->owner.get_long/trans_index()
         auto trans_index = this->owner.is_vertical() ? 0 : 1;
         auto long_index = this->owner.is_vertical() ? 1 : 0;
 
