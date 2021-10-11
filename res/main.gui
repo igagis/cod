@@ -5,7 +5,7 @@
 	}
 
 	@tiling_area{
-		id{tiling_area}
+		id{base_tiling_area}
 		dx{600}
 		
 		@tabbed_book{

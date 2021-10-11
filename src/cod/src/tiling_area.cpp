@@ -37,6 +37,9 @@ class dragger : public morda::color{
     morda::vector2 grab_point;
 
     tiling_area& owner;
+
+    // TODO: use morda::mouse_cursor_manager::iterator
+    std::list<morda::mouse_cursor>::iterator arrows_cursor_iter;
 public:
     std::shared_ptr<morda::widget> prev_widget;
     std::shared_ptr<morda::widget> next_widget;
@@ -56,6 +59,12 @@ public:
 
         this->grabbed = e.is_down;
         this->grab_point = e.pos;
+
+        if(!this->grabbed){
+            if(!this->is_hovered()){
+                this->context->cursor_manager.pop(this->arrows_cursor_iter);
+            }
+        }
         
         return true;
     }
@@ -96,6 +105,23 @@ public:
         this->next_widget->move_by(delta);
         
         return true;
+    }
+
+    void on_hover_change(unsigned pointer_id)override{
+        if(this->grabbed){
+            return;
+        }
+
+        if(this->is_hovered() || grabbed){
+            this->arrows_cursor_iter = this->context->cursor_manager.push(
+                    this->owner.is_vertical() ?
+                            morda::mouse_cursor::up_down_arrow
+                        :
+                            morda::mouse_cursor::left_right_arrow
+                );
+        }else{
+            this->context->cursor_manager.pop(this->arrows_cursor_iter);
+        }
     }
 
     void render(const morda::matrix4& matrix)const override{

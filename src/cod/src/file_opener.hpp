@@ -21,30 +21,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <mordavokne/application.hpp>
+#include "tiling_area.hpp"
 
-#include "code_edit.hpp"
-#include "file_tree.hpp"
-
-#include "file_opener.hpp"
+#include <morda/widgets/button/tab.hpp>
 
 namespace cod{
 
-struct command_line_arguments{
-	std::string base_dir;
-};
+class file_opener{
+    std::shared_ptr<tiling_area> base_tiling_area;
 
-class application : public mordavokne::application{
+    std::map<std::string, std::shared_ptr<morda::tab>> open_files;
 public:
-	const command_line_arguments cla;
-
-	cod::file_opener file_opener;
-
-	application(command_line_arguments&& cla);
-
-	static application& inst(){
-		return static_cast<application&>(mordavokne::application::inst());
-	}
+    file_opener(std::shared_ptr<tiling_area> base_tiling_area) :
+            base_tiling_area(std::move(base_tiling_area))
+    {
+        ASSERT(this->base_tiling_area)
+    }
+    
+    void open(std::string_view file_name);
 };
 
 }
