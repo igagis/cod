@@ -68,18 +68,37 @@ public:
         auto delta = e.pos - this->grab_point;
 
         auto trans_index = this->owner.is_vertical() ? 0 : 1;
+        auto long_index = this->owner.is_vertical() ? 1 : 0;
 
         delta[trans_index] = morda::real(0);
 
+        auto new_prev_dims = this->prev_widget->rect().d + delta;
+        auto new_next_dims = this->next_widget->rect().d - delta;
+
+        using std::max;
+
+        // clamp new tile dimensions to minimum tile size
+        new_prev_dims = max(new_prev_dims, morda::vector2(this->owner.min_tile_size));
+        new_next_dims = max(new_next_dims, morda::vector2(this->owner.min_tile_size));
+
+        if(delta[long_index] >= 0){
+            delta = min(delta, this->next_widget->rect().d - new_next_dims);
+        }else{
+            delta = max(delta, new_prev_dims - this->prev_widget->rect().d);
+        }
+
         this->move_by(delta);
 
-        // TODO:
+        this->prev_widget->resize_by(delta);
+
+        this->next_widget->resize_by(-delta);
+        this->next_widget->move_by(delta);
         
-        return false;
+        return true;
     }
 
     void render(const morda::matrix4& matrix)const override{
-        if(this->is_hovered()){
+        if(this->is_hovered() || this->grabbed){
             this->morda::color::render(matrix);
         }
     }

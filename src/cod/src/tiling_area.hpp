@@ -31,11 +31,11 @@ class tiling_area :
         public morda::oriented_widget,
         private morda::container
 {
+    std::shared_ptr<morda::container> content_container;
+public:
     const morda::real min_tile_size;
     const morda::real dragger_size;
 
-    std::shared_ptr<morda::container> content_container;
-public:
     tiling_area(std::shared_ptr<morda::context> c, const treeml::forest& desc);
 
     morda::container& content(){
