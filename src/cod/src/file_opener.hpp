@@ -38,7 +38,7 @@ public:
         ASSERT(this->base_tiling_area)
     }
     
-    void open(std::string_view file_name);
+    void open(const std::string& file_name);
 };
 
 }

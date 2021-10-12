@@ -73,18 +73,32 @@ std::shared_ptr<morda::tab> inflate_tab(const std::shared_ptr<morda::tabbed_book
 }
 }
 
-void file_opener::open(std::string_view file_name){
-    auto tb = this->base_tiling_area->try_get_widget_as<morda::tabbed_book>("tabbed_book");
-    ASSERT(tb)
+void file_opener::open(const std::string& file_name){
+	auto i = this->open_files.find(file_name);
+	if(i != this->open_files.end()){
+		i->second->activate();
+		return;
+	}
 
-    papki::fs_file f(file_name);
-    auto t = f.load();
+    auto book = this->base_tiling_area->try_get_widget_as<morda::tabbed_book>("tabbed_book");
+    ASSERT(book)
 
-    auto p = std::make_shared<editor_page>(tb->context, treeml::forest());
-    p->set_text(utki::to_utf32(std::string(reinterpret_cast<char*>(t.data()), t.size())));
+    papki::fs_file file(file_name);
+    auto bytes = file.load();
 
-    tb->add(
-            inflate_tab(tb, f.not_dir()),
-            p
-        );
+    auto page = std::make_shared<editor_page>(
+			book->context,
+			treeml::forest()
+		);
+    page->set_text(
+			utki::to_utf32(
+					utki::make_string(bytes)
+				)
+		);
+
+	auto tab = inflate_tab(book, file.not_dir());
+
+    book->add(tab, page);
+
+	this->open_files.insert(std::make_pair(file_name, tab));
 }
