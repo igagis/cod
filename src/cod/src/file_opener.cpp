@@ -107,5 +107,5 @@ void file_opener::open(const std::string& file_name){
 
     book.add(tab, page);
 
-	scope_exit.reset();
+	scope_exit.release();
 }
