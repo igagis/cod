@@ -38,8 +38,7 @@ class dragger : public morda::color{
 
     tiling_area& owner;
 
-    // TODO: use morda::mouse_cursor_manager::iterator
-    std::list<morda::mouse_cursor>::iterator arrows_cursor_iter;
+    morda::mouse_cursor_manager::iterator arrows_cursor_iter;
 public:
     std::shared_ptr<morda::widget> prev_widget;
     std::shared_ptr<morda::widget> next_widget;

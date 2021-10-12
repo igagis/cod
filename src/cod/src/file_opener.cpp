@@ -31,8 +31,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 namespace{
-std::shared_ptr<morda::tab> inflate_tab(const std::shared_ptr<morda::tabbed_book>& tb, const std::string& name){
-	auto t = tb->context->inflater.inflate_as<morda::tab>(R"(
+
+const treeml::forest tab_desc = treeml::read(R"(
 		@tab{
 			@row{
 				@text{
@@ -52,13 +52,47 @@ std::shared_ptr<morda::tab> inflate_tab(const std::shared_ptr<morda::tabbed_book
 			}
 		}
 	)");
-	t->get_widget_as<morda::text>("text").set_text(name);
+}
 
-	auto& close_btn = t->get_widget_as<morda::push_button>("close_button");
+void file_opener::open(const std::string& file_name){
+	{
+		auto i = this->open_files.find(file_name);
+		if(i != this->open_files.end()){
+			i->second->activate();
+			return;
+		}
+	}
+
+    auto& book = this->base_tiling_area->get_widget_as<morda::tabbed_book>("tabbed_book");
+
+    papki::fs_file file(file_name);
+    auto bytes = file.load();
+
+    auto page = std::make_shared<editor_page>(
+			book.context,
+			treeml::forest()
+		);
+    page->set_text(
+			utki::to_utf32(
+					utki::make_string(bytes)
+				)
+		);
+
+	auto tab = book.context->inflater.inflate_as<morda::tab>(tab_desc);
+
+	auto iter = this->open_files.insert(std::make_pair(file_name, tab));
+	ASSERT(iter.second)
+	utki::scope_exit scope_exit([this, iter = iter.first]{
+		this->open_files.erase(iter);
+	});
+
+	tab->get_widget_as<morda::text>("text").set_text(papki::not_dir(file_name));
 	
-	close_btn.click_handler = [
-			tabbed_book_wp = utki::make_weak(tb),
-			tab_wp = utki::make_weak(t)
+	tab->get_widget_as<morda::push_button>("close_button").click_handler = [
+			tabbed_book_wp = utki::make_weak_from(book),
+			tab_wp = utki::make_weak(tab),
+			iter = iter.first,
+			this // should be fine, since file_opener instance is in application singleton
 		](morda::push_button& btn)
 	{
 		auto tb = tabbed_book_wp.lock();
@@ -68,37 +102,11 @@ std::shared_ptr<morda::tab> inflate_tab(const std::shared_ptr<morda::tabbed_book
 		ASSERT(t)
 
 		tb->tear_out(*t);
+
+		this->open_files.erase(iter);
 	};
-	return t;
-}
-}
 
-void file_opener::open(const std::string& file_name){
-	auto i = this->open_files.find(file_name);
-	if(i != this->open_files.end()){
-		i->second->activate();
-		return;
-	}
+    book.add(tab, page);
 
-    auto book = this->base_tiling_area->try_get_widget_as<morda::tabbed_book>("tabbed_book");
-    ASSERT(book)
-
-    papki::fs_file file(file_name);
-    auto bytes = file.load();
-
-    auto page = std::make_shared<editor_page>(
-			book->context,
-			treeml::forest()
-		);
-    page->set_text(
-			utki::to_utf32(
-					utki::make_string(bytes)
-				)
-		);
-
-	auto tab = inflate_tab(book, file.not_dir());
-
-    book->add(tab, page);
-
-	this->open_files.insert(std::make_pair(file_name, tab));
+	scope_exit.reset();
 }
