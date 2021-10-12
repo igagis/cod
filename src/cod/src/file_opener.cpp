@@ -65,16 +65,15 @@ void file_opener::open(const std::string& file_name){
 
     auto& book = this->base_tiling_area->get_widget_as<morda::tabbed_book>("tabbed_book");
 
-    papki::fs_file file(file_name);
-    auto bytes = file.load();
-
     auto page = std::make_shared<editor_page>(
 			book.context,
 			treeml::forest()
 		);
     page->set_text(
 			utki::to_utf32(
-					utki::make_string(bytes)
+					utki::make_string(
+							papki::fs_file(file_name).load()
+						)
 				)
 		);
 
