@@ -21,10 +21,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include <list>
+
 namespace cod{
 
 class plugin{
+    typedef std::list<std::reference_wrapper<plugin>> plugins_list_type;
 
+    static plugins_list_type& get_plugins_list();
+
+    plugins_list_type::iterator iter;
+public:
+    plugin();
+    ~plugin();
 };
 
 }
