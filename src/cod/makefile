@@ -15,7 +15,7 @@ this_ldlibs += -lmordavokne-opengl -lmorda -ltreeml -lpapki -lclargs -lutki -rdy
 $(eval $(prorab-build-app))
 
 this_run_name := $(this_name)
-this_test_cmd := cd ../.. && $(prorab_this_name)
+this_test_cmd := cd ../.. && $(prorab_this_name) --plugin=src/plugins/text_editor/out/$(c)/text_editor.so.0
 this_test_deps := $(prorab_this_name)
 this_test_ld_path := $(prorab_space)
 $(eval $(prorab-run))

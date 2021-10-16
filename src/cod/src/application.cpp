@@ -33,6 +33,7 @@ application::application(command_line_arguments&& cla) :
 				}()
 			),
 		cla(std::move(cla)),
+		plugins(this->cla.plugins),
 		file_opener([this]{
 			this->gui.initStandardWidgets(*this->get_res_file());
 	

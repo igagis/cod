@@ -34,6 +34,7 @@ namespace cod{
 
 struct command_line_arguments{
 	std::string base_dir;
+	std::vector<std::string> plugins;
 };
 
 class application : public mordavokne::application{
