@@ -26,6 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "code_edit.hpp"
 #include "file_tree.hpp"
 
+#include "plugin_manager.hpp"
+
 #include "file_opener.hpp"
 
 namespace cod{
@@ -37,6 +39,8 @@ struct command_line_arguments{
 class application : public mordavokne::application{
 public:
 	const command_line_arguments cla;
+
+	plugin_manager plugins;
 
 	cod::file_opener file_opener;
 
