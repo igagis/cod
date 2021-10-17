@@ -10,6 +10,8 @@ this_lib_prefix :=
 
 this_no_install := true
 
+this_cxxflags += -I../../libcodplugin/src
+
 this_srcs = $(call prorab-src-dir, src)
 
 $(eval $(prorab-build-lib))

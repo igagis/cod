@@ -4,6 +4,8 @@
 
 namespace cod{
 
-class
+class text_editor_plugin : public cod::plugin{
+
+};
 
 }
