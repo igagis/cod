@@ -8,16 +8,21 @@ this_srcs += $(call prorab-src-dir,src)
 
 $(eval $(call prorab-config, ../../config))
 
-this_cxxflags += -I../3rd_party
+this_cxxflags += -I ../libcod/src
 
-this_ldlibs += -lmordavokne-opengl -lmorda -ltreeml -lpapki -lclargs -lutki -rdynamic -lm
+this_libcod := ../libcod/out/$(c)/libcod.so
+
+this_ldflags += -L $(dir $(this_libcod))
+this_ldlibs += -lcod -lmordavokne-opengl -lmorda -ltreeml -lpapki -lclargs -lutki -rdynamic -lm
 
 $(eval $(prorab-build-app))
 
+$(eval $(call prorab-depend, $(prorab_this_name), $(this_libcod)))
+
 this_run_name := $(this_name)
-this_test_cmd := cd ../.. && $(prorab_this_name) --plugin=src/plugins/text_editor/out/$(c)/text_editor.so.$(shell cat $(d)../libcodplugin/soname.txt)
+this_test_cmd := cd ../.. && $(prorab_this_name) --plugin=src/plugins/text_editor/out/$(c)/text_editor.so.$(shell cat $(d)../libcod/soname.txt)
 this_test_deps := $(prorab_this_name)
-this_test_ld_path := $(prorab_space)
+this_test_ld_path := src/cod/$(dir $(this_libcod))
 $(eval $(prorab-run))
 
 this_license_file := ../../LICENSE

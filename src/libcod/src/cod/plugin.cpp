@@ -19,36 +19,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* ================ LICENSE END ================ */
 
-#pragma once
+#include "plugin.hpp"
 
-#include <mordavokne/application.hpp>
+#include <functional>
 
-#include "file_tree.hpp"
+using namespace cod;
 
-#include <cod/plugin_manager.hpp>
+plugin::plugin_list_type& plugin::get_plugin_list(){
+    static plugin_list_type plugin_list;
+    return plugin_list;
+}
 
-#include "file_opener.hpp"
+plugin::plugin(){
+    // std::cout << "plugin::contructor(): enter" << std::endl;
+    auto& list = get_plugin_list();
+    list.push_back(*this);
+    this->iter = std::prev(list.end());
+}
 
-namespace cod{
-
-struct command_line_arguments{
-	std::string base_dir;
-	std::vector<std::string> plugins;
-};
-
-class application : public mordavokne::application{
-public:
-	const command_line_arguments cla;
-
-	plugin_manager plugins;
-
-	cod::file_opener file_opener;
-
-	application(command_line_arguments&& cla);
-
-	static application& inst(){
-		return static_cast<application&>(mordavokne::application::inst());
-	}
-};
-
+plugin::~plugin(){
+    auto& list = get_plugin_list();
+    list.erase(this->iter);
 }

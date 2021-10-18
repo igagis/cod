@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <morda/widgets/group/tabbed_book.hpp>
 #include <morda/widgets/label/text.hpp>
 
-#include "editor_page.hpp"
+#include "application.hpp"
 
 using namespace cod;
 
@@ -65,17 +65,8 @@ void file_opener::open(const std::string& file_name){
 
     auto& book = this->base_tiling_area->get_widget_as<morda::tabbed_book>("tabbed_book");
 
-    auto page = std::make_shared<editor_page>(
-			book.context,
-			treeml::forest()
-		);
-    page->set_text(
-			utki::to_utf32(
-					utki::make_string(
-							papki::fs_file(file_name).load()
-						)
-				)
-		);
+    auto page = application::inst().plugins.open_file(book.context, file_name);
+	ASSERT(page)
 
 	auto tab = book.context->inflater.inflate_as<morda::tab>(tab_desc);
 

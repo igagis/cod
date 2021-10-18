@@ -22,25 +22,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <list>
-#include <memory>
+
+#include <utki/span.hpp>
 
 #include <morda/widgets/group/book.hpp>
 
+#include "plugin.hpp"
+
 namespace cod{
 
-class plugin{
-    typedef std::list<std::reference_wrapper<plugin>> plugins_list_type;
-
-    static plugins_list_type& get_plugins_list();
-
-    plugins_list_type::iterator iter;
+class plugin_manager{
+    void load(const std::string& file_name);
 public:
-    plugin();
-    virtual ~plugin();
+    plugin_manager(utki::span<const std::string> plugins);
 
-    virtual std::shared_ptr<morda::page> open_file(std::string_view file_name){
-        return nullptr;
-    }
+    std::shared_ptr<morda::page> open_file(const std::shared_ptr<morda::context> context, const std::string& file_name);
 };
 
 }

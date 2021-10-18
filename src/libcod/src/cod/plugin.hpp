@@ -19,24 +19,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* ================ LICENSE END ================ */
 
-#include "plugin.hpp"
+#pragma once
 
-#include <functional>
+#include <list>
+#include <memory>
 
-using namespace cod;
+#include <morda/widgets/group/book.hpp>
 
-plugin::plugins_list_type& plugin::get_plugins_list(){
-    static plugins_list_type plugins_list;
-    return plugins_list;
-}
+namespace cod{
 
-plugin::plugin(){
-    auto& list = get_plugins_list();
-    list.push_back(*this);
-    this->iter = std::prev(list.end());
-}
+class plugin{
+    friend class plugin_manager;
 
-plugin::~plugin(){
-    auto& list = get_plugins_list();
-    list.erase(this->iter);
+    typedef std::list<std::reference_wrapper<plugin>> plugin_list_type;
+
+    static plugin::plugin_list_type& get_plugin_list();
+
+    plugin_list_type::iterator iter;
+public:
+    plugin();
+    virtual ~plugin();
+
+    virtual std::shared_ptr<morda::page> open_file(const std::shared_ptr<morda::context> context, std::string_view file_name){
+        return nullptr;
+    }
+};
+
 }

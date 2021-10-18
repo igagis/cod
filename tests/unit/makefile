@@ -3,11 +3,13 @@ include prorab-test.mk
 
 $(eval $(call prorab-config, ../../config))
 
+this_no_install := true
+
 this_name := unit_tests
 
 this_srcs := $(call prorab-src-dir, src)
 
-this_srcs += ../../src/cod/src/synhi/regex_highlighter.cpp
+this_srcs += ../../src/libcod/src/cod/synhi/regex_highlighter.cpp
 
 this_cxxflags += -I../../src -I../../src/3rd_party
 

@@ -21,11 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <srell.hpp>
-
 #include "highlighter.hpp"
 
 #include <treeml/tree.hpp>
+
+#include "../../../../3rd_party/srell.hpp"
 
 namespace synhi{
 

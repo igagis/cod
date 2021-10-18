@@ -37,7 +37,6 @@ application::application(command_line_arguments&& cla) :
 		file_opener([this]{
 			this->gui.initStandardWidgets(*this->get_res_file());
 	
-			this->gui.context->inflater.register_widget<code_edit>("code_edit");
 			this->gui.context->inflater.register_widget<file_tree>("file_tree");
 			this->gui.context->inflater.register_widget<tiling_area>("tiling_area");
 
