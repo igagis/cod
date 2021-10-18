@@ -32,6 +32,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace cod{
 
 class plugin_manager{
+    friend class plugin;
+
+    typedef std::list<std::reference_wrapper<plugin>> plugin_list_type;
+
+    static plugin_list_type& get_plugin_list();
+
+    static void register_plugin(plugin& p);
+    static void unregister_plugin(plugin& p);
+
     void load(const std::string& file_name);
 public:
     plugin_manager(utki::span<const std::string> plugins);

@@ -21,21 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <list>
-#include <memory>
-
 #include <morda/widgets/group/book.hpp>
 
 namespace cod{
 
 class plugin{
-    friend class plugin_manager;
-
-    typedef std::list<std::reference_wrapper<plugin>> plugin_list_type;
-
-    static plugin::plugin_list_type& get_plugin_list();
-
-    plugin_list_type::iterator iter;
 public:
     plugin();
     virtual ~plugin();

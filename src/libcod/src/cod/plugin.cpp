@@ -21,23 +21,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "plugin.hpp"
 
-#include <functional>
+#include "plugin_manager.hpp"
 
 using namespace cod;
 
-plugin::plugin_list_type& plugin::get_plugin_list(){
-    static plugin_list_type plugin_list;
-    return plugin_list;
-}
-
 plugin::plugin(){
     // std::cout << "plugin::contructor(): enter" << std::endl;
-    auto& list = get_plugin_list();
-    list.push_back(*this);
-    this->iter = std::prev(list.end());
+    plugin_manager::register_plugin(*this);
 }
 
 plugin::~plugin(){
-    auto& list = get_plugin_list();
-    list.erase(this->iter);
+    plugin_manager::unregister_plugin(*this);
 }
