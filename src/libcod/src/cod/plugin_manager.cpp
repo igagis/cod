@@ -46,8 +46,10 @@ void plugin_manager::register_plugin(plugin& p){
 }
 
 void plugin_manager::unregister_plugin(plugin& p){
-    // TODO:
-    ASSERT(false)
+    auto& list = get_plugin_list();
+    auto i = std::find_if(list.begin(), list.end(), [&](const auto& prw){return &prw.get() == &p;});
+    ASSERT(i != list.end())
+    list.erase(i);
 }
 
 plugin_manager::plugin_manager(utki::span<const std::string> plugins){
