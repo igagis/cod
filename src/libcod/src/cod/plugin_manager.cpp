@@ -34,49 +34,72 @@ const unsigned soname =
 #include "../../soname.txt"
     ;
 }
+namespace{
+plugin* just_loaded_plugin = nullptr;
 
-plugin_manager::plugin_list_type& plugin_manager::get_plugin_list(){
-    static plugin_list_type plugin_list;
-    return plugin_list;
+struct plugin_info{
+    plugin& instance;
+    void* dl_handle;
+};
+
+typedef std::list<plugin_info> plugin_list_type;
+
+plugin_list_type plugin_list;
 }
 
 void plugin_manager::register_plugin(plugin& p){
-    auto& list = get_plugin_list();
-    list.push_back(p);
+    just_loaded_plugin = &p;
 }
 
-void plugin_manager::unregister_plugin(plugin& p){
-    auto& list = get_plugin_list();
-    auto i = std::find_if(list.begin(), list.end(), [&](const auto& prw){return &prw.get() == &p;});
-    ASSERT(i != list.end())
-    list.erase(i);
-}
-
-plugin_manager::plugin_manager(utki::span<const std::string> plugins){
-    for(const auto& fn : plugins){
-        this->load(fn);
-    }
-}
-
-void plugin_manager::load(const std::string& file_name){
+namespace{
+void load_plugin(const std::string& file_name){
     // std::cout << "loading plugin " << file_name << std::endl;
+    
+    ASSERT(!just_loaded_plugin)
+
     auto handle = dlopen(
             file_name.c_str(),
             RTLD_NOW
                     | RTLD_GLOBAL // allow global visibility, as some plugins may depend on another ones
         );
     if(handle == nullptr){
-        throw std::runtime_error("could not load plugin"s + file_name);
+        throw std::runtime_error("could not load plugin: "s + file_name);
     }
+    ASSERT(just_loaded_plugin)
+
+    plugin_list.push_back(
+        plugin_info{
+            .instance = *just_loaded_plugin,
+            .dl_handle = handle
+        }
+    );
+
+    just_loaded_plugin = nullptr;
+
     // std::cout << "plugin loaded" << std::endl;
+}
+}
+
+plugin_manager::plugin_manager(utki::span<const std::string> plugins){
+    for(const auto& plugin_file_name : plugins){
+        load_plugin(plugin_file_name);
+    }
+}
+
+plugin_manager::~plugin_manager(){
+    while(!plugin_list.empty()){
+        if(dlclose(plugin_list.back().dl_handle) != 0){
+            ASSERT(false, [](auto& o){o << "dlclose() failed: " << dlerror();})
+        }
+        plugin_list.pop_back();
+    }
 }
 
 std::shared_ptr<morda::page> plugin_manager::open_file(const std::shared_ptr<morda::context> context, const std::string& file_name){
     // std::cout << "plugin_manager::open_file(): enter" << std::endl;
-    auto& plugins = get_plugin_list();
-    for(auto i = plugins.rbegin(); i != plugins.rend(); ++i){
+    for(auto i = plugin_list.rbegin(); i != plugin_list.rend(); ++i){
         // std::cout << "trying plugin" << std::endl;
-        auto page = i->get().open_file(context, file_name);
+        auto page = i->instance.open_file(context, file_name);
         if(page){
             return page;
         }

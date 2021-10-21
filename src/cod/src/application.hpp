@@ -40,9 +40,11 @@ class application : public mordavokne::application{
 public:
 	const command_line_arguments cla;
 
-	plugin_manager plugins;
-
 	cod::file_opener file_opener;
+
+	// this goes as last member to be sure the all the other members are initialized
+	// before loading plugins
+	plugin_manager plugins;
 
 	application(command_line_arguments&& cla);
 

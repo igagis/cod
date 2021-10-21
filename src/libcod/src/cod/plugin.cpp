@@ -29,7 +29,3 @@ plugin::plugin(){
     // std::cout << "plugin::contructor(): enter" << std::endl;
     plugin_manager::register_plugin(*this);
 }
-
-plugin::~plugin(){
-    plugin_manager::unregister_plugin(*this);
-}

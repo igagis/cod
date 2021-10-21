@@ -28,7 +28,7 @@ namespace cod{
 class plugin{
 public:
     plugin();
-    virtual ~plugin();
+    virtual ~plugin(){}
 
     virtual std::shared_ptr<morda::page> open_file(const std::shared_ptr<morda::context> context, std::string_view file_name){
         return nullptr;

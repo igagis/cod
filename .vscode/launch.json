@@ -9,10 +9,10 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/src/cod/out/dbg/cod",
-            "args": [],
+            "args": ["--plugin=src/plugins/text_editor/out/dbg/text_editor.so.0"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [],
+            "environment": [{"name": "LD_LIBRARY_PATH", "value": "src/libcod/out/dbg"}],
             "externalConsole": false,
             "MIMode": "gdb",
             "setupCommands": [

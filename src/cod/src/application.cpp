@@ -33,7 +33,6 @@ application::application(command_line_arguments&& cla) :
 				}()
 			),
 		cla(std::move(cla)),
-		plugins(this->cla.plugins),
 		file_opener([this]{
 			this->gui.initStandardWidgets(*this->get_res_file());
 	
@@ -66,5 +65,6 @@ application::application(command_line_arguments&& cla) :
 			};
 
 			return c.try_get_widget_as<tiling_area>("base_tiling_area");
-		}())
+		}()),
+		plugins(this->cla.plugins)
 {}

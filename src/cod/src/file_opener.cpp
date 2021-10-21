@@ -91,7 +91,9 @@ void file_opener::open(const std::string& file_name){
 		auto t = tab_wp.lock();
 		ASSERT(t)
 
-		tb->tear_out(*t);
+		btn.context->run_from_ui_thread([tb, t]{
+			tb->tear_out(*t);
+		});
 
 		this->open_files.erase(iter);
 	};
