@@ -19,3 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* ================ LICENSE END ================ */
 
+#include "plugin.hpp"
+
+using namespace cod;
+
+namespace{
+text_editor_plugin plugin_instance;
+}

@@ -36,6 +36,7 @@ const unsigned soname =
 }
 namespace{
 plugin* just_loaded_plugin = nullptr;
+std::string_view just_loaded_plugin_file_name;
 
 struct plugin_info{
     plugin& instance;
@@ -48,6 +49,11 @@ plugin_list_type plugin_list;
 }
 
 void plugin_manager::register_plugin(plugin& p){
+    if(just_loaded_plugin){
+        std::stringstream ss;
+        ss << "tried creating more than one plugin instance while loading plugin shared library: " << just_loaded_plugin_file_name;
+        throw std::logic_error(ss.str());
+    }
     just_loaded_plugin = &p;
 }
 
@@ -56,6 +62,14 @@ void load_plugin(const std::string& file_name){
     // std::cout << "loading plugin " << file_name << std::endl;
     
     ASSERT(!just_loaded_plugin)
+
+    // When loading shared library file it will construct static objects, but in case those constructors
+    // throw exception, the exception is not thrown by dlopen(), instead it is considered uncaught and terminate() is called.
+    // Because it is not possible to catch the exception from outside of dlopen(), we need to "inject" information needed
+    // for informative error reporting to the throwing code inside shared library via static variables.
+
+    // save plugin file name for informative error reporting
+    just_loaded_plugin_file_name = file_name;
 
     auto handle = dlopen(
             file_name.c_str(),

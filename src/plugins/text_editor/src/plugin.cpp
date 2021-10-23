@@ -27,10 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-namespace{
-text_editor_plugin plugin_instance;
-}
-
 std::shared_ptr<morda::page> text_editor_plugin::open_file(const std::shared_ptr<morda::context> context, std::string_view file_name){
     auto page = std::make_shared<editor_page>(
 			context,
