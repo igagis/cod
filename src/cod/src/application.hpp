@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <mordavokne/application.hpp>
 
-#include "file_tree.hpp"
+#include "context.hpp"
 
 #include <cod/plugin_manager.hpp>
 
@@ -40,7 +40,7 @@ class application : public mordavokne::application{
 public:
 	const command_line_arguments cla;
 
-	cod::file_opener file_opener;
+	cod::context context;
 
 	// this goes as last member to be sure the all the other members are initialized
 	// before loading plugins

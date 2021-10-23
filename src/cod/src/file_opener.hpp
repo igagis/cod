@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <morda/widgets/button/tab.hpp>
 
+#include "gui.hpp"
+
 namespace cod{
 
 class file_opener{
