@@ -96,7 +96,7 @@ auto file_tree::file_tree_provider::read_files(utki::span<const size_t> index)co
 	LOG([&](auto&o){o << std::endl;})
 #endif
 
-	auto dir_name = cod::application::inst().cla.base_dir + make_path(index, this->cache);
+	auto dir_name = cod::application::inst().context.base_dir + make_path(index, this->cache);
 
 	LOG([&](auto&o){o << "dir_name = " << dir_name << std::endl;})
 

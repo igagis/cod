@@ -21,18 +21,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "application.hpp"
 
-#include "file_tree.hpp"
-#include "tiling_area.hpp"
+#include "command_line_args.hpp"
 
 using namespace cod;
 
-application::application(command_line_arguments&& cla) :
+application::application(command_line_args&& cla) :
 		mordavokne::application(
 				"cod",
 				[](){
 					return mordavokne::window_params(r4::vector2<unsigned>(1024, 768));
 				}()
 			),
-		cla(std::move(cla)),
-		plugins(this->cla.plugins)
+		context(std::move(cla))
 {}

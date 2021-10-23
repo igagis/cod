@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace{
 mordavokne::application_factory app_fac([](auto args) -> std::unique_ptr<mordavokne::application>{
-	cod::command_line_arguments cla;
+	cod::command_line_args cla;
 
 	clargs::parser p;
 
