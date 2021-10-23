@@ -38,7 +38,7 @@ editor_page::editor_page(std::shared_ptr<morda::context> context, const treeml::
 			this,
 			hl = std::make_shared<synhi::regex_highlighter>(
 					std::make_shared<synhi::regex_highlighter_model>(
-							treeml::read(papki::fs_file("highlight/xml.3ml"))
+							treeml::read(papki::fs_file("highlight/xml.tml"))
 						)
 				)
 		]

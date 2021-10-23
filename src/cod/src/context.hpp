@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utki/singleton.hpp>
+
 #include "command_line_args.hpp"
 
 #include "gui.hpp"
@@ -9,7 +11,8 @@
 
 namespace cod{
 
-class context{
+// TODO: make intrusive_singleton
+class context : public utki::singleton<context>{
     friend class application;
     
     context(command_line_args&& cla);
