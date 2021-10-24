@@ -23,14 +23,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <papki/fs_file.hpp>
 
-#include <cod/editor_page.hpp>
+#include <cod/text_editor_page.hpp>
 
 using namespace cod;
 
 std::shared_ptr<morda::page> text_editor_plugin::open_file(const std::shared_ptr<morda::context> context, std::string_view file_name){
-    auto page = std::make_shared<editor_page>(
+    auto page = std::make_shared<text_editor_page>(
 			context,
-			treeml::forest()
+			std::string(file_name)
 		);
     page->set_text(
 			utki::to_utf32(

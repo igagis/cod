@@ -23,20 +23,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <morda/widgets/group/book.hpp>
 
-#include "code_edit.hpp"
-
 namespace cod{
 
-class editor_page :
-		public morda::page,
-		private code_edit
+class editor_page : public morda::page
 {
-public:
-	editor_page(std::shared_ptr<morda::context> context, const treeml::forest& desc);
+	const std::string file_name;
 
-	void set_text(std::u32string&& text){
-		this->code_edit::set_text(std::move(text));
-	}
+public:
+	editor_page(
+			std::shared_ptr<morda::context> context,
+			std::string&& file_name
+		);
 };
 
 }

@@ -16,6 +16,8 @@ public:
     std::shared_ptr<tiling_area> get_tiling_area(){
         return this->editors_tiling_area;
     }
+
+    // void open_editor(std::shared_ptr<morda::page> page, )
 };
 
 }

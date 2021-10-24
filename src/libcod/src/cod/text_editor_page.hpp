@@ -21,29 +21,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include "tiling_area.hpp"
+#include <morda/widgets/group/book.hpp>
 
-#include <morda/widgets/button/tab.hpp>
-
-#include "gui.hpp"
+#include "editor_page.hpp"
+#include "code_edit.hpp"
 
 namespace cod{
 
-class file_opener{
-    cod::gui& gui;
-
-    std::shared_ptr<tiling_area> base_tiling_area; // TODO: remove
-
-    std::map<std::string, std::shared_ptr<morda::tab>> open_files;
+class text_editor_page :
+		public editor_page,
+		private code_edit
+{
 public:
-    file_opener(std::shared_ptr<tiling_area> base_tiling_area, cod::gui& gui) :
-            gui(gui),
-            base_tiling_area(std::move(base_tiling_area))
-    {
-        ASSERT(this->base_tiling_area)
-    }
-    
-    void open(const std::string& file_name);
+	text_editor_page(
+            std::shared_ptr<morda::context> context,
+            std::string&& file_name
+        );
+
+	void set_text(std::u32string&& text){
+		this->code_edit::set_text(std::move(text));
+	}
 };
 
 }
