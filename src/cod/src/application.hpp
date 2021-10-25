@@ -23,9 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <mordavokne/application.hpp>
 
-#include "context.hpp"
-
-#include "command_line_args.hpp"
+#include <cod/context.hpp>
+#include <cod/command_line_args.hpp>
 
 namespace cod{
 

@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <morda/widgets/proxy/resize_proxy.hpp>
 #include <morda/widgets/proxy/mouse_proxy.hpp>
 
-#include "application.hpp"
+#include "context.hpp"
 
 using namespace cod;
 

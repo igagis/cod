@@ -30,18 +30,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace cod{
 
 class file_opener{
-    cod::gui& gui;
-
-    std::shared_ptr<tiling_area> base_tiling_area; // TODO: remove
+    context& owner;
 
     std::map<std::string, std::shared_ptr<morda::tab>> open_files;
 public:
-    file_opener(std::shared_ptr<tiling_area> base_tiling_area, cod::gui& gui) :
-            gui(gui),
-            base_tiling_area(std::move(base_tiling_area))
-    {
-        ASSERT(this->base_tiling_area)
-    }
+    file_opener(context& owner) :
+            owner(owner)
+    {}
     
     void open(const std::string& file_name);
 };

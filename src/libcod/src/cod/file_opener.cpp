@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <morda/widgets/group/tabbed_book.hpp>
 #include <morda/widgets/label/text.hpp>
 
-#include "application.hpp"
+#include "context.hpp"
 
 using namespace cod;
 
@@ -63,9 +63,11 @@ void file_opener::open(const std::string& file_name){
 		}
 	}
 
-    auto& book = this->base_tiling_area->get_widget_as<morda::tabbed_book>("tabbed_book");
+	auto& ctx = context::inst();
 
-	auto page = application::inst().context.plugins.open_file(book.context, file_name);
+    auto& book = ctx.gui.get_tiling_area()->get_widget_as<morda::tabbed_book>("tabbed_book");
+
+	auto page = ctx.plugins.open_file(book.context, file_name);
 	ASSERT(page)
 
 	auto tab = book.context->inflater.inflate_as<morda::tab>(tab_desc);

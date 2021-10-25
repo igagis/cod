@@ -1,14 +1,14 @@
 #include "gui.hpp"
 
-#include "application.hpp"
+#include "context.hpp"
 
 #include "file_tree.hpp"
 
 using namespace cod;
 
-gui::gui(){
-    auto& app = application::inst();
-
+gui::gui(mordavokne::application& app, context& owner) :
+        owner(owner)
+{
     app.gui.initStandardWidgets(*app.get_res_file());
 	
     app.gui.context->inflater.register_widget<file_tree>("file_tree");
@@ -36,8 +36,12 @@ gui::gui(){
             return;
         }
 
-        application::inst().context.file_opener.open(file_name);
+        context::inst().file_opener.open(file_name);
     };
 
     this->editors_tiling_area = c.try_get_widget_as<tiling_area>("base_tiling_area");
+}
+
+void gui::open_editor(std::shared_ptr<editor_page> page){
+    
 }
