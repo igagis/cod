@@ -25,8 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace cod{
 
-class editor_page : public morda::page
-{
+class editor_page : public morda::page{
 	const std::string file_name;
 
 public:

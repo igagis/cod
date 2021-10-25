@@ -30,14 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace cod{
 
 class file_opener{
-    context& owner;
-
     std::map<std::string, std::shared_ptr<morda::tab>> open_files;
-public:
-    file_opener(context& owner) :
-            owner(owner)
-    {}
-    
+public:    
     void open(const std::string& file_name);
 };
 

@@ -12,11 +12,9 @@ class context;
 class gui{
     friend class context;
 
-    context& owner;
-
     std::shared_ptr<tiling_area> editors_tiling_area;
 
-    gui(mordavokne::application& app, context& owner);
+    gui(mordavokne::application& app);
 public:
 
     // TODO: remove this method

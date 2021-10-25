@@ -6,9 +6,7 @@
 
 using namespace cod;
 
-gui::gui(mordavokne::application& app, context& owner) :
-        owner(owner)
-{
+gui::gui(mordavokne::application& app){
     app.gui.initStandardWidgets(*app.get_res_file());
 	
     app.gui.context->inflater.register_widget<file_tree>("file_tree");
