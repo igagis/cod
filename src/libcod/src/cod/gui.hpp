@@ -16,6 +16,7 @@ class gui{
 
     gui(mordavokne::application& app);
 public:
+    const std::shared_ptr<morda::context> morda_context;
 
     // TODO: remove this method
     std::shared_ptr<tiling_area> get_tiling_area(){

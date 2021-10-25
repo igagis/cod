@@ -6,7 +6,9 @@
 
 using namespace cod;
 
-gui::gui(mordavokne::application& app){
+gui::gui(mordavokne::application& app) :
+        morda_context(app.gui.context)
+{
     app.gui.initStandardWidgets(*app.get_res_file());
 	
     app.gui.context->inflater.register_widget<file_tree>("file_tree");
@@ -41,5 +43,5 @@ gui::gui(mordavokne::application& app){
 }
 
 void gui::open_editor(std::shared_ptr<editor_page> page){
-    
+    // TODO:
 }

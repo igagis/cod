@@ -67,7 +67,7 @@ void file_opener::open(const std::string& file_name){
 
     auto& book = ctx.gui.get_tiling_area()->get_widget_as<morda::tabbed_book>("tabbed_book");
 
-	auto page = ctx.plugins.open_file(book.context, file_name);
+	auto page = ctx.plugins.open_file(file_name);
 	ASSERT(page)
 
 	auto tab = book.context->inflater.inflate_as<morda::tab>(tab_desc);
