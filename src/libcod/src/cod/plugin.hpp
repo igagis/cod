@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <morda/widgets/group/book.hpp>
+#include "editor_page.hpp"
 
 namespace cod{
 
@@ -30,7 +30,11 @@ public:
     plugin();
     virtual ~plugin(){}
 
-    virtual std::shared_ptr<morda::page> open_file(const std::shared_ptr<morda::context>& context, std::string_view file_name){
+    virtual std::shared_ptr<editor_page> open_file(
+            const std::shared_ptr<morda::context>& context,
+            std::string_view file_name
+        )
+    {
         return nullptr;
     }
 };

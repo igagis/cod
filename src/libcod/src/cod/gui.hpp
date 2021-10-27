@@ -11,19 +11,15 @@ class context;
 
 class gui{
     friend class context;
+    friend class file_opener;
 
     std::shared_ptr<tiling_area> editors_tiling_area;
 
     gui(mordavokne::application& app);
-public:
-    const std::shared_ptr<morda::context> morda_context;
-
-    // TODO: remove this method
-    std::shared_ptr<tiling_area> get_tiling_area(){
-        return this->editors_tiling_area;
-    }
 
     void open_editor(std::shared_ptr<editor_page> page);
+public:
+    const std::shared_ptr<morda::context> morda_context;
 };
 
 }

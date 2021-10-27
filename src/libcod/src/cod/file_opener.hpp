@@ -21,16 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include "tiling_area.hpp"
-
-#include <morda/widgets/button/tab.hpp>
-
 #include "gui.hpp"
 
 namespace cod{
 
 class file_opener{
-    std::map<std::string, std::shared_ptr<morda::tab>> open_files;
+    std::map<std::string, std::shared_ptr<editor_page>> open_files;
 public:    
     void open(const std::string& file_name);
 };

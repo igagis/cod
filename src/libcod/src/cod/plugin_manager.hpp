@@ -41,7 +41,7 @@ public:
     plugin_manager(utki::span<const std::string> plugins);
     ~plugin_manager();
 
-    std::shared_ptr<morda::page> open_file(const std::string& file_name);
+    std::shared_ptr<editor_page> open_file(const std::string& file_name);
 };
 
 }

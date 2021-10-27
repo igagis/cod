@@ -26,9 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace cod{
 
 class editor_page : public morda::page{
+public:
 	const std::string file_name;
 
-public:
 	editor_page(
 			std::shared_ptr<morda::context> context,
 			std::string&& file_name

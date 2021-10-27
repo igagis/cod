@@ -110,7 +110,7 @@ plugin_manager::~plugin_manager(){
     }
 }
 
-std::shared_ptr<morda::page> plugin_manager::open_file(const std::string& file_name){
+std::shared_ptr<editor_page> plugin_manager::open_file(const std::string& file_name){
     // std::cout << "plugin_manager::open_file(): enter" << std::endl;
     for(auto i = plugin_list.rbegin(); i != plugin_list.rend(); ++i){
         // std::cout << "trying plugin" << std::endl;

@@ -21,38 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "file_opener.hpp"
 
-#include <papki/fs_file.hpp>
-
-#include <morda/widgets/group/tabbed_book.hpp>
-#include <morda/widgets/label/text.hpp>
-
 #include "context.hpp"
 
 using namespace cod;
-
-namespace{
-
-const treeml::forest tab_desc = treeml::read(R"(
-		@tab{
-			@row{
-				@text{
-					id{text}
-					text{cube}
-				}
-				@push_button{
-					id{close_button}
-					@image{
-						layout{
-							dx { 8dp }
-							dy { 8dp }
-						}
-						image{morda_img_close}
-					}
-				}
-			}
-		}
-	)");
-}
 
 void file_opener::open(const std::string& file_name){
 	{
@@ -65,42 +36,13 @@ void file_opener::open(const std::string& file_name){
 
 	auto& ctx = context::inst();
 
-    auto& book = ctx.gui.get_tiling_area()->get_widget_as<morda::tabbed_book>("tabbed_book");
-
 	auto page = ctx.plugins.open_file(file_name);
 	ASSERT(page)
 
-	auto tab = book.context->inflater.inflate_as<morda::tab>(tab_desc);
+	ctx.gui.open_editor(page);
 
-	auto iter = this->open_files.insert(std::make_pair(file_name, tab));
+	auto iter = this->open_files.insert(std::make_pair(file_name, std::move(page)));
 	ASSERT(iter.second)
-	utki::scope_exit scope_exit([this, iter = iter.first]{
-		this->open_files.erase(iter);
-	});
 
-	tab->get_widget_as<morda::text>("text").set_text(papki::not_dir(file_name));
-	
-	tab->get_widget_as<morda::push_button>("close_button").click_handler = [
-			tabbed_book_wp = utki::make_weak_from(book),
-			tab_wp = utki::make_weak(tab),
-			iter = iter.first,
-			this // should be fine, since file_opener instance is in application singleton
-		](morda::push_button& btn)
-	{
-		auto tb = tabbed_book_wp.lock();
-		ASSERT(tb)
-
-		auto t = tab_wp.lock();
-		ASSERT(t)
-
-		btn.context->run_from_ui_thread([tb, t]{
-			tb->tear_out(*t);
-		});
-
-		this->open_files.erase(iter);
-	};
-
-    book.add(tab, page);
-
-	scope_exit.release();
+	// TODO: remove from open files on page tear out
 }
