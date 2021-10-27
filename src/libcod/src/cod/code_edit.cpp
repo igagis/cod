@@ -279,7 +279,7 @@ void code_edit::start_cursor_blinking(){
 	this->context->updater->stop(*this);
 	this->cursor_blink_visible = true;
 	this->context->updater->start(
-			utki::make_shared_from(*static_cast<updateable*>(this)),
+			utki::make_weak_from(*static_cast<updateable*>(this)),
 			cursor_blink_period_ms
 		);
 }
