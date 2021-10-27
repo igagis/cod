@@ -28,7 +28,7 @@ namespace cod{
 class file_opener{
     friend class editor_page;
 
-    std::map<std::string, std::shared_ptr<editor_page>> open_files;
+    std::map<std::string, std::weak_ptr<editor_page>> open_files;
 public:    
     void open(const std::string& file_name);
 };

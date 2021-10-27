@@ -29,7 +29,9 @@ void file_opener::open(const std::string& file_name){
 	{
 		auto i = this->open_files.find(file_name);
 		if(i != this->open_files.end()){
-			i->second->activate();
+			if(auto p = i->second.lock()){
+				p->activate();
+			}
 			return;
 		}
 	}
