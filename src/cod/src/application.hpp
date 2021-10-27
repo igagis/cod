@@ -33,11 +33,6 @@ public:
 	cod::context context;
 
 	application(command_line_args&& cla);
-
-	// TODO: remove
-	static application& inst(){
-		return static_cast<application&>(mordavokne::application::inst());
-	}
 };
 
 }
