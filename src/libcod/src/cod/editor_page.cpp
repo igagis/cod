@@ -21,6 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "editor_page.hpp"
 
+#include "context.hpp"
+#include "file_opener.hpp"
+
 using namespace cod;
 
 editor_page::editor_page(std::shared_ptr<morda::context> context) :
@@ -29,5 +32,13 @@ editor_page::editor_page(std::shared_ptr<morda::context> context) :
 {}
 
 void editor_page::on_tear_out()noexcept{
-	// TODO:
+
+	// remove the page from list of open files
+
+	auto& ctx = context::inst();
+
+	auto i = ctx.file_opener.open_files.find(file_name);
+	if(i != ctx.file_opener.open_files.end()){
+		ctx.file_opener.open_files.erase(i);
+	}
 }
