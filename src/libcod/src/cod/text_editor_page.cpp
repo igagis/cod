@@ -11,7 +11,7 @@ text_editor_page::text_editor_page(
         std::string&& file_name
     ) :
 		morda::widget(std::move(context), treeml::forest()),
-		editor_page(this->context, std::move(file_name)),
+		editor_page(this->context),
 		code_edit(this->context, treeml::forest())
 {
 	// TODO: for now we set XML syntax highlighter for each code edit page,

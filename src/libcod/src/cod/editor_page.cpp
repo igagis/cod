@@ -23,12 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-editor_page::editor_page(
-		std::shared_ptr<morda::context> context,
-		std::string&& file_name
-	) :
+editor_page::editor_page(std::shared_ptr<morda::context> context) :
 		morda::widget(std::move(context), treeml::forest()),
-		morda::page(this->context, treeml::forest()),
-		file_name(std::move(file_name))
-{
+		morda::page(this->context, treeml::forest())
+{}
+
+void editor_page::on_tear_out()noexcept{
+	// TODO:
 }
