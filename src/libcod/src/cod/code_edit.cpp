@@ -271,7 +271,6 @@ void code_edit::on_focus_change(){
 		this->start_cursor_blinking();
 	}else{
 		this->context->updater->stop(*this);
-		this->cursors.clear();
 	}
 }
 

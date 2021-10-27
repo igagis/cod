@@ -41,6 +41,14 @@ public:
 	void set_text(std::u32string&& text){
 		this->code_edit::set_text(std::move(text));
 	}
+
+	void on_show()override{
+		this->focus();
+	}
+
+	void on_hide()noexcept override{
+		this->unfocus();
+	}
 };
 
 }
