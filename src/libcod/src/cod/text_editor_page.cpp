@@ -6,10 +6,7 @@
 
 using namespace cod;
 
-text_editor_page::text_editor_page(
-        std::shared_ptr<morda::context> context,
-        std::string&& file_name
-    ) :
+text_editor_page::text_editor_page(std::shared_ptr<morda::context> context) :
 		morda::widget(std::move(context), treeml::forest()),
 		editor_page(this->context),
 		code_edit(this->context, treeml::forest())
