@@ -43,7 +43,7 @@ void file_opener::open(const std::string& file_name){
 
 	ctx.gui.open_editor(page);
 
-	auto iter = this->open_files.insert(std::make_pair(file_name, std::move(page)));
+	this->open_files.insert(std::make_pair(file_name, std::move(page)));
 	ASSERT(iter.second)
 
 	// on tear out the editor_page will remove itself from open_files list
