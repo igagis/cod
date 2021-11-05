@@ -32,8 +32,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 namespace{
-uint16_t cursor_blink_period_ms = 500;
-morda::real cursor_thickness_dp = 2.0f;
+constexpr uint16_t cursor_blink_period_ms = 500;
+constexpr morda::real cursor_thickness_dp = 2.0f;
 }
 
 code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
