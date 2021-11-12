@@ -194,7 +194,7 @@ class code_edit :
 	// find cursors intersecting line_num by its selection
 	std::vector<std::tuple<const cursor*, cursor::selection>> find_cursors(size_t line_num);
 
-	void insert(cursor& c, const std::u32string& str);
+	void insert(cursor& c, std::u32string_view str);
 	void erase_forward(cursor& c, size_t num);
 	void erase_backward(cursor& c, size_t num);
 	void put_new_line(cursor& c);
@@ -218,9 +218,9 @@ class code_edit :
 
 	void render(const morda::matrix4& matrix)const override;
 
-	bool on_key(bool is_down, morda::key key)override;
+	bool on_key(const morda::key_event& e)override;
 
-	void on_character_input(const std::u32string& unicode, morda::key key)override;
+	void on_character_input(const morda::character_input_event& e)override;
 
 	std::shared_ptr<synhi::font_style> text_style = std::make_shared<synhi::font_style>(synhi::font_style{color: 0xffb0b0b0});
 

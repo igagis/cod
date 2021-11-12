@@ -308,8 +308,8 @@ std::vector<std::tuple<const code_edit::cursor*, code_edit::cursor::selection>> 
 	return ret;
 }
 
-void code_edit::insert(cursor& c, const std::u32string& str){
-	auto strs = utki::split(std::u32string_view(str), U'\n');
+void code_edit::insert(cursor& c, std::u32string_view str){
+	auto strs = utki::split(str, U'\n');
 	ASSERT(!strs.empty())
 
 	auto cp = c.get_pos_chars();
@@ -630,15 +630,15 @@ r4::vector2<size_t> code_edit::cursor::get_pos_glyphs()const noexcept{
 	};
 }
 
-bool code_edit::on_key(bool is_down, morda::key key){
-	switch(key){
+bool code_edit::on_key(const morda::key_event& e){
+	switch(e.key){
 		case morda::key::left_control:
 		case morda::key::right_control:
-			this->modifiers.set(modifier::word_navigation, is_down);
+			this->modifiers.set(modifier::word_navigation, e.is_down);
 			break;
 		case morda::key::left_shift:
 		case morda::key::right_shift:
-			this->modifiers.set(modifier::selection, is_down);
+			this->modifiers.set(modifier::selection, e.is_down);
 			break;
 		default:
 			break;
@@ -919,8 +919,8 @@ size_t code_edit::calc_word_length_backward(const cursor& c)const noexcept{
 	return ret;
 }
 
-void code_edit::on_character_input(const std::u32string& unicode, morda::key key){
-	switch(key){
+void code_edit::on_character_input(const morda::character_input_event& e){
+	switch(e.key){
 		case morda::key::enter:
 			this->for_each_cursor([this](cursor& c){
 				this->put_new_line(c);
@@ -1005,9 +1005,9 @@ void code_edit::on_character_input(const std::u32string& unicode, morda::key key
 			// }
 			// fall through
 		default:
-			if(!unicode.empty()){
-				this->for_each_cursor([this, &unicode](cursor& c){
-					this->insert(c, unicode);
+			if(!e.unicode.empty()){
+				this->for_each_cursor([this, &e](cursor& c){
+					this->insert(c, e.unicode);
 				});
 			}
 			break;
