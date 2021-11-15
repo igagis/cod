@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <morda/context.hpp>
 #include <morda/widgets/label/color.hpp>
+#include <morda/paint/frame_vao.hpp>
 
 using namespace cod;
 
@@ -280,15 +281,18 @@ void tiling_area::render(const morda::matrix4& matrix)const{
 
 	// draw selection
 
+	// TODO:
 	// if(this->is_focused()){
-		// ASSERT(this->select_index < this->content().size())
+		ASSERT(this->select_index < this->content().size())
 
-		// const auto& wp = this->content().children()[this->select_index];
-		// ASSERT(wp)
+		const auto& wp = this->content().children()[this->select_index];
+		ASSERT(wp)
 
-		// const auto& w = *wp;
+		const auto& w = *wp;
 
-		// TODO:
+		// TODO: cache vao
+		morda::frame_vao vao(this->context->renderer, w.rect().d, 2);
 
+		vao.render(matrix, 0xffff8080);
 	// }
 }
