@@ -27,32 +27,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace cod{
 
 class tiling_area :
-        virtual public morda::widget,
-        public morda::oriented_widget,
-        private morda::container
+		virtual public morda::widget,
+		public morda::oriented_widget,
+		private morda::container
 {
-    std::shared_ptr<morda::container> content_container;
+	std::shared_ptr<morda::container> content_container;
+
+	size_t select_index = 0;
 public:
-    const morda::real min_tile_size;
-    const morda::real dragger_size;
+	const morda::real min_tile_size;
+	const morda::real dragger_size;
 
-    tiling_area(std::shared_ptr<morda::context> c, const treeml::forest& desc);
+	tiling_area(std::shared_ptr<morda::context> c, const treeml::forest& desc);
 
-    morda::container& content(){
-        return *this->content_container;
-    }
+	morda::container& content(){
+		return *this->content_container;
+	}
 
-    void lay_out()override;
+	const morda::container& content()const{
+		return *this->content_container;
+	}
 
-    morda::vector2 measure(const morda::vector2& quotum)const override;
+	void lay_out()override;
 
-    // override in order to avoid invalidation of layout when children list changes
-    void on_children_change()override{
-        // do nothing
-    }
+	morda::vector2 measure(const morda::vector2& quotum)const override;
+
+	// override in order to avoid invalidation of layout when children list changes
+	void on_children_change()override{
+		// do nothing
+	}
+
+	void render(const morda::matrix4& matrix)const override;
 
 private:
-    
+	
 };
 
 }
