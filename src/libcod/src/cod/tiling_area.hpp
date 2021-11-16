@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <morda/widgets/container.hpp>
 #include <morda/widgets/base/oriented_widget.hpp>
+#include <morda/paint/frame_vao.hpp>
 
 namespace cod{
 
@@ -34,6 +35,7 @@ class tiling_area :
 	std::shared_ptr<morda::container> content_container;
 
 	size_t select_index = 0;
+	mutable morda::frame_vao selection_vao;
 public:
 	const morda::real min_tile_size;
 	const morda::real dragger_size;
