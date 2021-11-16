@@ -29,6 +29,7 @@ using namespace cod;
 namespace{
 const morda::real minimal_tile_size_dp = 100;
 const morda::real dragger_size_dp = 5;
+const uint32_t dragger_color = 0xffff8080;
 }
 
 namespace{
@@ -48,7 +49,7 @@ public:
 			morda::color(this->context, treeml::forest()),
 			owner(owner)
 	{
-		this->set_color(0xff00ff00);
+		this->set_color(dragger_color);
 	}
 
 	bool on_mouse_button(const morda::mouse_button_event& e)override{
@@ -281,7 +282,7 @@ void tiling_area::render(const morda::matrix4& matrix)const{
 	// draw selection
 
 	// TODO:
-	// if(this->is_focused()){
+	if(this->is_focused()){
 		ASSERT(this->select_index < this->content().size())
 
 		const auto& wp = this->content().children()[this->select_index];
@@ -294,5 +295,5 @@ void tiling_area::render(const morda::matrix4& matrix)const{
 		}
 
 		this->selection_vao.render(matrix, 0xffff8080);
-	// }
+	}
 }
