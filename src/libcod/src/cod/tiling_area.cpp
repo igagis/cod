@@ -297,3 +297,28 @@ void tiling_area::render(const morda::matrix4& matrix)const{
 		this->selection_vao.render(matrix, 0xffff8080);
 	}
 }
+
+bool tiling_area::on_key(const morda::key_event& e){
+	switch(e.key){
+		case morda::key::left_shift:
+		case morda::key::left_control:
+		case morda::key::left_alt:
+			break;
+		default:
+			return false;
+	}
+
+	auto sel_modifiers = 
+			morda::key_modifier::left_shift |
+			morda::key_modifier::left_control |
+			morda::key_modifier::left_alt;
+
+	if(e.is_down){
+		if(e.modifiers == sel_modifiers){
+			this->focus();
+			return true;
+		}
+	}
+
+	return false;
+}

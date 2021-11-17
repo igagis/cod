@@ -61,6 +61,8 @@ public:
 
 	void render(const morda::matrix4& matrix)const override;
 
+	bool on_key(const morda::key_event& e)override;
+
 private:
 	
 };
