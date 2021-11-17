@@ -1,0 +1,52 @@
+// this file defines default shortcuts
+
+/*
+
+======== key names ========
+
+escape
+f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12
+print
+insert
+delete
+grave (`)
+1 2 3 4 5 6 7 8 9 0
+-
+=
+backspace
+home
+end
+page_up
+page_down
+tab
+a b c d e f g h i j k l m n o p q r s t u v w x y z
+[ ]
+\
+caps_lock
+;
+'
+enter
+,
+.
+/
+left_shift
+right_shift
+left_control
+right_control
+left_command
+right_command
+left_alt
+right_alt
+arrow_up
+arrow_left
+arrow_down
+arrow_right
+space
+
+*/
+
+tiling_area.move_selection_left{
+	left_control left_alt left_shift arrow_left
+}
+
+
