@@ -45,7 +45,7 @@ space
 
 */
 
-tiling_area.move_selection_left{
+cod.tile.select_left{
 	left_control left_alt left_shift arrow_left
 }
 
