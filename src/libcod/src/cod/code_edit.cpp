@@ -926,7 +926,7 @@ void code_edit::on_character_input(const morda::character_input_event& e){
 				this->put_new_line(c);
 			});
 			break;
-		case morda::key::right:
+		case morda::key::arrow_right:
 			this->for_each_cursor([this](cursor& c){
 				size_t d = 1;
 				if(this->modifiers.get(code_edit::modifier::word_navigation)){
@@ -935,7 +935,7 @@ void code_edit::on_character_input(const morda::character_input_event& e){
 				c.move_right_by(d);
 			});
 			break;
-		case morda::key::left:
+		case morda::key::arrow_left:
 			this->for_each_cursor([this](cursor& c){
 				size_t d = 1;
 				if(this->modifiers.get(code_edit::modifier::word_navigation)){
@@ -944,12 +944,12 @@ void code_edit::on_character_input(const morda::character_input_event& e){
 				c.move_left_by(d);
 			});
 			break;
-		case morda::key::up:
+		case morda::key::arrow_up:
 			this->for_each_cursor([](cursor& c){
 				c.move_up_by(1);
 			});
 			break;
-		case morda::key::down:
+		case morda::key::arrow_down:
 			this->for_each_cursor([](cursor& c){
 				c.move_down_by(1);
 			});
