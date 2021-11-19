@@ -49,4 +49,14 @@ cod.tile.select_left{
 	left_control left_alt left_shift arrow_left
 }
 
+cod.tile.select_right{
+	left_control left_alt left_shift arrow_right
+}
 
+cod.tile.select_up{
+	left_control left_alt left_shift arrow_up
+}
+
+cod.tile.select_down{
+	left_control left_alt left_shift arrow_down
+}

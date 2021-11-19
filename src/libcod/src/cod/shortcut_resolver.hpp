@@ -10,7 +10,6 @@
 namespace cod{
 
 class shortcut_resolver{
-
 public:
 	struct shortcut{
 		utki::flags<morda::key_modifier> modifiers;
@@ -21,6 +20,8 @@ private:
 	mutable std::unordered_map<std::string, shortcut> shortcuts;
 
 public:
+	shortcut_resolver(const papki::file& f);
+
 	void load(const papki::file& f);
 
 	const shortcut& get(const std::string& name)const;
