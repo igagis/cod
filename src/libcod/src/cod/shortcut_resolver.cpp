@@ -47,7 +47,16 @@ void shortcut_resolver::load(const papki::file& f){
 	auto dom = treeml::read(f);
 
 	for(const auto& s : dom){
-		this->shortcuts[s.value.to_string()] = parse_shortcut(s.children);
+		auto name = s.value.to_string();
+		try{
+			this->shortcuts[name] = parse_shortcut(s.children);
+		}catch(const std::invalid_argument& e){
+			std::stringstream ss;
+			ss << e.what() << std::endl;
+			ss << "  while parsing shortcut: " << name << std::endl;
+			ss << "  from file: " << f.path();
+			throw std::invalid_argument(ss.str());
+		}
 	}
 }
 
