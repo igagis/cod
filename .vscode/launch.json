@@ -12,7 +12,7 @@
             "args": ["--plugin=src/plugins/text_editor/out/dbg/text_editor.so.0"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [{"name": "LD_LIBRARY_PATH", "value": "src/libcod/out/dbg"}],
+            "environment": [{"name": "LD_LIBRARY_PATH", "value": "src/lib/out/dbg"}],
             "externalConsole": false,
             "MIMode": "gdb",
             "setupCommands": [
