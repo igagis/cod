@@ -57,7 +57,7 @@
         {
             "label": "run",
             "type": "shell",
-            "command": "make run_cod",
+            "command": "make run-cod",
             "group": "build",
             "dependsOn": "build",
             "problemMatcher": []
@@ -65,7 +65,7 @@
 		{
             "label": "run_dbg",
             "type": "shell",
-            "command": "make run_cod config=dbg",
+            "command": "make run-cod config=dbg",
             "group": "build",
             "dependsOn": "build_dbg",
             "problemMatcher": []
@@ -73,7 +73,7 @@
         {
             "label": "run_asan",
             "type": "shell",
-            "command": "make run_cod config=asan",
+            "command": "make run-cod config=asan",
             "group": "build",
             "dependsOn": "build_asan",
             "problemMatcher": []

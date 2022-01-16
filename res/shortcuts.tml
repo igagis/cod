@@ -45,18 +45,18 @@ space
 
 */
 
-cod.tile.select_left{
+cod.tile.focus_left{
 	left_control left_alt left_shift arrow_left
 }
 
-cod.tile.select_right{
+cod.tile.focus_right{
 	left_control left_alt left_shift arrow_right
 }
 
-cod.tile.select_up{
+cod.tile.focus_up{
 	left_control left_alt left_shift arrow_up
 }
 
-cod.tile.select_down{
+cod.tile.focus_down{
 	left_control left_alt left_shift arrow_down
 }
