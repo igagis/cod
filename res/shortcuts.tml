@@ -2,6 +2,17 @@
 
 /*
 
+======== modifier key names ========
+
+left_shift
+right_shift
+left_control
+right_control
+left_command
+right_command
+left_alt
+right_alt
+
 ======== key names ========
 
 escape
@@ -29,14 +40,6 @@ enter
 ,
 .
 /
-left_shift
-right_shift
-left_control
-right_control
-left_command
-right_command
-left_alt
-right_alt
 arrow_up
 arrow_left
 arrow_down
