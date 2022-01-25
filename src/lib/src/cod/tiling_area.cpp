@@ -76,9 +76,8 @@ public:
 
 		auto delta = e.pos - this->grab_point;
 
-		// TODO: use this->owner.get_long/trans_index()
-		auto trans_index = this->owner.is_vertical() ? 0 : 1;
-		auto long_index = this->owner.is_vertical() ? 1 : 0;
+		auto trans_index = this->owner.get_trans_index();
+		auto long_index = this->owner.get_long_index();
 
 		delta[trans_index] = morda::real(0);
 
@@ -217,7 +216,8 @@ void tiling_area::lay_out(){
 
 	this->content_container->resize(content_dims);
 
-	// lay out draggers
+	// ====================
+	// = lay out draggers =
 
 	ASSERT(this->size() >= 1)
 
