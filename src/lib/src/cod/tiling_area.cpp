@@ -133,6 +133,7 @@ public:
 
 tiling_area::tiling_area(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
 		morda::widget(std::move(c), desc),
+		tile(this->context, treeml::forest()),
 		morda::oriented_widget(this->context, treeml::forest(), false),
 		morda::container(this->context, treeml::forest()),
 		min_tile_size(this->context->units.dp_to_px(minimal_tile_size_dp)),

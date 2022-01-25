@@ -25,10 +25,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <morda/widgets/base/oriented_widget.hpp>
 #include <morda/paint/frame_vao.hpp>
 
+#include "tile.hpp"
+
 namespace cod{
 
 class tiling_area :
-		virtual public morda::widget,
+		public tile,
 		public morda::oriented_widget,
 		private morda::container
 {
