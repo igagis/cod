@@ -100,8 +100,8 @@ tst::set set("regex_highlighter", [](tst::suite& suite){
 
             auto lines = utki::linq(utki::split(in, U'\n')).select([&](const auto& p){
                 return line{
-                    str: p,
-                    spans: highlighter.highlight(p)
+                    .str = p,
+                    .spans = highlighter.highlight(p)
                 };
             }).get();
 

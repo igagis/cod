@@ -703,7 +703,7 @@ void code_edit::line::append(line&& l){
 code_edit::line code_edit::line::cut_tail(size_t pos){
 	if(pos >= this->size()){
 		return line{
-			spans: {synhi::line_span{ style: this->spans.back().style }}
+			.spans = {synhi::line_span{ .style = this->spans.back().style }}
 		};
 	}
 

@@ -185,14 +185,14 @@ regex_highlighter_model::regex_matcher::match(
     for(size_t i = 1; i != m.size(); ++i){
         if(!m[i].matched){
             capture_groups.push_back(match_result::capture_group{
-                    matched: false,
-                    offset: size_t(std::distance(m[0].first, m[0].second))
+                    .matched = false,
+                    .offset = size_t(std::distance(m[0].first, m[0].second))
                 });
         }else{
             capture_groups.push_back(match_result::capture_group{
-                    matched: true,
-                    offset: size_t(std::distance(m[0].first, m[i].first)),
-                    str: std::u32string(m[i].first, m[i].second)
+                    .matched = true,
+                    .offset = size_t(std::distance(m[0].first, m[i].first)),
+                    .str = std::u32string(m[i].first, m[i].second)
                 });
         }
     }
@@ -358,8 +358,8 @@ public:
         }
 
         this->spans.push_back(line_span{
-            length: length,
-            style: style
+            .length = length,
+            .style = style
         });
     }
 
@@ -473,8 +473,8 @@ std::vector<line_span> regex_highlighter::highlight(std::u32string_view str){
                     ASSERT(op.state_to_push)
                     this->state_stack.push_back(
                             state_frame{
-                                state: *op.state_to_push,
-                                capture_groups: std::move(match.capture_groups)
+                                .state = *op.state_to_push,
+                                .capture_groups = std::move(match.capture_groups)
                             }
                         );
                     break;
@@ -498,8 +498,8 @@ std::vector<line_span> regex_highlighter::highlight(std::u32string_view str){
     if(ret.empty()){
         ASSERT(!this->state_stack.empty())
         ret.push_back(line_span{
-            length: 0,
-            style: this->state_stack.back().state.get().style
+            .length = 0,
+            .style = this->state_stack.back().state.get().style
         });
     }
 

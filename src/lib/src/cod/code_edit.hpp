@@ -222,7 +222,7 @@ class code_edit :
 
 	void on_character_input(const morda::character_input_event& e)override;
 
-	std::shared_ptr<synhi::font_style> text_style = std::make_shared<synhi::font_style>(synhi::font_style{color: 0xffb0b0b0});
+	std::shared_ptr<synhi::font_style> text_style = std::make_shared<synhi::font_style>(synhi::font_style{.color = 0xffb0b0b0});
 
 	void notify_text_change();
 

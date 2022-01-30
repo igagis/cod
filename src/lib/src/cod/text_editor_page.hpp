@@ -35,7 +35,7 @@ class text_editor_page :
 public:
 	text_editor_page(std::shared_ptr<morda::context> context);
 
-	void set_text(std::u32string&& text){
+	void set_text(std::u32string&& text)override{
 		this->code_edit::set_text(std::move(text));
 	}
 

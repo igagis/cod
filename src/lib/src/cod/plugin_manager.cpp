@@ -30,11 +30,13 @@ using namespace std::string_literals;
 
 using namespace cod;
 
-namespace{
-const unsigned soname =
-#include "../../soname.txt"
-    ;
-}
+// TODO: remove?
+// namespace{
+// const unsigned soname =
+// #include "../../soname.txt"
+//     ;
+// }
+
 namespace{
 plugin* just_loaded_plugin = nullptr;
 std::string_view just_loaded_plugin_file_name;

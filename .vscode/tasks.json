@@ -23,6 +23,16 @@
                 "$gcc"
             ]
         },
+		{
+            "label": "build_dbg_clang",
+            "type": "shell",
+            "command": "CXX=clang++ make config=dbg",
+            "args": [],
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
         {
             "label": "build_asan",
             "type": "shell",

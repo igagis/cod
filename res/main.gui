@@ -8,7 +8,7 @@
 		id{base_tiling_area}
 		dx{600}
 		
-		@tabbed_book{
+		@editors_book{
 			id{tabbed_book}
 			dx{100}
 		}
