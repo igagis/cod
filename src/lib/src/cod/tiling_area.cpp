@@ -277,28 +277,6 @@ morda::vector2 tiling_area::measure(const morda::vector2& quotum)const{
 	return ret;
 }
 
-void tiling_area::render(const morda::matrix4& matrix)const{
-	this->morda::container::render(matrix);
-
-	// draw selection
-
-	// TODO:
-	if(this->is_focused()){
-		ASSERT(this->select_index < this->content().size())
-
-		const auto& wp = this->content().children()[this->select_index];
-		ASSERT(wp)
-
-		const auto& w = *wp;
-
-		if(this->selection_vao.empty()){
-			this->selection_vao = morda::frame_vao(this->context->renderer, w.rect().d, 2);
-		}
-
-		this->selection_vao.render(matrix, 0xffff8080);
-	}
-}
-
 bool tiling_area::on_key(const morda::key_event& e){
 	switch(e.key){
 		case morda::key::left_shift:

@@ -1,10 +1,12 @@
 #pragma once
 
 #include <morda/widgets/widget.hpp>
+#include <morda/paint/frame_vao.hpp>
 
 namespace cod{
 
 class tile : virtual public morda::widget{
+	mutable morda::frame_vao selection_vao;
 public:
 	tile(std::shared_ptr<morda::context> c, const treeml::forest& desc);
 

@@ -23,7 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <morda/widgets/container.hpp>
 #include <morda/widgets/base/oriented_widget.hpp>
-#include <morda/paint/frame_vao.hpp>
 
 #include "tile.hpp"
 
@@ -36,8 +35,6 @@ class tiling_area :
 {
 	std::shared_ptr<morda::container> content_container;
 
-	size_t select_index = 0;
-	mutable morda::frame_vao selection_vao;
 public:
 	const morda::real min_tile_size;
 	const morda::real dragger_size;
@@ -62,7 +59,10 @@ public:
 		// do nothing
 	}
 
-	void render(const morda::matrix4& matrix)const override;
+	void render(const morda::matrix4& matrix)const override{
+		this->morda::container::render(matrix);
+		this->tile::render(matrix);
+	}
 
 	bool on_key(const morda::key_event& e)override;
 
