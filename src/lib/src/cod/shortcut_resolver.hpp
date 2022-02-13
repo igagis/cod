@@ -13,8 +13,9 @@ class shortcut_resolver{
 public:
 	struct shortcut{
 		std::string name;
-		utki::flags<morda::key_modifier> modifiers;
-		morda::key key = morda::key::unknown;
+		morda::key_combo combo = {
+			morda::key::unknown
+		};
 	};
 
 private:

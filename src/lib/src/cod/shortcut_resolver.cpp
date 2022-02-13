@@ -24,19 +24,19 @@ shortcut_resolver::shortcut parse_shortcut(const treeml::tree& sc){
 
 		auto mod = morda::to_key_modifier(key);
 		if(mod != morda::key_modifier::unknown){
-			if(ret.modifiers.get(mod)){
+			if(ret.combo.modifiers.get(mod)){
 				throw std::invalid_argument("key modifier '"s + name + "' specified twice");
 			}
-			ret.modifiers.set(mod);
+			ret.combo.modifiers.set(mod);
 		}else{
-			if(ret.key != morda::key::unknown){
+			if(ret.combo.key != morda::key::unknown){
 				throw std::invalid_argument(
 						"two non-modifier keys ("s +
-								std::string(morda::to_string(ret.key)) + ", " +
+								std::string(morda::to_string(ret.combo.key)) + ", " +
 								name +
 								") specified in same shortcut");
 			}
-			ret.key = key;
+			ret.combo.key = key;
 		}
 	}
 

@@ -36,7 +36,7 @@ bool tile::on_key(const morda::key_event& e){
 	// const auto& sc_fu = context::inst().shortcuts.get("cod.tile.focus_up");
 	// const auto& sc_fd = context::inst().shortcuts.get("cod.tile.focus_down");
 
-	if(sc_fl.modifiers == e.combo.modifiers && sc_fl.key == e.combo.key){
+	if(sc_fl.combo == e.combo){
 		std::cout << "tile left" << std::endl;
 		return true;
 	}
