@@ -219,6 +219,7 @@ void file_tree::notify_file_select(){
 
 file_tree::file_tree(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
 		morda::widget(std::move(c), desc),
+		tile(this->context, desc),
 		morda::column(this->context, layout)
 {
 	auto& tv = this->get_widget_as<morda::tree_view>("tree_view");
