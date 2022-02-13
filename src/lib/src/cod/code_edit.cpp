@@ -631,7 +631,7 @@ r4::vector2<size_t> code_edit::cursor::get_pos_glyphs()const noexcept{
 }
 
 bool code_edit::on_key(const morda::key_event& e){
-	switch(e.key){
+	switch(e.combo.key){
 		case morda::key::left_control:
 		case morda::key::right_control:
 			this->modifiers.set(modifier::word_navigation, e.is_down);
@@ -920,7 +920,7 @@ size_t code_edit::calc_word_length_backward(const cursor& c)const noexcept{
 }
 
 void code_edit::on_character_input(const morda::character_input_event& e){
-	switch(e.key){
+	switch(e.combo.key){
 		case morda::key::enter:
 			this->for_each_cursor([this](cursor& c){
 				this->put_new_line(c);
@@ -1005,9 +1005,9 @@ void code_edit::on_character_input(const morda::character_input_event& e){
 			// }
 			// fall through
 		default:
-			if(!e.unicode.empty()){
+			if(!e.string.empty()){
 				this->for_each_cursor([this, &e](cursor& c){
-					this->insert(c, e.unicode);
+					this->insert(c, e.string);
 				});
 			}
 			break;

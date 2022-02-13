@@ -11,6 +11,8 @@ public:
 	tile(std::shared_ptr<morda::context> c, const treeml::forest& desc);
 
 	void render(const morda::matrix4& matrix)const override;
+
+	bool on_key(const morda::key_event& e)override;
 };
 
 }
