@@ -31,13 +31,26 @@ void tile::render(const morda::matrix4& matrix)const{
 }
 
 bool tile::on_key(const morda::key_event& e){
-	const auto& sc_fl = context::inst().shortcuts.get("cod.tile.focus_left");
-	// const auto& sc_fr = context::inst().shortcuts.get("cod.tile.focus_right");
-	// const auto& sc_fu = context::inst().shortcuts.get("cod.tile.focus_up");
-	// const auto& sc_fd = context::inst().shortcuts.get("cod.tile.focus_down");
+	if(!e.is_down){
+		return false;
+	}
 
-	if(sc_fl.combo == e.combo){
+	const auto& fl = context::inst().shortcuts.get("cod.tile.focus_left");
+	const auto& fr = context::inst().shortcuts.get("cod.tile.focus_right");
+	const auto& fu = context::inst().shortcuts.get("cod.tile.focus_up");
+	const auto& fd = context::inst().shortcuts.get("cod.tile.focus_down");
+
+	if(fl.combo == e.combo){
 		std::cout << "tile left" << std::endl;
+		return true;
+	}else if(fr.combo == e.combo){
+		std::cout << "tile right" << std::endl;
+		return true;
+	}else if(fu.combo == e.combo){
+		std::cout << "tile up" << std::endl;
+		return true;
+	}else if(fd.combo == e.combo){
+		std::cout << "tile down" << std::endl;
 		return true;
 	}
 
