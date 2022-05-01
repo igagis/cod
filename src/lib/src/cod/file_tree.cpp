@@ -111,7 +111,7 @@ auto file_tree::file_tree_provider::read_files(utki::span<const size_t> index)co
 				}).get();
 }
 
-std::string file_tree::file_tree_provider::get_path(utki::span<const size_t> index)const noexcept{
+std::string file_tree::file_tree_provider::get_path(utki::span<const size_t> index)const{
 	auto tr = utki::make_traversal(this->cache);
 
 	auto iter = tr.make_iterator(index);

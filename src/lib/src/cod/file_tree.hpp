@@ -58,7 +58,7 @@ class file_tree :
 		size_t count(utki::span<const size_t> index)const noexcept override;
 		std::shared_ptr<morda::widget> get_widget(utki::span<const size_t> index, bool is_collapsed)override;
 
-		std::string get_path(utki::span<const size_t> index)const noexcept;
+		std::string get_path(utki::span<const size_t> index)const; // TODO: make noexcept, right now linter is angry about it
 	};
 
 	std::shared_ptr<file_tree_provider> provider;

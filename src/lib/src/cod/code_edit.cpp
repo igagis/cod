@@ -44,7 +44,7 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& de
 		lines_provider(std::make_shared<provider>(*this))
 {
 	this->set_font(this->context->loader.load<morda::res::font>("fnt_monospace"));
-	this->on_font_change();
+	this->code_edit::on_font_change();
 
 	this->push_back_inflate(treeml::read(R"qwertyuiop(
 			@row{
