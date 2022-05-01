@@ -63,3 +63,19 @@ cod.tile.focus_up{
 cod.tile.focus_down{
 	left_alt arrow_down
 }
+
+cod.tile.move_left{
+	left_alt left_control left_shift arrow_left
+}
+
+cod.tile.move_rigth{
+	left_alt left_control left_shift arrow_right
+}
+
+cod.tile.move_up{
+	left_alt left_control left_shift arrow_up
+}
+
+cod.tile.move_down{
+	left_alt left_control left_shift arrow_down
+}
