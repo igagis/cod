@@ -8,7 +8,7 @@ namespace cod{
 
 class tabbed_book_tile :
 		public tile,
-		public morda::tabbed_book // TODO: make private
+		public morda::tabbed_book
 {
 public:
 	tabbed_book_tile(std::shared_ptr<morda::context> c, const treeml::forest& desc);

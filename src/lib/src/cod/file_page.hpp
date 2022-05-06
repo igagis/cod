@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace cod{
 
-class file_page : public morda::page{ // TODO: make private inheritance
+class file_page : public morda::page{
 	friend class plugin_manager;
 
 	std::string file_name;
