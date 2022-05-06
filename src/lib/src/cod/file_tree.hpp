@@ -32,7 +32,7 @@ namespace cod{
 
 class file_tree :
 		virtual public morda::widget,
-		public tile,
+		public tile, // TODO: make page isntead of tile
 		private morda::column
 {
 	class file_tree_provider : public morda::tree_view::provider{
