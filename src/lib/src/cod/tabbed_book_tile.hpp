@@ -6,12 +6,12 @@
 
 namespace cod{
 
-class editors_book :
+class tabbed_book_tile :
 		public tile,
 		public morda::tabbed_book // TODO: make private
 {
 public:
-	editors_book(std::shared_ptr<morda::context> c, const treeml::forest& desc);
+	tabbed_book_tile(std::shared_ptr<morda::context> c, const treeml::forest& desc);
 
 	void render(const morda::matrix4& matrix)const override{
 		this->morda::tabbed_book::render(matrix);

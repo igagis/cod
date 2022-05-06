@@ -5,7 +5,7 @@
 
 #include "context.hpp"
 #include "file_tree.hpp"
-#include "editors_book.hpp"
+#include "tabbed_book_tile.hpp"
 
 using namespace cod;
 
@@ -41,7 +41,7 @@ gui::gui(mordavokne::application& app) :
 	
     app.gui.context->inflater.register_widget<file_tree>("file_tree");
     app.gui.context->inflater.register_widget<tiling_area>("tiling_area");
-	app.gui.context->inflater.register_widget<editors_book>("editors_book");
+	app.gui.context->inflater.register_widget<tabbed_book_tile>("tabbed_book_tile");
 
     app.gui.context->loader.mount_res_pack(
             *app.get_res_file("res/")

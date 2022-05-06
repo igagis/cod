@@ -4,7 +4,7 @@
 		dx{200}
 	}
 
-	@editors_book{
+	@tabbed_book_tile{
 		id{tabbed_book}
 		dx{600}
 	}
