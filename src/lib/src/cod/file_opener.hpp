@@ -26,9 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace cod{
 
 class file_opener{
-    friend class editor_page;
+    friend class page;
 
-    std::map<std::string, std::weak_ptr<editor_page>> open_files;
+    std::map<std::string, std::weak_ptr<page>> open_files;
 public:    
     void open(const std::string& file_name);
 };

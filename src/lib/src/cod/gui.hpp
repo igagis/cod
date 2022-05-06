@@ -5,7 +5,7 @@
 #include <morda/widgets/group/tabbed_book.hpp>
 
 #include "tiling_area.hpp"
-#include "editor_page.hpp"
+#include "page.hpp"
 
 namespace cod{
 
@@ -19,7 +19,7 @@ class gui{
 
     gui(mordavokne::application& app);
 
-    void open_editor(std::shared_ptr<editor_page> page);
+    void open_editor(std::shared_ptr<page> page);
 public:
     const std::shared_ptr<morda::context> morda_context;
 };

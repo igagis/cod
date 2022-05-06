@@ -25,12 +25,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace cod{
 
-class editor_page : public morda::page{ // TODO: make private inheritance
+class page : public morda::page{ // TODO: make private inheritance
 	friend class plugin_manager;
 
 	std::string file_name;
 public:
-	editor_page(std::shared_ptr<morda::context> context);
+	page(std::shared_ptr<morda::context> context);
 
 	const std::string& get_file_name()const{
 		return this->file_name;
