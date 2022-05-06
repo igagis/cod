@@ -4,13 +4,8 @@
 		dx{200}
 	}
 
-	@tiling_area{
-		id{base_tiling_area}
+	@editors_book{
+		id{tabbed_book}
 		dx{600}
-		
-		@editors_book{
-			id{tabbed_book}
-			dx{100}
-		}
 	}
 }

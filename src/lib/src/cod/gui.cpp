@@ -68,18 +68,17 @@ gui::gui(mordavokne::application& app) :
         context::inst().file_opener.open(file_name);
     };
 
-    this->editors_tiling_area = c.try_get_widget_as<tiling_area>("base_tiling_area");
+	this->editors_tabbed_book = c.try_get_widget_as<morda::tabbed_book>("tabbed_book");
 }
 
 void gui::open_editor(std::shared_ptr<editor_page> page){
-    auto& book = this->editors_tiling_area->get_widget_as<morda::tabbed_book>("tabbed_book");
 
-	auto tab = book.context->inflater.inflate_as<morda::tab>(tab_desc);
+	auto tab = this->editors_tabbed_book->context->inflater.inflate_as<morda::tab>(tab_desc);
 
 	tab->get_widget_as<morda::text>("text").set_text(papki::not_dir(page->get_file_name()));
 	
 	tab->get_widget_as<morda::push_button>("close_button").click_handler = [
-			tabbed_book_wp = utki::make_weak_from(book),
+			tabbed_book_wp = utki::make_weak(this->editors_tabbed_book),
 			tab_wp = utki::make_weak(tab)
 		](morda::push_button& btn)
 	{
@@ -94,5 +93,5 @@ void gui::open_editor(std::shared_ptr<editor_page> page){
 		});
 	};
 
-    book.add(tab, page);
+    this->editors_tabbed_book->add(tab, page);
 }
