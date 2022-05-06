@@ -69,8 +69,6 @@ public:
 		this->tile::render(matrix);
 	}
 
-	bool on_key(const morda::key_event& e)override;
-
 private:
 	
 };

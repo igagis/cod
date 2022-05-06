@@ -276,28 +276,3 @@ morda::vector2 tiling_area::measure(const morda::vector2& quotum)const{
 
 	return ret;
 }
-
-bool tiling_area::on_key(const morda::key_event& e){
-	switch(e.combo.key){
-		case morda::key::left_shift:
-		case morda::key::left_control:
-		case morda::key::left_alt:
-			break;
-		default:
-			return false;
-	}
-
-	auto sel_modifiers = 
-			morda::key_modifier::left_shift |
-			morda::key_modifier::left_control |
-			morda::key_modifier::left_alt;
-
-	if(e.is_down){
-		if(e.combo.modifiers == sel_modifiers){
-			this->focus();
-			return true;
-		}
-	}
-
-	return false;
-}
