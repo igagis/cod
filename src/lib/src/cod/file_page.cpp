@@ -19,24 +19,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* ================ LICENSE END ================ */
 
-#pragma once
+#include "file_page.hpp"
 
-#include <morda/widgets/group/book.hpp>
+#include "context.hpp"
+#include "file_opener.hpp"
 
-namespace cod{
+using namespace cod;
 
-class editor_page : public morda::page{ // TODO: make private inheritance
-	friend class plugin_manager;
+file_page::file_page(std::shared_ptr<morda::context> context) :
+		morda::widget(std::move(context), treeml::forest()),
+		morda::page(this->context, treeml::forest())
+{}
 
-	std::string file_name;
-public:
-	editor_page(std::shared_ptr<morda::context> context);
+void file_page::on_tear_out()noexcept{
 
-	const std::string& get_file_name()const{
-		return this->file_name;
+	// remove the page from list of open files
+
+	auto& ctx = context::inst();
+
+	auto i = ctx.file_opener.open_files.find(file_name);
+	if(i != ctx.file_opener.open_files.end()){
+		ctx.file_opener.open_files.erase(i);
 	}
-	
-	void on_tear_out()noexcept override;
-};
-
 }

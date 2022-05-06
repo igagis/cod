@@ -71,8 +71,7 @@ gui::gui(mordavokne::application& app) :
 	this->editors_tabbed_book = c.try_get_widget_as<morda::tabbed_book>("tabbed_book");
 }
 
-void gui::open_editor(std::shared_ptr<editor_page> page){
-
+void gui::open_editor(std::shared_ptr<file_page> page){
 	auto tab = this->editors_tabbed_book->context->inflater.inflate_as<morda::tab>(tab_desc);
 
 	tab->get_widget_as<morda::text>("text").set_text(papki::not_dir(page->get_file_name()));
