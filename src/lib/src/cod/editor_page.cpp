@@ -19,19 +19,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* ================ LICENSE END ================ */
 
-#include "page.hpp"
+#include "editor_page.hpp"
 
 #include "context.hpp"
 #include "file_opener.hpp"
 
 using namespace cod;
 
-page::page(std::shared_ptr<morda::context> context) :
+editor_page::editor_page(std::shared_ptr<morda::context> context) :
 		morda::widget(std::move(context), treeml::forest()),
 		morda::page(this->context, treeml::forest())
 {}
 
-void page::on_tear_out()noexcept{
+void editor_page::on_tear_out()noexcept{
 
 	// remove the page from list of open files
 

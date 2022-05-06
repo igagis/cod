@@ -8,7 +8,7 @@ using namespace cod;
 
 text_editor_page::text_editor_page(std::shared_ptr<morda::context> context) :
 		morda::widget(std::move(context), treeml::forest()),
-		page(this->context),
+		editor_page(this->context),
 		code_edit(this->context, treeml::forest())
 {
 	// TODO: for now we set XML syntax highlighter for each code edit page,

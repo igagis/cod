@@ -23,13 +23,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <morda/widgets/group/book.hpp>
 
-#include "page.hpp"
+#include "editor_page.hpp"
 #include "code_edit.hpp"
 
 namespace cod{
 
 class text_editor_page :
-		public page,
+		public editor_page,
 		private code_edit
 {
 public:
