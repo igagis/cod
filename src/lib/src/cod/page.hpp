@@ -25,18 +25,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace cod{
 
-class file_page : public morda::page{
-	friend class plugin_manager;
-
-	std::string file_name;
+class page : public morda::page{
 public:
-	file_page(std::shared_ptr<morda::context> context);
+	page(std::shared_ptr<morda::context> context);
 
-	const std::string& get_file_name()const{
-		return this->file_name;
-	}
-	
-	void on_tear_out()noexcept override;
+	virtual std::string_view get_name()const = 0;
 };
 
 }

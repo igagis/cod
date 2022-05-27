@@ -4,7 +4,7 @@
 
 #include "tiling_area.hpp"
 #include "tabbed_book_tile.hpp"
-#include "page.hpp"
+#include "file_page.hpp"
 
 namespace cod{
 

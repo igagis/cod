@@ -51,5 +51,5 @@ void file_opener::open(const std::string& file_name){
 		ASSERT(iter.second)
 	}
 
-	// on tear out the file_page will remove itself from open_files list
+	// on tear out the page will remove itself from open_files list
 }
