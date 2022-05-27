@@ -63,7 +63,7 @@ tst::set set("regex_highlighter", [](tst::suite& suite){
         [](){
             synhi::regex_highlighter sh(
                     std::make_shared<synhi::regex_highlighter_model>(
-                            treeml::read(papki::fs_file("../../highlight/xml.3ml"))
+                            treeml::read(papki::fs_file("../../highlight/xml.tml"))
                         )
                 );
         }
@@ -90,7 +90,7 @@ tst::set set("regex_highlighter", [](tst::suite& suite){
 (2)                (0)</(1)tag(0)>)qwertyuiop"}
         },
         [model = std::make_shared<synhi::regex_highlighter_model>(
-                treeml::read(papki::fs_file("../../highlight/xml.3ml"))
+                treeml::read(papki::fs_file("../../highlight/xml.tml"))
             )]
         (const auto& p)
         {
@@ -119,7 +119,7 @@ tst::set set("regex_highlighter", [](tst::suite& suite){
             auto dir = "data/synhi/crash_1/"s;
             synhi::regex_highlighter highlighter(
                     std::make_shared<synhi::regex_highlighter_model>(
-                            treeml::read(papki::fs_file(dir + "xml.3ml"))
+                            treeml::read(papki::fs_file(dir + "xml.tml"))
                         )
                 );
 
