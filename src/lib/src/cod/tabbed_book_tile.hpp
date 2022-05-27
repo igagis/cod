@@ -3,6 +3,7 @@
 #include <morda/widgets/group/tabbed_book.hpp>
 
 #include "tile.hpp"
+#include "page.hpp"
 
 namespace cod{
 
@@ -17,6 +18,8 @@ public:
 		this->morda::tabbed_book::render(matrix);
 		this->tile::render(matrix);
 	}
+
+	void add(std::shared_ptr<page> p);
 };
 
 }

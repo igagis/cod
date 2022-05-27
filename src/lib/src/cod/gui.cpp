@@ -1,38 +1,12 @@
 #include "gui.hpp"
 
 #include <morda/widgets/group/tabbed_book.hpp>
-#include <morda/widgets/label/text.hpp>
 
 #include "context.hpp"
 #include "file_tree_page.hpp"
 #include "tabbed_book_tile.hpp"
 
 using namespace cod;
-
-namespace{
-
-const treeml::forest tab_desc = treeml::read(R"(
-		@tab{
-			@row{
-				@text{
-					id{text}
-					text{cube}
-				}
-				@push_button{
-					id{close_button}
-					@image{
-						layout{
-							dx { 8dp }
-							dy { 8dp }
-						}
-						image{morda_img_close}
-					}
-				}
-			}
-		}
-	)");
-
-}
 
 gui::gui(mordavokne::application& app) :
         morda_context(app.gui.context)
@@ -75,25 +49,5 @@ gui::gui(mordavokne::application& app) :
 }
 
 void gui::open_editor(std::shared_ptr<file_page> page){
-	auto tab = this->editors_tabbed_book->context->inflater.inflate_as<morda::tab>(tab_desc);
-
-	tab->get_widget_as<morda::text>("text").set_text(papki::not_dir(page->get_name()));
-	
-	tab->get_widget_as<morda::push_button>("close_button").click_handler = [
-			tabbed_book_wp = utki::make_weak(this->editors_tabbed_book),
-			tab_wp = utki::make_weak(tab)
-		](morda::push_button& btn)
-	{
-		auto tb = tabbed_book_wp.lock();
-		ASSERT(tb)
-
-		auto t = tab_wp.lock();
-		ASSERT(t)
-
-		btn.context->run_from_ui_thread([tb, t]{
-			tb->tear_out(*t);
-		});
-	};
-
-    this->editors_tabbed_book->add(tab, page);
+	this->editors_tabbed_book->add(page);
 }
