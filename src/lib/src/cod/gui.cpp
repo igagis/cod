@@ -4,7 +4,7 @@
 #include <morda/widgets/label/text.hpp>
 
 #include "context.hpp"
-#include "file_tree.hpp"
+#include "file_tree_page.hpp"
 #include "tabbed_book_tile.hpp"
 
 using namespace cod;

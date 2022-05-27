@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* ================ LICENSE END ================ */
 
-#include "file_tree.hpp"
+#include "file_tree_page.hpp"
 
 #include <utki/tree.hpp>
 #include <utki/linq.hpp>
