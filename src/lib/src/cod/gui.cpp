@@ -39,7 +39,7 @@ gui::gui(mordavokne::application& app) :
 {
     app.gui.initStandardWidgets(*app.get_res_file());
 	
-    app.gui.context->inflater.register_widget<file_tree>("file_tree");
+    app.gui.context->inflater.register_widget<file_tree_page>("file_tree"); // TODO: remove
     app.gui.context->inflater.register_widget<tiling_area>("tiling_area");
 	app.gui.context->inflater.register_widget<tabbed_book_tile>("tabbed_book_tile");
 
@@ -59,7 +59,7 @@ gui::gui(mordavokne::application& app) :
 	// TODO: remove
 	// c.get_widget_as<morda::tabbed_book>("left_panel");
 
-    c.get_widget_as<file_tree>("file_tree")
+    c.get_widget_as<file_tree_page>("file_tree")
             .file_select_handler = [](std::string file_name)
     {
         // std::cout << "file = " << file_name << '\n';

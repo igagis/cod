@@ -31,13 +31,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace cod{
 
-class file_tree :
+class file_tree_page :
 		virtual public morda::widget,
 		public tile, // TODO: make page isntead of tile
 		private morda::column
 {
 	class file_tree_provider : public morda::tree_view::provider{
-		file_tree& owner;
+		file_tree_page& owner;
 
 		struct file_entry{
 			bool is_directory;
@@ -55,7 +55,7 @@ class file_tree :
 
 		static std::string make_path(utki::span<const size_t> index, const file_entry_forest_type& fef);
 	public:
-		file_tree_provider(file_tree& owner);
+		file_tree_provider(file_tree_page& owner);
 		size_t count(utki::span<const size_t> index)const noexcept override;
 		std::shared_ptr<morda::widget> get_widget(utki::span<const size_t> index, bool is_collapsed)override;
 
@@ -68,7 +68,7 @@ class file_tree :
 
 	void notify_file_select();
 public:
-	file_tree(std::shared_ptr<morda::context> c, const treeml::forest& desc);
+	file_tree_page(std::shared_ptr<morda::context> c, const treeml::forest& desc);
 
 	std::function<void(std::string)> file_select_handler;
 

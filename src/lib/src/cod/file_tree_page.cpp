@@ -70,7 +70,7 @@ const treeml::forest layout = treeml::read(R"qwertyuiop(
 )qwertyuiop");
 }
 
-std::string file_tree::file_tree_provider::make_path(utki::span<const size_t> index, const file_entry_forest_type& fef){
+std::string file_tree_page::file_tree_provider::make_path(utki::span<const size_t> index, const file_entry_forest_type& fef){
 	auto cur_file_list = &fef;
 	std::string dir_name;
 	for(auto i = index.begin(); i != index.end(); ++i){
@@ -88,7 +88,7 @@ std::string file_tree::file_tree_provider::make_path(utki::span<const size_t> in
 	return dir_name;
 }
 
-auto file_tree::file_tree_provider::read_files(utki::span<const size_t> index)const -> decltype(cache){
+auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> index)const -> decltype(cache){
 #ifdef DEBUG
 	for(auto& i : index){
 		LOG([&](auto&o){o << " " << i;})
@@ -111,7 +111,7 @@ auto file_tree::file_tree_provider::read_files(utki::span<const size_t> index)co
 				}).get();
 }
 
-std::string file_tree::file_tree_provider::get_path(utki::span<const size_t> index)const{
+std::string file_tree_page::file_tree_provider::get_path(utki::span<const size_t> index)const{
 	auto tr = utki::make_traversal(this->cache);
 
 	auto iter = tr.make_iterator(index);
@@ -132,12 +132,12 @@ std::string file_tree::file_tree_provider::get_path(utki::span<const size_t> ind
 	return ss.str();
 }
 
-file_tree::file_tree_provider::file_tree_provider(file_tree& owner) :
+file_tree_page::file_tree_provider::file_tree_provider(file_tree_page& owner) :
 		owner(owner),
 		cache(read_files(utki::make_span<size_t>(nullptr, 0)))
 {}
 
-size_t file_tree::file_tree_provider::count(utki::span<const size_t> index)const noexcept{
+size_t file_tree_page::file_tree_provider::count(utki::span<const size_t> index)const noexcept{
 	decltype(this->cache)* cur_file_list = &this->cache;
 	for(auto i = index.begin(); i != index.end(); ++i){
 		ASSERT(*i < cur_file_list->size())
@@ -156,7 +156,7 @@ size_t file_tree::file_tree_provider::count(utki::span<const size_t> index)const
 	return cur_file_list->size();
 }
 
-std::shared_ptr<morda::widget> file_tree::file_tree_provider::get_widget(utki::span<const size_t> index, bool is_collapsed){
+std::shared_ptr<morda::widget> file_tree_page::file_tree_provider::get_widget(utki::span<const size_t> index, bool is_collapsed){
 	auto tr = utki::make_traversal(this->cache);
 	ASSERT(tr.is_valid(index))
 	auto& file_entry = tr[index];
@@ -211,13 +211,13 @@ std::shared_ptr<morda::widget> file_tree::file_tree_provider::get_widget(utki::s
 	return w;
 }
 
-void file_tree::notify_file_select(){
+void file_tree_page::notify_file_select(){
 	if(this->file_select_handler){
 		this->file_select_handler(this->provider->get_path(utki::make_span(this->cursor_index)));
 	}
 }
 
-file_tree::file_tree(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
+file_tree_page::file_tree_page(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
 		morda::widget(std::move(c), desc),
 		tile(this->context, desc),
 		morda::column(this->context, layout)
