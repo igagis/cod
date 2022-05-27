@@ -28,8 +28,13 @@ namespace cod{
 
 class tile : virtual public morda::widget{
 	mutable morda::frame_vao selection_vao;
-public:
+
+	// only these 2 tiles are supposed to exist, so declare those as friends and make tile constructor private
+	friend class tabbed_book_tile;
+	friend class tiling_area;
+
 	tile(std::shared_ptr<morda::context> c, const treeml::forest& desc);
+public:
 
 	void render(const morda::matrix4& matrix)const override;
 
