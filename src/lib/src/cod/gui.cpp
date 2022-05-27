@@ -12,8 +12,7 @@ gui::gui(mordavokne::application& app) :
         morda_context(app.gui.context)
 {
     app.gui.initStandardWidgets(*app.get_res_file());
-	
-    app.gui.context->inflater.register_widget<file_tree_page>("file_tree"); // TODO: remove
+
     app.gui.context->inflater.register_widget<tiling_area>("tiling_area");
 	app.gui.context->inflater.register_widget<tabbed_book_tile>("tabbed_book_tile");
 
@@ -30,20 +29,21 @@ gui::gui(mordavokne::application& app) :
     ASSERT(app.gui.get_root())
     auto& c = *app.gui.get_root();
 
-	// TODO: remove
-	// c.get_widget_as<morda::tabbed_book>("left_panel");
+	{
+		auto ft = std::make_shared<file_tree_page>(c.context);
 
-    c.get_widget_as<file_tree_page>("file_tree")
-            .file_select_handler = [](std::string file_name)
-    {
-        // std::cout << "file = " << file_name << '\n';
+		ft->file_select_handler = [](std::string file_name){
+			// std::cout << "file = " << file_name << '\n';
 
-        if(papki::is_dir(file_name)){
-            return;
-        }
+			if(papki::is_dir(file_name)){
+				return;
+			}
 
-        context::inst().file_opener.open(file_name);
-    };
+			context::inst().file_opener.open(file_name);
+		};
+
+		c.get_widget_as<tabbed_book_tile>("left_panel").add(ft);
+	}
 
 	this->editors_tabbed_book = c.try_get_widget_as<tabbed_book_tile>("tabbed_book");
 }

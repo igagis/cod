@@ -1,14 +1,8 @@
 @tiling_area{
-/*	@tabbed_book_tile{
+	@tabbed_book_tile{
 		id{left_panel}
 		dx{200}
-*/
-		@file_tree{
-			id{file_tree}
-			dx{200}
-		}
-
-//	}
+	}
 
 	@tabbed_book_tile{
 		id{tabbed_book}

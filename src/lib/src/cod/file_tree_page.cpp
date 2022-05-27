@@ -217,9 +217,9 @@ void file_tree_page::notify_file_select(){
 	}
 }
 
-file_tree_page::file_tree_page(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
-		morda::widget(std::move(c), desc),
-		tile(this->context, desc),
+file_tree_page::file_tree_page(std::shared_ptr<morda::context> c) :
+		morda::widget(std::move(c), tml::forest()),
+		page(this->context),
 		morda::column(this->context, layout)
 {
 	auto& tv = this->get_widget_as<morda::tree_view>("tree_view");
@@ -255,4 +255,8 @@ file_tree_page::file_tree_page(std::shared_ptr<morda::context> c, const treeml::
 	this->provider = std::make_shared<file_tree_provider>(*this);
 
 	tv.set_provider(this->provider);
+}
+
+std::string_view file_tree_page::get_name()const{
+	return "file tree";
 }

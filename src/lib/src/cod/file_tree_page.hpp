@@ -27,13 +27,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <morda/widgets/group/tree_view.hpp>
 #include <morda/context.hpp>
 
-#include "tile.hpp"
+#include "page.hpp"
 
 namespace cod{
 
 class file_tree_page :
 		virtual public morda::widget,
-		public tile, // TODO: make page isntead of tile
+		public page,
 		private morda::column
 {
 	class file_tree_provider : public morda::tree_view::provider{
@@ -68,14 +68,16 @@ class file_tree_page :
 
 	void notify_file_select();
 public:
-	file_tree_page(std::shared_ptr<morda::context> c, const treeml::forest& desc);
+	file_tree_page(std::shared_ptr<morda::context> c);
 
 	std::function<void(std::string)> file_select_handler;
 
 	void render(const morda::matrix4& matrix)const override{
 		this->morda::column::render(matrix);
-		this->tile::render(matrix);
+		this->page::render(matrix);
 	}
+
+	std::string_view get_name()const override;
 };
 
 }
