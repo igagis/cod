@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* ================ LICENSE END ================ */
 
-#include "file_page.hpp"
+#include "page.hpp"
 
 #include "context.hpp"
 #include "file_opener.hpp"

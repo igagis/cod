@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <morda/widgets/group/book.hpp>
 
-#include "file_page.hpp"
+#include "page.hpp"
 #include "code_edit.hpp"
 
 namespace cod{

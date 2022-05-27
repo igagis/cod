@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <morda/widgets/widget.hpp>
+#include <morda/widgets/group/book.hpp>
 #include <morda/widgets/group/column.hpp>
 #include <morda/widgets/group/tree_view.hpp>
 #include <morda/context.hpp>

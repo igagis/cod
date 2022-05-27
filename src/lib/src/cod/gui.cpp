@@ -56,6 +56,9 @@ gui::gui(mordavokne::application& app) :
     ASSERT(app.gui.get_root())
     auto& c = *app.gui.get_root();
 
+	// TODO: remove
+	// c.get_widget_as<morda::tabbed_book>("left_panel");
+
     c.get_widget_as<file_tree>("file_tree")
             .file_select_handler = [](std::string file_name)
     {
@@ -68,7 +71,7 @@ gui::gui(mordavokne::application& app) :
         context::inst().file_opener.open(file_name);
     };
 
-	this->editors_tabbed_book = c.try_get_widget_as<morda::tabbed_book>("tabbed_book");
+	this->editors_tabbed_book = c.try_get_widget_as<tabbed_book_tile>("tabbed_book");
 }
 
 void gui::open_editor(std::shared_ptr<file_page> page){

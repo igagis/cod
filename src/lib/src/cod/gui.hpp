@@ -2,10 +2,9 @@
 
 #include <mordavokne/application.hpp>
 
-#include <morda/widgets/group/tabbed_book.hpp>
-
 #include "tiling_area.hpp"
-#include "file_page.hpp"
+#include "tabbed_book_tile.hpp"
+#include "page.hpp"
 
 namespace cod{
 
@@ -15,7 +14,7 @@ class gui{
     friend class context;
     friend class file_opener;
 
-    std::shared_ptr<morda::tabbed_book> editors_tabbed_book;
+    std::shared_ptr<tabbed_book_tile> editors_tabbed_book;
 
     gui(mordavokne::application& app);
 
