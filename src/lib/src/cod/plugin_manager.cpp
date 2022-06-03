@@ -80,7 +80,7 @@ void load_plugin(const std::string& file_name){
                     | RTLD_GLOBAL // allow global visibility, as some plugins may depend on another ones
         );
     if(handle == nullptr){
-        throw std::runtime_error("could not load plugin: "s + file_name);
+        throw std::runtime_error("could not load plugin: "s + file_name + "\n    " + dlerror());
     }
     ASSERT(just_loaded_plugin)
 

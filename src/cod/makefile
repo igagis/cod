@@ -17,7 +17,7 @@ this_ldlibs += -lcod -lmordavokne-opengl -lmorda -ltreeml -lpapki -lclargs -lutk
 
 $(eval $(prorab-build-app))
 
-$(eval $(call prorab-depend, $(prorab_this_name), $(this_libcod)))
+$(eval $(call prorab-depend, $(prorab_this_name), $(this_libcod) ../plugins/text_editor/out/$(c)/text_editor.so))
 
 this_run_name := $(this_name)
 this_test_cmd := cd ../.. && $(prorab_this_name) --plugin=src/plugins/text_editor/out/$(c)/text_editor.so.$(shell cat $(d)../lib/soname.txt)
@@ -28,3 +28,5 @@ $(eval $(prorab-run))
 this_license_file := ../../LICENSE
 this_src_dir := src
 $(eval $(prorab-license))
+
+$(eval $(call prorab-include, ../plugins/text_editor/makefile))
