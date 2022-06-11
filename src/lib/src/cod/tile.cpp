@@ -68,18 +68,6 @@ bool tile::on_key(const morda::key_event& e){
 	}else if(context::inst().shortcuts.get("cod.tile.focus_down").combo == e.combo){
 		std::cout << "tile down" << std::endl;
 		return true;
-	}else if(context::inst().shortcuts.get("cod.tile.move_left").combo == e.combo){
-		std::cout << "move tile left" << std::endl;
-		return true;
-	}else if(context::inst().shortcuts.get("cod.tile.move_right").combo == e.combo){
-		std::cout << "move tile right" << std::endl;
-		return true;
-	}else if(context::inst().shortcuts.get("cod.tile.move_up").combo == e.combo){
-		std::cout << "move tile up" << std::endl;
-		return true;
-	}else if(context::inst().shortcuts.get("cod.tile.move_down").combo == e.combo){
-		std::cout << "move tile down" << std::endl;
-		return true;
 	}
 
 	return false;

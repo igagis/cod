@@ -46,6 +46,14 @@ public:
 	void on_hide()noexcept override{
 		this->unfocus();
 	}
+
+	bool on_key(const morda::key_event& e){
+		if(this->code_edit::on_key(e)){
+			return true;
+		}
+
+		return this->file_page::on_key(e);
+	}
 };
 
 }

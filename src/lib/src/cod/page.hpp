@@ -30,6 +30,8 @@ public:
 	page(std::shared_ptr<morda::context> context);
 
 	virtual std::string_view get_name()const = 0;
+
+	bool on_key(const morda::key_event& e)override;
 };
 
 }

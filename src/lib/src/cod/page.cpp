@@ -21,9 +21,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "page.hpp"
 
+#include "context.hpp"
+
 using namespace cod;
 
 page::page(std::shared_ptr<morda::context> context) :
 		morda::widget(std::move(context), treeml::forest()),
 		morda::page(this->context, treeml::forest())
 {}
+
+bool page::on_key(const morda::key_event& e){
+	if(!e.is_down){
+		return false;
+	}
+
+	if(context::inst().shortcuts.get("cod.page.move_left").combo == e.combo){
+		std::cout << "move page left" << std::endl;
+		return true;
+	}else if(context::inst().shortcuts.get("cod.page.move_right").combo == e.combo){
+		std::cout << "move page right" << std::endl;
+		return true;
+	}else if(context::inst().shortcuts.get("cod.page.move_up").combo == e.combo){
+		std::cout << "move page up" << std::endl;
+		return true;
+	}else if(context::inst().shortcuts.get("cod.page.move_down").combo == e.combo){
+		std::cout << "move page down" << std::endl;
+		return true;
+	}
+
+	return false;
+}

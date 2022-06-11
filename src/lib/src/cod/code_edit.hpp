@@ -210,17 +210,7 @@ class code_edit :
 
 	r4::vector2<size_t> mouse_pos_to_glyph_pos(const morda::vector2& mouse_pos)const noexcept;
 
-	bool on_mouse_button(const morda::mouse_button_event& event)override;
-
 	bool mouse_selection = false;
-
-	bool on_mouse_move(const morda::mouse_move_event& event)override;
-
-	void render(const morda::matrix4& matrix)const override;
-
-	bool on_key(const morda::key_event& e)override;
-
-	void on_character_input(const morda::character_input_event& e)override;
 
 	std::shared_ptr<synhi::font_style> text_style = std::make_shared<synhi::font_style>(synhi::font_style{.color = 0xffb0b0b0});
 
@@ -234,6 +224,12 @@ public:
 	
 	code_edit(const code_edit&) = delete;
 	code_edit& operator=(const code_edit&) = delete;
+
+	void render(const morda::matrix4& matrix)const override;
+	bool on_mouse_button(const morda::mouse_button_event& event)override;
+	bool on_mouse_move(const morda::mouse_move_event& event)override;
+	bool on_key(const morda::key_event& e)override;
+	void on_character_input(const morda::character_input_event& e)override;
 
 	using morda::text_widget::set_text;
 

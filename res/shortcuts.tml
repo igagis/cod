@@ -64,18 +64,18 @@ cod.tile.focus_down{
 	left_alt arrow_down
 }
 
-cod.tile.move_left{
+cod.page.move_left{
 	left_alt left_control left_shift arrow_left
 }
 
-cod.tile.move_right{
+cod.page.move_right{
 	left_alt left_control left_shift arrow_right
 }
 
-cod.tile.move_up{
+cod.page.move_up{
 	left_alt left_control left_shift arrow_up
 }
 
-cod.tile.move_down{
+cod.page.move_down{
 	left_alt left_control left_shift arrow_down
 }
