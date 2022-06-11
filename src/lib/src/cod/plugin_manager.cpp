@@ -118,7 +118,6 @@ std::shared_ptr<file_page> plugin_manager::open_file(const std::string& file_nam
         // std::cout << "trying plugin" << std::endl;
         auto page = i->instance.open_file(context::inst().gui.morda_context, file_name);
         if(page){
-            page->file_name = file_name;
             return page;
         }
     }

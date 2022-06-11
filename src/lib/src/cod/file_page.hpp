@@ -26,17 +26,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace cod{
 
 class file_page : public page{
-	friend class plugin_manager;
-
 	std::string file_name;
 public:
-	file_page(std::shared_ptr<morda::context> context);
+	file_page(std::shared_ptr<morda::context> context, std::string&& file_name);
 
-	std::string_view get_name()const override{
-		return this->file_name;
-	}
-	
 	void on_tear_out()noexcept override;
+
+	std::shared_ptr<morda::widget> create_tab_content()override;
 };
 
 }

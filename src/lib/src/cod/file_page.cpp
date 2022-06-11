@@ -21,14 +21,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "file_page.hpp"
 
+#include <morda/widgets/label/text.hpp>
+
 #include "context.hpp"
 #include "file_opener.hpp"
 
 using namespace cod;
 
-file_page::file_page(std::shared_ptr<morda::context> context) :
+file_page::file_page(std::shared_ptr<morda::context> context, std::string&& file_name) :
 		morda::widget(std::move(context), treeml::forest()),
-		page(this->context)
+		page(this->context),
+		file_name(std::move(file_name))
 {}
 
 void file_page::on_tear_out()noexcept{
@@ -41,4 +44,10 @@ void file_page::on_tear_out()noexcept{
 	if(i != ctx.file_opener.open_files.end()){
 		ctx.file_opener.open_files.erase(i);
 	}
+}
+
+std::shared_ptr<morda::widget> file_page::create_tab_content(){
+	auto t = std::make_shared<morda::text>(this->context, tml::forest());
+	t->set_text(file_name);
+	return t;
 }

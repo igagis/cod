@@ -257,6 +257,8 @@ file_tree_page::file_tree_page(std::shared_ptr<morda::context> c) :
 	tv.set_provider(this->provider);
 }
 
-std::string_view file_tree_page::get_name()const{
-	return "file tree";
+std::shared_ptr<morda::widget> file_tree_page::create_tab_content(){
+	auto t = std::make_shared<morda::text>(this->context, tml::forest());
+	t->set_text("file tree");
+	return t;
 }

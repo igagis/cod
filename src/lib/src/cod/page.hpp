@@ -29,9 +29,9 @@ class page : public morda::page{
 public:
 	page(std::shared_ptr<morda::context> context);
 
-	virtual std::string_view get_name()const = 0;
-
 	bool on_key(const morda::key_event& e)override;
+
+	virtual std::shared_ptr<morda::widget> create_tab_content() = 0;
 };
 
 }

@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 std::shared_ptr<file_page> text_editor_plugin::open_file(const std::shared_ptr<morda::context>& context, std::string_view file_name){
-    auto page = std::make_shared<text_editor_page>(context);
+    auto page = std::make_shared<text_editor_page>(context, std::string(file_name));
     page->set_text(
 			utki::to_utf32(
 					utki::make_string(

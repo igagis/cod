@@ -36,9 +36,12 @@ namespace{
 const treeml::forest tab_desc = treeml::read(R"(
 		@tab{
 			@row{
-				@text{
-					id{text}
-					text{cube}
+				// @text{
+				// 	id{text}
+				// 	text{cube}
+				// }
+				@widget{
+					id{placeholder}
 				}
 				@push_button{
 					id{close_button}
@@ -59,7 +62,7 @@ const treeml::forest tab_desc = treeml::read(R"(
 void tabbed_book_tile::add(std::shared_ptr<page> p){
 	auto tab = this->context->inflater.inflate_as<morda::tab>(tab_desc);
 
-	tab->get_widget_as<morda::text>("text").set_text(papki::not_dir(p->get_name()));
+	tab->get_widget("placeholder").replace_by(p->create_tab_content());
 	
 	tab->get_widget_as<morda::push_button>("close_button").click_handler = [
 			tabbed_book_wp = utki::make_weak_from(*this),

@@ -77,7 +77,7 @@ public:
 		this->page::render(matrix);
 	}
 
-	std::string_view get_name()const override;
+	std::shared_ptr<morda::widget> create_tab_content()override;
 };
 
 }
