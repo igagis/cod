@@ -41,6 +41,10 @@ public:
 	}
 
 	void add(std::shared_ptr<page> p);
+
+	size_t num_pages()const noexcept{
+		return this->get_book().size();
+	}
 };
 
 }

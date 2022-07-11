@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <morda/widgets/group/book.hpp>
+#include <morda/widgets/button/tab.hpp>
 
 namespace cod{
 
@@ -32,6 +33,9 @@ public:
 	bool on_key(const morda::key_event& e)override;
 
 	virtual std::shared_ptr<morda::widget> create_tab_content() = 0;
+
+private:
+	void move_right();
 };
 
 }

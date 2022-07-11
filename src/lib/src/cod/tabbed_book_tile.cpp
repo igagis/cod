@@ -33,7 +33,7 @@ tabbed_book_tile::tabbed_book_tile(std::shared_ptr<morda::context> c, const tree
 
 namespace{
 
-const treeml::forest tab_desc = treeml::read(R"(
+const tml::forest tab_desc = tml::read(R"(
 		@tab{
 			@row{
 				// @text{

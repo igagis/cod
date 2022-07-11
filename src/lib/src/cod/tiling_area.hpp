@@ -39,7 +39,7 @@ class tiling_area :
 		private morda::container
 {
 	std::shared_ptr<morda::container> content_container;
-
+	
 public:
 	const morda::real min_tile_size;
 	const morda::real dragger_size;

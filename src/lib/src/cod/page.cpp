@@ -40,6 +40,9 @@ bool page::on_key(const morda::key_event& e){
 		return true;
 	}else if(context::inst().shortcuts.get("cod.page.move_right").combo == e.combo){
 		std::cout << "move page right" << std::endl;
+		this->context->run_from_ui_thread([p = utki::make_shared_from(*this)]{
+			p->move_right();
+		});
 		return true;
 	}else if(context::inst().shortcuts.get("cod.page.move_up").combo == e.combo){
 		std::cout << "move page up" << std::endl;
@@ -50,4 +53,28 @@ bool page::on_key(const morda::key_event& e){
 	}
 
 	return false;
+}
+
+void page::move_right(){
+	auto tbt = this->try_get_ancestor<tabbed_book_tile>();
+	if(!tbt){
+		// the page is not added to tabbed book tile
+		// std::cout << "page is not in book tile" << std::endl;
+		return;
+	}
+
+	auto ta = tbt->try_get_ancestor<tiling_area>();
+	if(!ta){
+		// the tabbed book tile is not in tiling area
+		std::cout << "tabbed book tile is not in tiling area" << std::endl;
+		return;
+	}
+
+	ASSERT(&ta->content() == tbt->parent())
+
+	// auto tbtp = utki::make_shared_from(*tbt);
+
+	std::cout << "actual move right" << std::endl;
+
+	
 }
