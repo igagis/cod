@@ -394,9 +394,7 @@ std::vector<line_span> regex_highlighter::highlight(std::u32string_view str)
 					return e.first == matcher;
 				});
 				if (i == cache.end()) {
-					cache.push_back(
-						std::make_pair(matcher, matcher->preprocess(this->state_stack.back().capture_groups))
-					);
+					cache.emplace_back(matcher, matcher->preprocess(this->state_stack.back().capture_groups));
 					matcher = cache.back().second.get();
 				} else {
 					matcher = i->second.get();

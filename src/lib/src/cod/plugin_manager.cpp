@@ -46,7 +46,7 @@ struct plugin_info {
 	void* dl_handle;
 };
 
-typedef std::list<plugin_info> plugin_list_type;
+using plugin_list_type = std::list<plugin_info>;
 
 plugin_list_type plugin_list;
 } // namespace

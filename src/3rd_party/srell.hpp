@@ -30,6 +30,8 @@
 ******************************************************************************
 **/
 
+// NOLINTBEGIN
+
 #ifndef SRELL_REGEX_TEMPLATE_LIBRARY
 #define SRELL_REGEX_TEMPLATE_LIBRARY
 
@@ -9865,3 +9867,5 @@ typedef regex_token_iterator<std::string::const_iterator, std::iterator_traits<s
 #endif
 
 #endif	//  SRELL_REGEX_TEMPLATE_LIBRARY
+
+//NOLINTEND

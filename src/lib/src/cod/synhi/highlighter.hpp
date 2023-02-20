@@ -44,7 +44,7 @@ public:
 
 	virtual void reset() = 0;
 
-	virtual ~highlighter() {}
+	virtual ~highlighter() = default;
 };
 
 } // namespace synhi

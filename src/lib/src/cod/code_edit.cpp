@@ -247,8 +247,9 @@ void code_edit::line_widget::render(const morda::matrix4& matrix) const
 morda::vector2 code_edit::line_widget::measure(const morda::vector2& quotum) const noexcept
 {
 	morda::vector2 ret = this->owner.font_info.glyph_dims;
-	ret.x() *= this->owner.lines[this->line_num].str.size()
-		+ 1; // for empty strings the widget will still have size of one glyph
+	ret.x() *= morda::real(
+		this->owner.lines[this->line_num].str.size() + 1
+	); // for empty strings the widget will still have size of one glyph
 
 	for (unsigned i = 0; i != ret.size(); ++i) {
 		if (quotum[i] >= 0) {

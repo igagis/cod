@@ -42,7 +42,7 @@ class code_edit :
 	private morda::column,
 	private morda::updateable
 {
-	typedef morda::column base_container;
+	using base_container = morda::column;
 
 	std::shared_ptr<morda::list_widget> list;
 	std::shared_ptr<morda::scroll_area> scroll_area;
@@ -55,6 +55,8 @@ class code_edit :
 	void on_font_change() override
 	{
 		const auto& font = this->get_font().get();
+
+		using std::round;
 
 		this->font_info.glyph_dims.set(font.get_advance(' '), font.get_height());
 		this->font_info.baseline = round((font.get_height() + font.get_ascender() - font.get_descender()) / 2);

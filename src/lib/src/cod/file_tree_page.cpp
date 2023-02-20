@@ -74,15 +74,18 @@ std::string file_tree_page::file_tree_provider::make_path(
 {
 	auto cur_file_list = &fef;
 	std::string dir_name;
-	for (auto i = index.begin(); i != index.end(); ++i) {
-		ASSERT(*i < cur_file_list->size())
-		auto& f = (*cur_file_list)[*i];
+	for (const auto& i : index) {
+		ASSERT(i < cur_file_list->size())
+		auto& f = (*cur_file_list)[i];
 		ASSERT(f.value.is_directory)
 		dir_name.append(f.value.name);
 		if (f.value.is_directory) {
 			dir_name.append("/");
 		} else {
-			ASSERT(std::next(i) == index.end())
+			// It should be the last index.
+			// Since we are using range based for loop, at least check that
+			// it is equal to the last index of the span.
+			ASSERT(i == *index.rbegin())
 		}
 		cur_file_list = &f.children;
 	}

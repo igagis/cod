@@ -45,7 +45,7 @@ class file_tree_page : virtual public morda::widget, public page, private morda:
 			bool children_read = false;
 		};
 
-		typedef utki::tree<file_entry>::container_type file_entry_forest_type;
+		using file_entry_forest_type = utki::tree<file_entry>::container_type;
 
 		mutable file_entry_forest_type cache;
 

@@ -40,7 +40,7 @@ class plugin_manager : public utki::singleton<plugin_manager>
 
 public:
 	plugin_manager(utki::span<const std::string> plugins);
-	~plugin_manager();
+	~plugin_manager() override;
 
 	std::shared_ptr<file_page> open_file(const std::string& file_name);
 };

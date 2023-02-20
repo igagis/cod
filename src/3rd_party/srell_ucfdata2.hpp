@@ -4,6 +4,8 @@
 //  Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
 //  For terms of use, see http://www.unicode.org/terms_of_use.html
 
+// NOLINTBEGIN
+
 template <typename T2, typename T3>
 struct unicode_casefolding
 {
@@ -2489,3 +2491,5 @@ const T2 unicode_casefolding<T2, T3>::rev_charsettable[] =
 	0x1E943, 0x1E921, eos	//  4300
 };
 #define SRELL_UCFDATA_VERSION 200
+
+// NOLINTEND
