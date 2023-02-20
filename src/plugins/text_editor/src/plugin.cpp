@@ -21,21 +21,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "plugin.hpp"
 
-#include <papki/fs_file.hpp>
-
 #include <cod/text_editor_page.hpp>
+#include <papki/fs_file.hpp>
 
 using namespace cod;
 
-std::shared_ptr<file_page> text_editor_plugin::open_file(const std::shared_ptr<morda::context>& context, std::string_view file_name){
-    auto page = std::make_shared<text_editor_page>(context, std::string(file_name));
-    page->set_text(
-			utki::to_utf32(
-					utki::make_string(
-							papki::fs_file(file_name).load()
-						)
-				)
-		);
+std::shared_ptr<file_page> text_editor_plugin::open_file(
+	const std::shared_ptr<morda::context>& context,
+	std::string_view file_name
+)
+{
+	auto page = std::make_shared<text_editor_page>(context, std::string(file_name));
+	page->set_text(utki::to_utf32(utki::make_string(papki::fs_file(file_name).load())));
 
-    return page;
+	return page;
 }

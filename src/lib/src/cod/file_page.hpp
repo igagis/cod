@@ -23,16 +23,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "page.hpp"
 
-namespace cod{
+namespace cod {
 
-class file_page : public page{
+class file_page : public page
+{
 	std::string file_name;
+
 public:
 	file_page(std::shared_ptr<morda::context> context, std::string&& file_name);
 
-	void on_tear_out()noexcept override;
+	void on_tear_out() noexcept override;
 
-	utki::shared_ref<morda::widget> create_tab_content()override;
+	utki::shared_ref<morda::widget> create_tab_content() override;
 };
 
-}
+} // namespace cod

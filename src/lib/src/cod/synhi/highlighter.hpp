@@ -23,27 +23,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <morda/res/font.hpp>
 
-namespace synhi{
+namespace synhi {
 
-struct font_style{
-    morda::res::font::style style = morda::res::font::style::normal;
-    bool underline = false;
-    bool stroke = false;
-    uint32_t color = 0xffffffff;
+struct font_style {
+	morda::res::font::style style = morda::res::font::style::normal;
+	bool underline = false;
+	bool stroke = false;
+	uint32_t color = 0xffffffff;
 };
 
-struct line_span{
-    size_t length = 0;
-    std::shared_ptr<const font_style> style;
+struct line_span {
+	size_t length = 0;
+	std::shared_ptr<const font_style> style;
 };
 
-class highlighter{
+class highlighter
+{
 public:
-    virtual std::vector<line_span> highlight(std::u32string_view str) = 0;
+	virtual std::vector<line_span> highlight(std::u32string_view str) = 0;
 
-    virtual void reset() = 0;
+	virtual void reset() = 0;
 
-    virtual ~highlighter(){}
+	virtual ~highlighter() {}
 };
 
-}
+} // namespace synhi

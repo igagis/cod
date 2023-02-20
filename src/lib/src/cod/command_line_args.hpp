@@ -24,9 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <vector>
 
-namespace cod{
-struct command_line_args{
+namespace cod {
+struct command_line_args {
 	std::string base_dir;
 	std::vector<std::string> plugins;
 };
-}
+} // namespace cod

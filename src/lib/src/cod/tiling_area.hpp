@@ -21,56 +21,56 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <morda/widgets/container.hpp>
 #include <morda/widgets/base/oriented_widget.hpp>
+#include <morda/widgets/container.hpp>
 
 #include "tile.hpp"
 
-namespace cod{
+namespace cod {
 
 /*
 The tile_area arranges tiles either vertially or horizontally.
 The tiles are stored in the content container which is the first container child of the tile_area.
 The rest of the children are dragger widgets for dragging tile borders within tile_area with mouse.
 */
-class tiling_area :
-		public tile,
-		public morda::oriented_widget,
-		private morda::container
+class tiling_area : public tile, public morda::oriented_widget, private morda::container
 {
 	utki::shared_ref<morda::container> content_container;
-	
+
 public:
 	const morda::real min_tile_size;
 	const morda::real dragger_size;
 
 	tiling_area(std::shared_ptr<morda::context> c, const treeml::forest& desc);
 
-	morda::container& content(){
+	morda::container& content()
+	{
 		return *this->content_container;
 	}
 
-	const morda::container& content()const{
+	const morda::container& content() const
+	{
 		return *this->content_container;
 	}
 
-	void lay_out()override;
+	void lay_out() override;
 
-	morda::vector2 measure(const morda::vector2& quotum)const override;
+	morda::vector2 measure(const morda::vector2& quotum) const override;
 
 	// override in order to avoid invalidation of layout when children list changes,
 	// because default implementation of this method invalidates layout
-	void on_children_change()override{
+	void on_children_change() override
+	{
 		// do nothing
 	}
 
-	void render(const morda::matrix4& matrix)const override{
+	void render(const morda::matrix4& matrix) const override
+	{
 		this->morda::container::render(matrix);
 		this->tile::render(matrix);
 	}
 
 private:
-	
 };
 
-}
+} // namespace cod

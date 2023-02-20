@@ -23,25 +23,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <list>
 
-#include <utki/span.hpp>
-#include <utki/singleton.hpp>
-
 #include <morda/widgets/group/book.hpp>
+#include <utki/singleton.hpp>
+#include <utki/span.hpp>
 
 #include "plugin.hpp"
 
-namespace cod{
+namespace cod {
 
-class plugin_manager : public utki::singleton<plugin_manager>{
-    friend class plugin;
+class plugin_manager : public utki::singleton<plugin_manager>
+{
+	friend class plugin;
 
-    static void register_plugin(plugin& p);
-    static void unregister_plugin(plugin& p);
+	static void register_plugin(plugin& p);
+	static void unregister_plugin(plugin& p);
+
 public:
-    plugin_manager(utki::span<const std::string> plugins);
-    ~plugin_manager();
+	plugin_manager(utki::span<const std::string> plugins);
+	~plugin_manager();
 
-    std::shared_ptr<file_page> open_file(const std::string& file_name);
+	std::shared_ptr<file_page> open_file(const std::string& file_name);
 };
 
-}
+} // namespace cod

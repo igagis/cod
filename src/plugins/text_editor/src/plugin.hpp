@@ -23,11 +23,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <cod/plugin.hpp>
 
-namespace cod{
+namespace cod {
 
-class text_editor_plugin : public cod::plugin{
+class text_editor_plugin : public cod::plugin
+{
 public:
-    std::shared_ptr<file_page> open_file(const std::shared_ptr<morda::context>& context, std::string_view file_name)override;
+	std::shared_ptr<file_page> open_file(const std::shared_ptr<morda::context>& context, std::string_view file_name)
+		override;
 };
 
-}
+} // namespace cod

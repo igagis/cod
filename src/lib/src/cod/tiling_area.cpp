@@ -26,51 +26,55 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-namespace{
+namespace {
 const morda::real minimal_tile_size_dp = 100;
 const morda::real dragger_size_dp = 5;
 const uint32_t dragger_color = 0xffff8080;
-}
+} // namespace
 
-namespace{
-class dragger : public morda::color{
+namespace {
+class dragger : public morda::color
+{
 	bool grabbed = false;
 	morda::vector2 grab_point;
 
 	tiling_area& owner;
 
 	morda::mouse_cursor_manager::iterator arrows_cursor_iter;
+
 public:
 	std::shared_ptr<morda::widget> prev_widget;
 	std::shared_ptr<morda::widget> next_widget;
 
 	dragger(std::shared_ptr<morda::context> c, tiling_area& owner) :
-			morda::widget(std::move(c), treeml::forest()),
-			morda::color(this->context, treeml::forest()),
-			owner(owner)
+		morda::widget(std::move(c), treeml::forest()),
+		morda::color(this->context, treeml::forest()),
+		owner(owner)
 	{
 		this->set_color(dragger_color);
 	}
 
-	bool on_mouse_button(const morda::mouse_button_event& e)override{
-		if(e.button != morda::mouse_button::left){
+	bool on_mouse_button(const morda::mouse_button_event& e) override
+	{
+		if (e.button != morda::mouse_button::left) {
 			return false;
 		}
 
 		this->grabbed = e.is_down;
 		this->grab_point = e.pos;
 
-		if(!this->grabbed){
-			if(!this->is_hovered()){
+		if (!this->grabbed) {
+			if (!this->is_hovered()) {
 				this->context->cursor_manager.pop(this->arrows_cursor_iter);
 			}
 		}
-		
+
 		return true;
 	}
 
-	bool on_mouse_move(const morda::mouse_move_event& e)override{
-		if(!this->grabbed){
+	bool on_mouse_move(const morda::mouse_move_event& e) override
+	{
+		if (!this->grabbed) {
 			return false;
 		}
 
@@ -90,9 +94,9 @@ public:
 		new_prev_dims = max(new_prev_dims, morda::vector2(this->owner.min_tile_size));
 		new_next_dims = max(new_next_dims, morda::vector2(this->owner.min_tile_size));
 
-		if(delta[long_index] >= 0){
+		if (delta[long_index] >= 0) {
 			delta = min(delta, this->next_widget->rect().d - new_next_dims);
-		}else{
+		} else {
 			delta = max(delta, new_prev_dims - this->prev_widget->rect().d);
 		}
 
@@ -102,50 +106,49 @@ public:
 
 		this->next_widget->resize_by(-delta);
 		this->next_widget->move_by(delta);
-		
+
 		return true;
 	}
 
-	void on_hover_change(unsigned pointer_id)override{
-		if(this->grabbed){
+	void on_hover_change(unsigned pointer_id) override
+	{
+		if (this->grabbed) {
 			return;
 		}
 
-		if(this->is_hovered() || grabbed){
+		if (this->is_hovered() || grabbed) {
 			this->arrows_cursor_iter = this->context->cursor_manager.push(
-					this->owner.is_vertical() ?
-							morda::mouse_cursor::up_down_arrow
-						:
-							morda::mouse_cursor::left_right_arrow
-				);
-		}else{
+				this->owner.is_vertical() ? morda::mouse_cursor::up_down_arrow : morda::mouse_cursor::left_right_arrow
+			);
+		} else {
 			this->context->cursor_manager.pop(this->arrows_cursor_iter);
 		}
 	}
 
-	void render(const morda::matrix4& matrix)const override{
-		if(this->is_hovered() || this->grabbed){
+	void render(const morda::matrix4& matrix) const override
+	{
+		if (this->is_hovered() || this->grabbed) {
 			this->morda::color::render(matrix);
 		}
 	}
 };
-}
+} // namespace
 
 tiling_area::tiling_area(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
-		morda::widget(std::move(c), desc),
-		tile(this->context, treeml::forest()),
-		morda::oriented_widget(this->context, treeml::forest(), false),
-		morda::container(this->context, treeml::forest()),
-		content_container(utki::make_shared_ref<morda::container>(this->context, treeml::forest())),
-		min_tile_size(this->context->units.dp_to_px(minimal_tile_size_dp)),
-		dragger_size(this->context->units.dp_to_px(dragger_size_dp))
+	morda::widget(std::move(c), desc),
+	tile(this->context, treeml::forest()),
+	morda::oriented_widget(this->context, treeml::forest(), false),
+	morda::container(this->context, treeml::forest()),
+	content_container(utki::make_shared_ref<morda::container>(this->context, treeml::forest())),
+	min_tile_size(this->context->units.dp_to_px(minimal_tile_size_dp)),
+	dragger_size(this->context->units.dp_to_px(dragger_size_dp))
 {
-	for(const auto& p : desc){
-		if(!morda::is_property(p)){
+	for (const auto& p : desc) {
+		if (!morda::is_property(p)) {
 			continue;
 		}
 
-		if(p.value == "vertical"){
+		if (p.value == "vertical") {
 			this->set_vertical(morda::get_property_value(p).to_bool());
 		}
 	}
@@ -156,7 +159,8 @@ tiling_area::tiling_area(std::shared_ptr<morda::context> c, const treeml::forest
 	this->content_container->push_back_inflate(desc);
 }
 
-void tiling_area::lay_out(){
+void tiling_area::lay_out()
+{
 	auto long_index = this->get_long_index();
 	auto trans_index = this->get_trans_index();
 
@@ -165,7 +169,7 @@ void tiling_area::lay_out(){
 	// calculate current length of all tiles
 	morda::real tiles_length = 0;
 
-	for(const auto& t : *this->content_container){
+	for (const auto& t : *this->content_container) {
 		tiles_length += max(t->rect().d[long_index], this->min_tile_size);
 	}
 
@@ -174,9 +178,9 @@ void tiling_area::lay_out(){
 	using std::round;
 
 	// arrange tiles
-	if(content_dims[long_index] >= tiles_length){
+	if (content_dims[long_index] >= tiles_length) {
 		morda::vector2 pos{0, 0};
-		for(auto& t : *this->content_container){
+		for (auto& t : *this->content_container) {
 			morda::real tile_length = max(t->rect().d[long_index], this->min_tile_size);
 
 			ASSERT(tiles_length > 0)
@@ -189,12 +193,12 @@ void tiling_area::lay_out(){
 			t->move_to(pos);
 			pos[long_index] += dims[long_index];
 		}
-	}else{
+	} else {
 		morda::real left_length = content_dims[long_index];
 
 		morda::vector2 pos{0, 0};
 
-		for(auto& t : *this->content_container){
+		for (auto& t : *this->content_container) {
 			morda::real tile_length = max(t->rect().d[long_index], this->min_tile_size);
 
 			ASSERT(tiles_length > 0)
@@ -202,7 +206,7 @@ void tiling_area::lay_out(){
 			morda::vector2 dims;
 			dims[trans_index] = content_dims[trans_index];
 			dims[long_index] = left_length * (tile_length / tiles_length);
-			if(dims[long_index] <= this->min_tile_size){
+			if (dims[long_index] <= this->min_tile_size) {
 				dims[long_index] = this->min_tile_size;
 			}
 			tiles_length -= tile_length;
@@ -225,12 +229,12 @@ void tiling_area::lay_out(){
 	auto num_draggers = this->content_container->size() == 0 ? 0 : this->content_container->size() - 1;
 
 	// remove redundant draggers
-	while(this->size() - 1 > num_draggers){
+	while (this->size() - 1 > num_draggers) {
 		this->pop_back();
 	}
 
 	// add missing draggers
-	while(this->size() - 1 < num_draggers){
+	while (this->size() - 1 < num_draggers) {
 		this->push_back(utki::make_shared_ref<dragger>(this->context, *this));
 	}
 
@@ -238,12 +242,12 @@ void tiling_area::lay_out(){
 	dragger_dims[long_index] = this->dragger_size;
 	dragger_dims[trans_index] = this->rect().d[trans_index];
 
-	for(auto i = std::next(this->begin()); i != this->end(); ++i){
+	for (auto i = std::next(this->begin()); i != this->end(); ++i) {
 		auto index = size_t(std::distance(this->begin(), i)) - 1;
 
 		ASSERT(index < this->content().size())
 
-		auto& dragger = dynamic_cast<::dragger &>(*(*i));
+		auto& dragger = dynamic_cast<::dragger&>(*(*i));
 
 		dragger.prev_widget = this->content().children()[index];
 		dragger.next_widget = this->content().children()[index + 1];
@@ -257,19 +261,20 @@ void tiling_area::lay_out(){
 	}
 }
 
-morda::vector2 tiling_area::measure(const morda::vector2& quotum)const{
+morda::vector2 tiling_area::measure(const morda::vector2& quotum) const
+{
 	auto long_index = this->get_long_index();
 
 	morda::vector2 ret;
 
-	for(size_t i = 0; i != quotum.size(); ++i){
-		if(quotum[i] < 0){
+	for (size_t i = 0; i != quotum.size(); ++i) {
+		if (quotum[i] < 0) {
 			ret[i] = this->min_tile_size;
 
-			if(i == long_index){
+			if (i == long_index) {
 				ret[i] *= this->content_container->size();
 			}
-		}else{
+		} else {
 			ret[i] = quotum[i];
 		}
 	}

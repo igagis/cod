@@ -25,11 +25,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-void file_opener::open(const std::string& file_name){
+void file_opener::open(const std::string& file_name)
+{
 	{
 		auto i = this->open_files.find(file_name);
-		if(i != this->open_files.end()){
-			if(auto p = i->second.lock()){
+		if (i != this->open_files.end()) {
+			if (auto p = i->second.lock()) {
 				p->activate();
 			}
 			return;
@@ -40,17 +41,17 @@ void file_opener::open(const std::string& file_name){
 
 	auto page = ctx.plugins.open_file(file_name);
 
-	if(!page){
+	if (!page) {
 		// no plugin found which opens the file
 		return;
 	}
 
 	// on tear out the page will remove itself from open_files list
-	auto iter =	this->open_files.insert(std::make_pair(file_name, page));
+	auto iter = this->open_files.insert(std::make_pair(file_name, page));
 	ASSERT(iter.second)
 
 	// set the scope_exit in case opening the editor fails
-	utki::scope_exit open_files_scope_exit([this, &iter](){
+	utki::scope_exit open_files_scope_exit([this, &iter]() {
 		this->open_files.erase(iter.first);
 	});
 

@@ -26,12 +26,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 tabbed_book_tile::tabbed_book_tile(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
-		morda::widget(std::move(c), desc),
-		tile(this->context, desc),
-		tabbed_book(this->context, desc)
+	morda::widget(std::move(c), desc),
+	tile(this->context, desc),
+	tabbed_book(this->context, desc)
 {}
 
-namespace{
+namespace {
 
 const tml::forest tab_desc = tml::read(R"(
 		@tab{
@@ -57,28 +57,26 @@ const tml::forest tab_desc = tml::read(R"(
 		}
 	)");
 
-}
+} // namespace
 
-void tabbed_book_tile::add(const utki::shared_ref<page>& p){
+void tabbed_book_tile::add(const utki::shared_ref<page>& p)
+{
 	auto tab = this->context->inflater.inflate_as<morda::tab>(tab_desc);
 
 	tab->get_widget("placeholder").replace_by(p->create_tab_content());
-	
-	tab->get_widget_as<morda::push_button>("close_button").click_handler = [
-			tabbed_book_wp = utki::make_weak_from(*this),
-			tab_wp = utki::make_weak(tab)
-		](morda::push_button& btn)
-	{
-		auto tb = tabbed_book_wp.lock();
-		ASSERT(tb)
 
-		auto t = tab_wp.lock();
-		ASSERT(t)
+	tab->get_widget_as<morda::push_button>("close_button").click_handler =
+		[tabbed_book_wp = utki::make_weak_from(*this), tab_wp = utki::make_weak(tab)](morda::push_button& btn) {
+			auto tb = tabbed_book_wp.lock();
+			ASSERT(tb)
 
-		btn.context->run_from_ui_thread([tb, t]{
-			tb->tear_out(*t);
-		});
-	};
+			auto t = tab_wp.lock();
+			ASSERT(t)
 
-    this->morda::tabbed_book::add(tab, p);
+			btn.context->run_from_ui_thread([tb, t] {
+				tb->tear_out(*t);
+			});
+		};
+
+	this->morda::tabbed_book::add(tab, p);
 }

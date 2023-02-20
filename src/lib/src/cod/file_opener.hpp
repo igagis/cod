@@ -23,14 +23,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "gui.hpp"
 
-namespace cod{
+namespace cod {
 
-class file_opener{
-    friend class file_page;
+class file_opener
+{
+	friend class file_page;
 
-    std::map<std::string, std::weak_ptr<file_page>> open_files;
-public:    
-    void open(const std::string& file_name);
+	std::map<std::string, std::weak_ptr<file_page>> open_files;
+
+public:
+	void open(const std::string& file_name);
 };
 
-}
+} // namespace cod

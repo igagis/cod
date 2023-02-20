@@ -23,20 +23,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "file_page.hpp"
 
-namespace cod{
+namespace cod {
 
-class plugin{
+class plugin
+{
 public:
-    plugin();
-    virtual ~plugin(){}
+	plugin();
+	virtual ~plugin() = default;
 
-    virtual std::shared_ptr<file_page> open_file(
-            const std::shared_ptr<morda::context>& context,
-            std::string_view file_name
-        )
-    {
-        return nullptr;
-    }
+	virtual std::shared_ptr<file_page> open_file(
+		const std::shared_ptr<morda::context>& context,
+		std::string_view file_name
+	)
+	{
+		return nullptr;
+	}
 };
 
-}
+} // namespace cod
