@@ -89,7 +89,7 @@ public:
 		std::vector<std::shared_ptr<const font_style>> styles;
 
 		struct parse_result {
-			std::shared_ptr<regex_highlighter_model::rule> rule;
+			utki::shared_ref<regex_highlighter_model::rule> rule;
 
 			struct operation_entry {
 				operation::type type;
@@ -146,7 +146,7 @@ public:
 		std::shared_ptr<const font_style> style;
 
 		struct parse_result {
-			std::shared_ptr<state> state_;
+			utki::shared_ref<regex_highlighter_model::state> state;
 			std::vector<std::string> rules;
 			std::string style;
 		};

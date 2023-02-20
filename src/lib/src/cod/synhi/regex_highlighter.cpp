@@ -145,8 +145,7 @@ struct parsing_context {
 			ss << "state not found: " << name;
 			throw std::invalid_argument(ss.str());
 		}
-		ASSERT(i->second.state_)
-		return i->second.state_;
+		return i->second.state;
 	}
 
 	std::shared_ptr<regex_highlighter_model::rule> get_rule(const std::string& name)
@@ -205,8 +204,7 @@ regex_highlighter_model::matcher::match_result regex_highlighter_model::regex_ma
 
 regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse(const treeml::forest& desc)
 {
-	parse_result ret;
-	ret.rule = std::make_shared<rule>();
+	parse_result ret{.rule = utki::make_shared_ref<rule>()};
 
 	for (const auto& n : desc) {
 		if (n.value == "styles") {
@@ -245,9 +243,7 @@ regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse
 
 regex_highlighter_model::state::parse_result regex_highlighter_model::state::parse(const treeml::forest& desc)
 {
-	parse_result ret;
-
-	ret.state_ = std::make_shared<state>();
+	parse_result ret{.state = utki::make_shared_ref<state>()};
 
 	for (const auto& n : desc) {
 		if (n.value == "style") {
@@ -288,9 +284,8 @@ regex_highlighter_model::regex_highlighter_model(const treeml::forest& spec)
 
 	// set state -> rules and state -> styles references
 	for (const auto& n : c.states) {
-		ASSERT(n.second.state_)
-		this->states.push_back(n.second.state_);
-		auto& state_ = *n.second.state_;
+		this->states.push_back(n.second.state);
+		auto& state_ = *n.second.state;
 		const auto& parsed = n.second;
 		state_.rules = utki::linq(parsed.rules)
 						   .select([&](const auto& m) -> std::shared_ptr<const rule> {
@@ -303,8 +298,6 @@ regex_highlighter_model::regex_highlighter_model(const treeml::forest& spec)
 
 	// set rule -> style and rule -> state references
 	for (const auto& n : c.rules) {
-		ASSERT(n.second.rule)
-
 		auto& rule = *n.second.rule;
 		const auto& parsed = n.second;
 
