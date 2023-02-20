@@ -44,8 +44,8 @@ class code_edit :
 {
 	using base_container = morda::column;
 
-	std::shared_ptr<morda::list_widget> list;
-	std::shared_ptr<morda::scroll_area> scroll_area;
+	utki::shared_ref<morda::list_widget> list;
+	utki::shared_ref<morda::scroll_area> scroll_area;
 
 	struct {
 		morda::vector2 glyph_dims;

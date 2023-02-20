@@ -130,8 +130,8 @@ tst::set set("regex_highlighter", [](tst::suite& suite){
                     U'\n'
                 );
             
-            for(auto i = lines.begin(); i != lines.end(); ++i){
-                highlighter.highlight(*i);
+            for(const auto& l : lines){
+                highlighter.highlight(l);
             }
         }
     );

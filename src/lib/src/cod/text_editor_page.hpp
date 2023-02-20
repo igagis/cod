@@ -48,7 +48,7 @@ public:
 		this->unfocus();
 	}
 
-	bool on_key(const morda::key_event& e)
+	bool on_key(const morda::key_event& e) override
 	{
 		if (this->code_edit::on_key(e)) {
 			return true;

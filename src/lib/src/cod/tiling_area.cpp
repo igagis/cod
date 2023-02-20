@@ -85,6 +85,8 @@ public:
 
 		delta[trans_index] = morda::real(0);
 
+		ASSERT(this->prev_widget)
+		ASSERT(this->next_widget)
 		auto new_prev_dims = this->prev_widget->rect().d + delta;
 		auto new_next_dims = this->next_widget->rect().d - delta;
 
@@ -249,8 +251,8 @@ void tiling_area::lay_out()
 
 		auto& dragger = dynamic_cast<::dragger&>(*(*i));
 
-		dragger.prev_widget = this->content().children()[index];
-		dragger.next_widget = this->content().children()[index + 1];
+		dragger.prev_widget = this->content().children()[index].to_shared_ptr();
+		dragger.next_widget = this->content().children()[index + 1].to_shared_ptr();
 
 		dragger.resize(dragger_dims);
 
@@ -272,7 +274,7 @@ morda::vector2 tiling_area::measure(const morda::vector2& quotum) const
 			ret[i] = this->min_tile_size;
 
 			if (i == long_index) {
-				ret[i] *= this->content_container->size();
+				ret[i] *= morda::real(this->content_container->size());
 			}
 		} else {
 			ret[i] = quotum[i];

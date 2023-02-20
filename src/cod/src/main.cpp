@@ -35,7 +35,7 @@ mordavokne::application_factory app_fac([](auto args) -> std::unique_ptr<mordavo
 		help = true;
 	});
 	p.add("plugin", "load specified plugin file", [&cla](std::string_view file_name) {
-		cla.plugins.push_back(std::string(file_name));
+		cla.plugins.emplace_back(file_name);
 	});
 
 	auto fa = p.parse(args);

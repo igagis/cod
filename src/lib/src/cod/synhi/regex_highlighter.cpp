@@ -119,9 +119,7 @@ struct parsing_context {
 				throw std::invalid_argument(ss.str());
 			}
 
-			this->states.push_back(
-				std::make_pair(s.value.to_string(), regex_highlighter_model::state::parse(s.children))
-			);
+			this->states.emplace_back(s.value.to_string(), regex_highlighter_model::state::parse(s.children));
 		}
 	}
 
@@ -187,6 +185,7 @@ regex_highlighter_model::matcher::match_result regex_highlighter_model::regex_ma
 	ASSERT(m.size() >= 1)
 	for (size_t i = 1; i != m.size(); ++i) {
 		if (!m[i].matched) {
+			// NOLINTNEXTLINE(modernize-use-emplace, "capture_group has no suitable constructor")
 			capture_groups.push_back(
 				match_result::capture_group{.matched = false, .offset = size_t(std::distance(m[0].first, m[0].second))}
 			);
@@ -225,9 +224,9 @@ regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse
 				treeml::crawler(n.children).get().value.to_string()
 			);
 		} else if (n.value == "push") {
-			ret.operations.push_back({operation::type::push, treeml::crawler(n.children).get().value.to_string()});
+			ret.operations.emplace_back(operation::type::push, treeml::crawler(n.children).get().value.to_string());
 		} else if (n.value == "pop") {
-			ret.operations.push_back({operation::type::pop, std::string()});
+			ret.operations.emplace_back(operation::type::pop, std::string());
 		} else {
 			std::stringstream ss;
 			ss << "unknown rule keyword: " << n.value;
@@ -335,6 +334,7 @@ void regex_highlighter::reset()
 	this->state_stack.clear();
 	ASSERT(this->model)
 	ASSERT(!this->model->states.empty());
+	// NOLINTNEXTLINE(modernize-use-emplace, "state_frame has no appropriate constructor")
 	this->state_stack.push_back(state_frame{.state = *this->model->states.front()});
 }
 
@@ -470,6 +470,7 @@ std::vector<line_span> regex_highlighter::highlight(std::u32string_view str)
 			switch (op.type_) {
 				case regex_highlighter_model::rule::operation::type::push:
 					ASSERT(op.state_to_push)
+					// NOLINTNEXTLINE(modernize-use-emplace, "state_frame has no appropriate constructor")
 					this->state_stack.push_back(
 						state_frame{.state = *op.state_to_push, .capture_groups = std::move(match.capture_groups)}
 					);

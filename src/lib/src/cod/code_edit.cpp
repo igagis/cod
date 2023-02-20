@@ -39,13 +39,9 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& de
 	widget(std::move(c), desc),
 	character_input_widget(this->context),
 	text_widget(this->context, desc),
-	column(this->context, treeml::forest()),
-	lines_provider(std::make_shared<provider>(*this))
-{
-	this->set_font(this->context->loader.load<morda::res::font>("fnt_monospace"));
-	this->code_edit::on_font_change();
-
-	this->push_back_inflate(treeml::read(R"qwertyuiop(
+	column( //
+		this->context,
+		treeml::read(R"qwertyuiop(
 			@row{
 				layout{dx{fill} dy{0} weight{1}}
 
@@ -73,9 +69,15 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& de
 					dx{fill} dy{min}
 				}
 			}
-		)qwertyuiop"));
+		)qwertyuiop")
+	),
+	list(utki::make_shared_from(this->get_widget_as<morda::list_widget>("lines"))),
+	scroll_area(utki::make_shared_from(this->get_widget_as<morda::scroll_area>("scroll_area"))),
+	lines_provider(std::make_shared<provider>(*this))
+{
+	this->set_font(this->context->loader.load<morda::res::font>("fnt_monospace"));
+	this->code_edit::on_font_change();
 
-	this->list = utki::make_shared_from(this->get_widget_as<morda::list_widget>("lines"));
 	this->list->set_provider(this->lines_provider);
 
 	auto& vs = this->get_widget_as<morda::fraction_band_widget>("vertical_scroll");
@@ -92,8 +94,6 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& de
 			s->set_band_fraction(lw.get_scroll_band());
 		}
 	};
-
-	this->scroll_area = utki::make_shared_from(this->get_widget_as<morda::scroll_area>("scroll_area"));
 
 	auto& hs = this->get_widget_as<morda::fraction_band_widget>("horizontal_scroll");
 
@@ -301,7 +301,7 @@ std::vector<std::tuple<const code_edit::cursor*, code_edit::cursor::selection>> 
 	for (auto& c : this->cursors) {
 		auto s = c.get_selection_glyphs();
 		if (s.segment.p1.y() <= line_num && line_num <= s.segment.p2.y()) {
-			ret.push_back(std::make_tuple(&c, s));
+			ret.emplace_back(&c, s);
 		}
 	}
 
@@ -459,7 +459,7 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event)
 			if (event.is_down) {
 				this->cursors.clear();
 
-				this->cursors.push_back(cursor(*this, this->mouse_pos_to_glyph_pos(event.pos)));
+				this->cursors.emplace_back(*this, this->mouse_pos_to_glyph_pos(event.pos));
 				this->mouse_selection = true;
 
 				this->focus();
@@ -709,7 +709,7 @@ code_edit::line code_edit::line::cut_tail(size_t pos)
 		cur_span_end += i->length;
 		if (pos < cur_span_end) {
 			size_t to_end = cur_span_end - pos;
-			ret.spans.push_back(synhi::line_span(*i));
+			ret.spans.emplace_back(*i);
 			ret.spans.back().length = to_end;
 			i->length -= to_end;
 			// LOG("this->spans.size() = " << this->spans.size() << std::endl)
@@ -870,11 +870,15 @@ size_t code_edit::calc_word_length_forward(const cursor& c) const noexcept
 	bool non_ws_met = false;
 	for (auto i = std::next(l.begin(), cp.x()); i != l.end(); ++i, ++ret) {
 		if (non_ws_met) {
-			if (std::isspace(*i)) {
+			// TODO: converting char32_t to int might not be the right thing to do here.
+			// Consider using ICU library for checking for whitespace.
+			if (std::isspace(int(*i))) {
 				break;
 			}
 		} else {
-			if (!std::isspace(*i)) {
+			// TODO: converting char32_t to int might not be the right thing to do here.
+			// Consider using ICU library for checking for whitespace.
+			if (!std::isspace(int(*i))) {
 				non_ws_met = true;
 			}
 		}
@@ -905,11 +909,15 @@ size_t code_edit::calc_word_length_backward(const cursor& c) const noexcept
 	ASSERT(cp.x() <= l.size())
 	for (auto i = std::next(l.rbegin(), l.size() - cp.x()); i != l.rend(); ++i, ++ret) {
 		if (non_ws_met) {
-			if (std::isspace(*i)) {
+			// TODO: converting char32_t to int might not be the right thing to do here.
+			// Consider using ICU library for checking for whitespace.
+			if (std::isspace(int(*i))) {
 				break;
 			}
 		} else {
-			if (!std::isspace(*i)) {
+			// TODO: converting char32_t to int might not be the right thing to do here.
+			// Consider using ICU library for checking for whitespace.
+			if (!std::isspace(int(*i))) {
 				non_ws_met = true;
 			}
 		}
