@@ -208,7 +208,10 @@ void code_edit::line_widget::render(const morda::matrix4& matrix) const
 		const auto& font = this->owner.get_font().get(s.style->style);
 
 		morda::matrix4 matr(matrix);
-		matr.translate(morda::real(cur_char_pos) * this->owner.font_info.glyph_dims.x(), this->owner.font_info.baseline);
+		matr.translate(
+			morda::real(cur_char_pos) * this->owner.font_info.glyph_dims.x(),
+			this->owner.font_info.baseline
+		);
 		auto res = font.render(
 			matr,
 			morda::color_to_vec4f(s.style->color),
