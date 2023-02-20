@@ -21,12 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <morda/widgets/widget.hpp>
 #include <morda/paint/frame_vao.hpp>
+#include <morda/widgets/widget.hpp>
 
-namespace cod{
+namespace cod {
 
-class tile : virtual public morda::widget{
+class tile : virtual public morda::widget
+{
 	mutable morda::frame_vao selection_vao;
 
 	// only these 2 tiles are supposed to exist, so declare those as friends and make tile constructor private
@@ -34,11 +35,17 @@ class tile : virtual public morda::widget{
 	friend class tiling_area;
 
 	tile(std::shared_ptr<morda::context> c, const treeml::forest& desc);
+
+	void set_selection_vao();
+
 public:
+	void render(const morda::matrix4& matrix) const override;
 
-	void render(const morda::matrix4& matrix)const override;
+	bool on_key(const morda::key_event& e) override;
 
-	bool on_key(const morda::key_event& e)override;
+	void on_focus_change() override;
+
+	void on_resize() override;
 };
 
-}
+} // namespace cod

@@ -28,44 +28,55 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 tile::tile(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
-		morda::widget(std::move(c), desc)
+	morda::widget(std::move(c), desc),
+	selection_vao(this->context->renderer)
 {}
 
-void tile::render(const morda::matrix4& matrix)const{
+void tile::render(const morda::matrix4& matrix) const
+{
 	// draw selection
-
-	// TODO: clean up
-	if(this->is_focused()){
-	// 	ASSERT(this->select_index < this->content().size())
-
-	// 	const auto& wp = this->content().children()[this->select_index];
-	// 	ASSERT(wp)
-
-	// 	const auto& w = *wp;
-
-		if(this->selection_vao.empty()){
-			this->selection_vao = morda::frame_vao(this->context->renderer, this->rect().d, 2);
-		}
-
+	if (this->is_focused()) {
 		this->selection_vao.render(matrix, 0xffff8080);
 	}
 }
 
-bool tile::on_key(const morda::key_event& e){
-	if(!e.is_down){
+void tile::set_selection_vao()
+{
+	this->selection_vao.set(this->rect().d, 2);
+}
+
+void tile::on_focus_change()
+{
+	if (this->is_focused()) {
+		this->set_selection_vao();
+	} else {
+		// TODO: reset selection_vao to save resources
+	}
+}
+
+void tile::on_resize()
+{
+	if (this->is_focused()) {
+		this->set_selection_vao();
+	}
+}
+
+bool tile::on_key(const morda::key_event& e)
+{
+	if (!e.is_down) {
 		return false;
 	}
 
-	if(context::inst().shortcuts.get("cod.tile.focus_left").combo == e.combo){
+	if (context::inst().shortcuts.get("cod.tile.focus_left").combo == e.combo) {
 		std::cout << "tile left" << std::endl;
 		return true;
-	}else if(context::inst().shortcuts.get("cod.tile.focus_right").combo == e.combo){
+	} else if (context::inst().shortcuts.get("cod.tile.focus_right").combo == e.combo) {
 		std::cout << "tile right" << std::endl;
 		return true;
-	}else if(context::inst().shortcuts.get("cod.tile.focus_up").combo == e.combo){
+	} else if (context::inst().shortcuts.get("cod.tile.focus_up").combo == e.combo) {
 		std::cout << "tile up" << std::endl;
 		return true;
-	}else if(context::inst().shortcuts.get("cod.tile.focus_down").combo == e.combo){
+	} else if (context::inst().shortcuts.get("cod.tile.focus_down").combo == e.combo) {
 		std::cout << "tile down" << std::endl;
 		return true;
 	}

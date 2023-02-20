@@ -1,6 +1,7 @@
 include prorab.mk
 include prorab-test.mk
 include prorab-license.mk
+include prorab-clang-format.mk
 
 this_name := cod
 
@@ -16,6 +17,8 @@ this_ldflags += -L $(dir $(this_libcod))
 this_ldlibs += -lcod -lmordavokne-opengl -lmorda -ltreeml -lpapki -lclargs -lutki -rdynamic -lm
 
 $(eval $(prorab-build-app))
+
+$(eval $(prorab-clang-format))
 
 $(eval $(call prorab-depend, $(prorab_this_name), $(this_libcod) ../plugins/text_editor/out/$(c)/text_editor.so))
 

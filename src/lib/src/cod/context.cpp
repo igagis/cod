@@ -24,9 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 context::context(command_line_args&& cla, mordavokne::application& app) :
-        base_dir(std::move(cla.base_dir)),
-        res_file(app.get_res_file()),
-        gui(app),
-		shortcuts(*app.get_res_file("res/shortcuts.tml")), // TODO: how to inject shortcuts filename?
-        plugins(cla.plugins)
+	base_dir(std::move(cla.base_dir)),
+	res_file(app.get_res_file()),
+	gui(app),
+	shortcuts(*app.get_res_file("res/shortcuts.tml")), // TODO: how to inject shortcuts filename?
+	plugins(cla.plugins)
 {}

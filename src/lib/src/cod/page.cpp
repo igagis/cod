@@ -26,28 +26,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 page::page(std::shared_ptr<morda::context> context) :
-		morda::widget(std::move(context), treeml::forest()),
-		morda::page(this->context, treeml::forest())
+	morda::widget(std::move(context), treeml::forest()),
+	morda::page(this->context, treeml::forest())
 {}
 
-bool page::on_key(const morda::key_event& e){
-	if(!e.is_down){
+bool page::on_key(const morda::key_event& e)
+{
+	if (!e.is_down) {
 		return false;
 	}
 
-	if(context::inst().shortcuts.get("cod.page.move_left").combo == e.combo){
+	if (context::inst().shortcuts.get("cod.page.move_left").combo == e.combo) {
 		std::cout << "move page left" << std::endl;
 		return true;
-	}else if(context::inst().shortcuts.get("cod.page.move_right").combo == e.combo){
+	} else if (context::inst().shortcuts.get("cod.page.move_right").combo == e.combo) {
 		std::cout << "move page right" << std::endl;
-		this->context->run_from_ui_thread([p = utki::make_shared_from(*this)]{
+		this->context->run_from_ui_thread([p = utki::make_shared_from(*this)] {
 			p->move_right();
 		});
 		return true;
-	}else if(context::inst().shortcuts.get("cod.page.move_up").combo == e.combo){
+	} else if (context::inst().shortcuts.get("cod.page.move_up").combo == e.combo) {
 		std::cout << "move page up" << std::endl;
 		return true;
-	}else if(context::inst().shortcuts.get("cod.page.move_down").combo == e.combo){
+	} else if (context::inst().shortcuts.get("cod.page.move_down").combo == e.combo) {
 		std::cout << "move page down" << std::endl;
 		return true;
 	}
@@ -55,16 +56,17 @@ bool page::on_key(const morda::key_event& e){
 	return false;
 }
 
-void page::move_right(){
+void page::move_right()
+{
 	auto tbt = this->try_get_ancestor<tabbed_book_tile>();
-	if(!tbt){
+	if (!tbt) {
 		// the page is not added to tabbed book tile
 		// std::cout << "page is not in book tile" << std::endl;
 		return;
 	}
 
 	auto ta = tbt->try_get_ancestor<tiling_area>();
-	if(!ta){
+	if (!ta) {
 		// the tabbed book tile is not in tiling area
 		std::cout << "tabbed book tile is not in tiling area" << std::endl;
 		return;
@@ -75,6 +77,4 @@ void page::move_right(){
 	// auto tbtp = utki::make_shared_from(*tbt);
 
 	std::cout << "actual move right" << std::endl;
-
-	
 }

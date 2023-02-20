@@ -29,25 +29,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 file_page::file_page(std::shared_ptr<morda::context> context, std::string&& file_name) :
-		morda::widget(std::move(context), treeml::forest()),
-		page(this->context),
-		file_name(std::move(file_name))
+	morda::widget(std::move(context), treeml::forest()),
+	page(this->context),
+	file_name(std::move(file_name))
 {}
 
-void file_page::on_tear_out()noexcept{
-
+void file_page::on_tear_out() noexcept
+{
 	// remove the page from list of open files
 
 	auto& ctx = context::inst();
 
 	auto i = ctx.file_opener.open_files.find(file_name);
-	if(i != ctx.file_opener.open_files.end()){
+	if (i != ctx.file_opener.open_files.end()) {
 		ctx.file_opener.open_files.erase(i);
 	}
 }
 
-std::shared_ptr<morda::widget> file_page::create_tab_content(){
-	auto t = std::make_shared<morda::text>(this->context, tml::forest());
+utki::shared_ref<morda::widget> file_page::create_tab_content()
+{
+	auto t = utki::make_shared_ref<morda::text>(this->context, tml::forest());
 	t->set_text(file_name);
 	return t;
 }

@@ -21,25 +21,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <morda/widgets/widget.hpp>
+#include <morda/context.hpp>
 #include <morda/widgets/group/book.hpp>
 #include <morda/widgets/group/column.hpp>
 #include <morda/widgets/group/tree_view.hpp>
-#include <morda/context.hpp>
+#include <morda/widgets/widget.hpp>
 
 #include "page.hpp"
 
-namespace cod{
+namespace cod {
 
-class file_tree_page :
-		virtual public morda::widget,
-		public page,
-		private morda::column
+class file_tree_page : virtual public morda::widget, public page, private morda::column
 {
-	class file_tree_provider : public morda::tree_view::provider{
+	class file_tree_provider : public morda::tree_view::provider
+	{
 		file_tree_page& owner;
 
-		struct file_entry{
+		struct file_entry {
 			bool is_directory;
 			std::string name;
 			// TODO: type
@@ -47,19 +45,21 @@ class file_tree_page :
 			bool children_read = false;
 		};
 
-		typedef utki::tree<file_entry>::container_type file_entry_forest_type;
+		using file_entry_forest_type = utki::tree<file_entry>::container_type;
 
 		mutable file_entry_forest_type cache;
 
-		decltype(cache) read_files(utki::span<const size_t> index)const;
+		decltype(cache) read_files(utki::span<const size_t> index) const;
 
 		static std::string make_path(utki::span<const size_t> index, const file_entry_forest_type& fef);
+
 	public:
 		file_tree_provider(file_tree_page& owner);
-		size_t count(utki::span<const size_t> index)const noexcept override;
-		std::shared_ptr<morda::widget> get_widget(utki::span<const size_t> index, bool is_collapsed)override;
+		size_t count(utki::span<const size_t> index) const noexcept override;
+		utki::shared_ref<morda::widget> get_widget(utki::span<const size_t> index, bool is_collapsed) override;
 
-		std::string get_path(utki::span<const size_t> index)const; // TODO: make noexcept, right now linter is angry about it
+		std::string get_path(utki::span<const size_t> index
+		) const; // TODO: make noexcept, right now linter is angry about it
 	};
 
 	std::shared_ptr<file_tree_provider> provider;
@@ -67,17 +67,19 @@ class file_tree_page :
 	std::vector<size_t> cursor_index;
 
 	void notify_file_select();
+
 public:
 	file_tree_page(std::shared_ptr<morda::context> c);
 
 	std::function<void(std::string)> file_select_handler;
 
-	void render(const morda::matrix4& matrix)const override{
+	void render(const morda::matrix4& matrix) const override
+	{
 		this->morda::column::render(matrix);
 		this->page::render(matrix);
 	}
 
-	std::shared_ptr<morda::widget> create_tab_content()override;
+	utki::shared_ref<morda::widget> create_tab_content() override;
 };
 
-}
+} // namespace cod

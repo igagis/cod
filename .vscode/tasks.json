@@ -109,6 +109,14 @@
             "problemMatcher": [
                 "$gcc"
             ]
+        },
+        {
+            "label": "format",
+            "type": "shell",
+            "command": "make apply-format",
+            "args": [],
+            "group": "build",
+            "problemMatcher": []
         }
     ]
 }

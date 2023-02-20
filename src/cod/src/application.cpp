@@ -24,11 +24,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 application::application(command_line_args&& cla) :
-		mordavokne::application(
-				"cod",
-				[](){
-					return mordavokne::window_params(r4::vector2<unsigned>(1024, 768));
-				}()
-			),
-		context(std::move(cla), *this)
+	mordavokne::application(
+		"cod",
+		[]() {
+			return mordavokne::window_params(r4::vector2<unsigned>(1024, 768));
+		}()
+	),
+	context(std::move(cla), *this)
 {}

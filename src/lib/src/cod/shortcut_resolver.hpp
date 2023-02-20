@@ -23,20 +23,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <unordered_map>
 
-#include <utki/flags.hpp>
-#include <papki/file.hpp>
-
 #include <morda/util/key.hpp>
+#include <papki/file.hpp>
+#include <utki/flags.hpp>
 
-namespace cod{
+namespace cod {
 
-class shortcut_resolver{
+class shortcut_resolver
+{
 public:
-	struct shortcut{
+	struct shortcut {
 		std::string name;
-		morda::key_combo combo = {
-			morda::key::unknown
-		};
+		morda::key_combo combo = {morda::key::unknown};
 	};
 
 private:
@@ -47,7 +45,7 @@ public:
 
 	void load(const papki::file& f);
 
-	const shortcut& get(std::string_view name)const;
+	const shortcut& get(std::string_view name) const;
 };
 
-}
+} // namespace cod

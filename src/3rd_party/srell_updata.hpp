@@ -37,6 +37,8 @@
 //  For terms of use, see http://www.unicode.org/terms_of_use.html
 //
 
+// NOLINTBEGIN
+
 template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
 struct unicode_property_data
 {
@@ -5998,3 +6000,5 @@ const T6 unicode_property_data<T1, T2, T3, T4, T5, T6>::positiontable[] =
 	{ 17115, 7 }	//  #322 scx=Yi:Yiii
 };
 #define SRELL_UPDATA_VERSION 110
+
+//NOLINTEND

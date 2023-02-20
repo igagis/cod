@@ -21,24 +21,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "file_tree_page.hpp"
 
-#include <utki/tree.hpp>
-#include <utki/linq.hpp>
-
-#include <papki/fs_file.hpp>
-
-#include <morda/widgets/label/text.hpp>
 #include <morda/widgets/label/color.hpp>
-#include <morda/widgets/slider/scroll_bar.hpp>
+#include <morda/widgets/label/text.hpp>
 #include <morda/widgets/proxy/click_proxy.hpp>
-
-#include <morda/widgets/proxy/resize_proxy.hpp>
 #include <morda/widgets/proxy/mouse_proxy.hpp>
+#include <morda/widgets/proxy/resize_proxy.hpp>
+#include <morda/widgets/slider/scroll_bar.hpp>
+#include <papki/fs_file.hpp>
+#include <utki/linq.hpp>
+#include <utki/tree.hpp>
 
 #include "context.hpp"
 
 using namespace cod;
 
-namespace{
+namespace {
 const treeml::forest layout = treeml::read(R"qwertyuiop(
 	@row{
 		layout{
@@ -68,64 +65,83 @@ const treeml::forest layout = treeml::read(R"qwertyuiop(
 		}
 	}
 )qwertyuiop");
-}
+} // namespace
 
-std::string file_tree_page::file_tree_provider::make_path(utki::span<const size_t> index, const file_entry_forest_type& fef){
+std::string file_tree_page::file_tree_provider::make_path(
+	utki::span<const size_t> index,
+	const file_entry_forest_type& fef
+)
+{
 	auto cur_file_list = &fef;
 	std::string dir_name;
-	for(auto i = index.begin(); i != index.end(); ++i){
-		ASSERT(*i < cur_file_list->size())
-		auto& f = (*cur_file_list)[*i];
+	for (const auto& i : index) {
+		ASSERT(i < cur_file_list->size())
+		auto& f = (*cur_file_list)[i];
 		ASSERT(f.value.is_directory)
 		dir_name.append(f.value.name);
-		if(f.value.is_directory){
+		if (f.value.is_directory) {
 			dir_name.append("/");
-		}else{
-			ASSERT(std::next(i) == index.end())
+		} else {
+			// It should be the last index.
+			// Since we are using range based for loop, at least check that
+			// it is equal to the last index of the span.
+			ASSERT(i == *index.rbegin())
 		}
 		cur_file_list = &f.children;
 	}
 	return dir_name;
 }
 
-auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> index)const -> decltype(cache){
+auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> index) const -> decltype(cache)
+{
 #ifdef DEBUG
-	for(auto& i : index){
-		LOG([&](auto&o){o << " " << i;})
+	for (auto& i : index) {
+		LOG([&](auto& o) {
+			o << " " << i;
+		})
 	}
-	LOG([&](auto&o){o << std::endl;})
+	LOG([&](auto& o) {
+		o << std::endl;
+	})
 #endif
 
 	auto dir_name = cod::context::inst().base_dir + make_path(index, this->cache);
 
-	LOG([&](auto&o){o << "dir_name = " << dir_name << std::endl;})
+	LOG([&](auto& o) {
+		o << "dir_name = " << dir_name << std::endl;
+	})
 
 	return utki::linq(papki::fs_file(dir_name).list_dir())
-			.order_by([](const auto& v) -> const auto&{return v;})
-			.select([](auto&& e){
-					bool is_dir = papki::is_dir(e);
-					return typename decltype(this->cache)::value_type(file_entry{
-						is_dir,
-						is_dir ? e.substr(0, e.size() - 1) : std::move(e)
-					});
-				}).get();
+		.order_by([](const auto& v) -> const auto& {
+			return v;
+		})
+		.select([](auto&& e) {
+			bool is_dir = papki::is_dir(e);
+			return typename decltype(this->cache
+			)::value_type(file_entry{
+				.is_directory = is_dir,
+				.name = is_dir ? e.substr(0, e.size() - 1) : std::move(e)
+			});
+		})
+		.get();
 }
 
-std::string file_tree_page::file_tree_provider::get_path(utki::span<const size_t> index)const{
+std::string file_tree_page::file_tree_provider::get_path(utki::span<const size_t> index) const
+{
 	auto tr = utki::make_traversal(this->cache);
 
 	auto iter = tr.make_iterator(index);
 
 	std::stringstream ss;
 
-	for(size_t i = 0; i != iter.depth(); ++i){
-		if(i != 0){
+	for (size_t i = 0; i != iter.depth(); ++i) {
+		if (i != 0) {
 			ss << "/";
 		}
 		ss << iter.at_level(i).value.name;
 	}
 
-	if(iter->value.is_directory){
+	if (iter->value.is_directory) {
 		ss << "/";
 	}
 
@@ -133,20 +149,21 @@ std::string file_tree_page::file_tree_provider::get_path(utki::span<const size_t
 }
 
 file_tree_page::file_tree_provider::file_tree_provider(file_tree_page& owner) :
-		owner(owner),
-		cache(read_files(utki::make_span<size_t>(nullptr, 0)))
+	owner(owner),
+	cache(read_files(utki::make_span<size_t>(nullptr, 0)))
 {}
 
-size_t file_tree_page::file_tree_provider::count(utki::span<const size_t> index)const noexcept{
+size_t file_tree_page::file_tree_provider::count(utki::span<const size_t> index) const noexcept
+{
 	decltype(this->cache)* cur_file_list = &this->cache;
-	for(auto i = index.begin(); i != index.end(); ++i){
+	for (auto i = index.begin(); i != index.end(); ++i) {
 		ASSERT(*i < cur_file_list->size())
 		auto& f = (*cur_file_list)[*i];
-		if(!f.value.is_directory){
+		if (!f.value.is_directory) {
 			ASSERT(i == std::prev(index.end()))
 			return 0;
 		}
-		if(!f.value.children_read){
+		if (!f.value.children_read) {
 			f.children = this->read_files(utki::make_span(index.data(), std::distance(index.begin(), i) + 1));
 			f.value.children_read = true;
 		}
@@ -156,7 +173,11 @@ size_t file_tree_page::file_tree_provider::count(utki::span<const size_t> index)
 	return cur_file_list->size();
 }
 
-std::shared_ptr<morda::widget> file_tree_page::file_tree_provider::get_widget(utki::span<const size_t> index, bool is_collapsed){
+utki::shared_ref<morda::widget> file_tree_page::file_tree_provider::get_widget(
+	utki::span<const size_t> index,
+	bool is_collapsed
+)
+{
 	auto tr = utki::make_traversal(this->cache);
 	ASSERT(tr.is_valid(index))
 	auto& file_entry = tr[index];
@@ -187,7 +208,7 @@ std::shared_ptr<morda::widget> file_tree_page::file_tree_provider::get_widget(ut
 
 	w->get_widget_as<morda::text>("tx").set_text(file_entry.value.name);
 
-	if(utki::make_span(this->owner.cursor_index) == index){
+	if (utki::make_span(this->owner.cursor_index) == index) {
 		auto bg = w->try_get_widget_as<morda::color>("bg");
 		ASSERT(bg)
 		bg->set_visible(true);
@@ -195,12 +216,8 @@ std::shared_ptr<morda::widget> file_tree_page::file_tree_provider::get_widget(ut
 
 	auto& cp = w->get_widget_as<morda::click_proxy>("cp");
 
-	cp.click_handler = [
-			this,
-			index = utki::make_vector(index)
-		](morda::click_proxy& cp)
-	{
-		if(this->owner.cursor_index == index){
+	cp.click_handler = [this, index = utki::make_vector(index)](morda::click_proxy& cp) {
+		if (this->owner.cursor_index == index) {
 			return;
 		}
 		this->owner.cursor_index = index;
@@ -211,43 +228,44 @@ std::shared_ptr<morda::widget> file_tree_page::file_tree_provider::get_widget(ut
 	return w;
 }
 
-void file_tree_page::notify_file_select(){
-	if(this->file_select_handler){
+void file_tree_page::notify_file_select()
+{
+	if (this->file_select_handler) {
 		this->file_select_handler(this->provider->get_path(utki::make_span(this->cursor_index)));
 	}
 }
 
 file_tree_page::file_tree_page(std::shared_ptr<morda::context> c) :
-		morda::widget(std::move(c), tml::forest()),
-		page(this->context),
-		morda::column(this->context, layout)
+	morda::widget(std::move(c), tml::forest()),
+	page(this->context),
+	morda::column(this->context, layout)
 {
 	auto& tv = this->get_widget_as<morda::tree_view>("tree_view");
 
 	auto& vs = this->get_widget_as<morda::scroll_bar>("vertical_scroll");
 	auto& hs = this->get_widget_as<morda::scroll_bar>("horizontal_scroll");
 
-	tv.scroll_change_handler = [vs = utki::make_weak_from(vs), hs = utki::make_weak_from(hs)](morda::tree_view& tv){
+	tv.scroll_change_handler = [vs = utki::make_weak_from(vs), hs = utki::make_weak_from(hs)](morda::tree_view& tv) {
 		auto f = tv.get_scroll_factor();
 		auto b = tv.get_scroll_band();
-		if(auto sb = hs.lock()){
+		if (auto sb = hs.lock()) {
 			sb->set_fraction(f.x());
 			sb->set_band_fraction(b.x());
 		}
-		if(auto sb = vs.lock()){
+		if (auto sb = vs.lock()) {
 			sb->set_fraction(f.y());
 			sb->set_band_fraction(b.y());
 		}
 	};
 
-	vs.fraction_change_handler = [tv = utki::make_weak_from(tv)](morda::fraction_widget& fw){
-		if(auto w = tv.lock()){
+	vs.fraction_change_handler = [tv = utki::make_weak_from(tv)](morda::fraction_widget& fw) {
+		if (auto w = tv.lock()) {
 			w->set_vertical_scroll_factor(fw.fraction());
 		}
 	};
 
-	hs.fraction_change_handler = [tv = utki::make_weak_from(tv)](morda::fraction_widget& fw){
-		if(auto w = tv.lock()){
+	hs.fraction_change_handler = [tv = utki::make_weak_from(tv)](morda::fraction_widget& fw) {
+		if (auto w = tv.lock()) {
 			w->set_horizontal_scroll_factor(fw.fraction());
 		}
 	};
@@ -257,8 +275,9 @@ file_tree_page::file_tree_page(std::shared_ptr<morda::context> c) :
 	tv.set_provider(this->provider);
 }
 
-std::shared_ptr<morda::widget> file_tree_page::create_tab_content(){
-	auto t = std::make_shared<morda::text>(this->context, tml::forest());
+utki::shared_ref<morda::widget> file_tree_page::create_tab_content()
+{
+	auto t = utki::make_shared_ref<morda::text>(this->context, tml::forest());
 	t->set_text("file tree");
 	return t;
 }

@@ -21,21 +21,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <morda/widgets/group/book.hpp>
 #include <morda/widgets/button/tab.hpp>
+#include <morda/widgets/group/book.hpp>
 
-namespace cod{
+namespace cod {
 
-class page : public morda::page{
+class page : public morda::page
+{
 public:
 	page(std::shared_ptr<morda::context> context);
 
-	bool on_key(const morda::key_event& e)override;
+	bool on_key(const morda::key_event& e) override;
 
-	virtual std::shared_ptr<morda::widget> create_tab_content() = 0;
+	virtual utki::shared_ref<morda::widget> create_tab_content() = 0;
 
 private:
 	void move_right();
 };
 
-}
+} // namespace cod

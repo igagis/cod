@@ -21,144 +21,164 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include "highlighter.hpp"
-
 #include <treeml/tree.hpp>
 
 #include "../../../../3rd_party/srell.hpp"
 
-namespace synhi{
+#include "highlighter.hpp"
 
-class regex_highlighter_model{
+namespace synhi {
+
+class regex_highlighter_model
+{
 public:
-    regex_highlighter_model(const treeml::forest& spec);
+	regex_highlighter_model(const treeml::forest& spec);
 
-    struct state;
+	struct state;
 
-    class matcher{
-    public:
-        const bool is_preprocessed;
+	class matcher
+	{
+	public:
+		const bool is_preprocessed;
 
-        matcher(bool is_preprocessed = false) :
-                is_preprocessed(is_preprocessed)
-        {}
+		matcher(bool is_preprocessed = false) :
+			is_preprocessed(is_preprocessed)
+		{}
 
-        virtual ~matcher(){}
+		virtual ~matcher() = default;
 
-        struct match_result{
-            size_t begin;
-            size_t size;
+		struct match_result {
+			size_t begin;
+			size_t size;
 
-            struct capture_group{
-                bool matched;
-                size_t offset;
-                std::u32string str;
-            };
-            std::vector<capture_group> capture_groups;
-        };
-        virtual match_result match(std::u32string_view str, bool line_begin)const = 0;
+			struct capture_group {
+				bool matched;
+				size_t offset;
+				std::u32string str;
+			};
 
-        virtual std::shared_ptr<const matcher> preprocess(utki::span<const match_result::capture_group> capture_groups)const{
-            return nullptr;
-        }
-    };
+			std::vector<capture_group> capture_groups;
+		};
 
-    struct rule{
-    public:
-        std::shared_ptr<const matcher> matcher_;
+		virtual match_result match(std::u32string_view str, bool line_begin) const = 0;
 
-        struct operation{
-            enum class type{
-                push,
-                pop
-            };
-            type type_;
+		virtual std::shared_ptr<const matcher> preprocess(utki::span<const match_result::capture_group> capture_groups
+		) const
+		{
+			return nullptr;
+		}
+	};
 
-            // plain pointer to avoid circular references in case state refers a rule which pushes the same state
-            state* state_to_push = nullptr;
-        };
+	struct rule {
+	public:
+		std::shared_ptr<const matcher> matcher_;
 
-        std::vector<operation> operations;
+		struct operation {
+			enum class type {
+				push,
+				pop
+			};
+			type type_;
 
-        std::vector<std::shared_ptr<const font_style>> styles;
+			// plain pointer to avoid circular references in case state refers a rule which pushes the same state
+			state* state_to_push = nullptr;
+		};
 
-        struct parse_result{
-            std::shared_ptr<rule> rule_;
-            std::vector<std::tuple<operation::type, std::string>> operations;
-            std::vector<std::string> styles;
-            std::string state_to_push;
-        };
-        static parse_result parse(const treeml::forest& spec);
-    };
+		std::vector<operation> operations;
 
-    class regex_matcher : public matcher{
-        srell::u32regex regex;
+		std::vector<std::shared_ptr<const font_style>> styles;
 
-    public:
-        regex_matcher(std::u32string_view regex_str) :
-                regex(regex_str.data(), regex_str.size(), srell::regex_constants::optimize)
-        {}
-        match_result match(std::u32string_view str, bool line_begin)const override;
-    };
+		struct parse_result {
+			utki::shared_ref<regex_highlighter_model::rule> rule;
 
-    // preprocessed regex matcher
-    class ppregex_matcher : public matcher{
-        struct regex_part{
-            std::u32string str;
-            unsigned group_num;
-        };
-        std::vector<regex_part> regex_parts;
-        std::u32string regex_tail;
+			struct operation_entry {
+				operation::type type;
+				std::string state;
+			};
 
-    public:
-        ppregex_matcher(std::string_view regex);
+			std::vector<operation_entry> operations;
+			std::vector<std::string> styles;
+			std::string state_to_push;
+		};
 
-        match_result match(std::u32string_view str, bool line_begin)const override{
-            // this method is not supposed to be ever called
-            ASSERT(false)
-            return {};
-        }
+		static parse_result parse(const treeml::forest& spec);
+	};
 
-        std::shared_ptr<const matcher> preprocess(utki::span<const match_result::capture_group> capture_groups)const override;
-    };
+	class regex_matcher : public matcher
+	{
+		srell::u32regex regex;
 
-    struct state{
-        std::vector<std::shared_ptr<const rule>> rules;
-        std::shared_ptr<const font_style> style;
+	public:
+		regex_matcher(std::u32string_view regex_str) :
+			regex(regex_str.data(), regex_str.size(), srell::regex_constants::optimize)
+		{}
 
-        struct parse_result{
-            std::shared_ptr<state> state_;
-            std::vector<std::string> rules;
-            std::string style;
-        };
-        static parse_result parse(const treeml::forest& spec);
-    };
+		match_result match(std::u32string_view str, bool line_begin) const override;
+	};
 
-    // need to keep strong pointers to all states, because rules hold only plain pointer to the state_to_push
-    std::vector<std::shared_ptr<const state>> states;
+	// preprocessed regex matcher
+	class ppregex_matcher : public matcher
+	{
+		struct regex_part {
+			std::u32string str;
+			unsigned group_num;
+		};
+
+		std::vector<regex_part> regex_parts;
+		std::u32string regex_tail;
+
+	public:
+		ppregex_matcher(std::string_view regex);
+
+		match_result match(std::u32string_view str, bool line_begin) const override
+		{
+			// this method is not supposed to be ever called
+			ASSERT(false)
+			return {};
+		}
+
+		std::shared_ptr<const matcher> preprocess(utki::span<const match_result::capture_group> capture_groups
+		) const override;
+	};
+
+	struct state {
+		std::vector<std::shared_ptr<const rule>> rules;
+		std::shared_ptr<const font_style> style;
+
+		struct parse_result {
+			utki::shared_ref<regex_highlighter_model::state> state;
+			std::vector<std::string> rules;
+			std::string style;
+		};
+
+		static parse_result parse(const treeml::forest& spec);
+	};
+
+	// need to keep strong pointers to all states, because rules hold only plain pointer to the state_to_push
+	std::vector<std::shared_ptr<const state>> states;
 };
 
-class regex_highlighter : public highlighter{
-    const std::shared_ptr<const regex_highlighter_model> model;
+class regex_highlighter : public highlighter
+{
+	const std::shared_ptr<const regex_highlighter_model> model;
+
 public:
-    regex_highlighter(
-            std::shared_ptr<const regex_highlighter_model> model
-        );
+	regex_highlighter(std::shared_ptr<const regex_highlighter_model> model);
 
-    void reset()override;
+	void reset() override;
 
-    std::vector<line_span> highlight(std::u32string_view str)override;
+	std::vector<line_span> highlight(std::u32string_view str) override;
 
 private:
-    struct state_frame{
-        std::reference_wrapper<const regex_highlighter_model::state> state;
-        std::vector<regex_highlighter_model::matcher::match_result::capture_group> capture_groups;
-        std::vector<std::pair<
-                const regex_highlighter_model::matcher*,
-                std::shared_ptr<const regex_highlighter_model::matcher>
-            >> preprocessed_rules_cache;
-    };
-    std::vector<state_frame> state_stack;
+	struct state_frame {
+		std::reference_wrapper<const regex_highlighter_model::state> state;
+		std::vector<regex_highlighter_model::matcher::match_result::capture_group> capture_groups;
+		std::vector<
+			std::pair<const regex_highlighter_model::matcher*, std::shared_ptr<const regex_highlighter_model::matcher>>>
+			preprocessed_rules_cache;
+	};
+
+	std::vector<state_frame> state_stack;
 };
 
-}
+} // namespace synhi

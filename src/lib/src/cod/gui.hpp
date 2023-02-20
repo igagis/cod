@@ -23,25 +23,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <mordavokne/application.hpp>
 
-#include "tiling_area.hpp"
-#include "tabbed_book_tile.hpp"
 #include "file_page.hpp"
+#include "tabbed_book_tile.hpp"
+#include "tiling_area.hpp"
 
-namespace cod{
+namespace cod {
 
 class context;
 
-class gui{
-    friend class context;
-    friend class file_opener;
+class gui
+{
+	friend class context;
+	friend class file_opener;
 
-    std::shared_ptr<tabbed_book_tile> editors_tabbed_book;
+	std::shared_ptr<tabbed_book_tile> editors_tabbed_book;
 
-    gui(mordavokne::application& app);
+	gui(mordavokne::application& app);
 
-    void open_editor(std::shared_ptr<file_page> page);
+	void open_editor(utki::shared_ref<file_page> page);
+
 public:
-    const std::shared_ptr<morda::context> morda_context;
+	const std::shared_ptr<morda::context> morda_context;
 };
 
-}
+} // namespace cod

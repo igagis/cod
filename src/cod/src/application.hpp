@@ -21,18 +21,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include <cod/command_line_args.hpp>
+#include <cod/context.hpp>
 #include <mordavokne/application.hpp>
 
-#include <cod/context.hpp>
-#include <cod/command_line_args.hpp>
+namespace cod {
 
-namespace cod{
-
-class application : public mordavokne::application{
+class application : public mordavokne::application
+{
 public:
 	cod::context context;
 
 	application(command_line_args&& cla);
 };
 
-}
+} // namespace cod

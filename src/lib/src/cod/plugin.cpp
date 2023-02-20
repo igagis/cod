@@ -25,7 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-plugin::plugin(){
-    // std::cout << "plugin::contructor(): enter" << std::endl;
-    plugin_manager::register_plugin(*this);
+plugin::plugin()
+{
+	// std::cout << "plugin::contructor(): enter" << std::endl;
+	plugin_manager::register_plugin(*this);
 }
