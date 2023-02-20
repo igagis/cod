@@ -418,7 +418,7 @@ std::vector<line_span> regex_highlighter::highlight(std::u32string_view str){
 		const auto& state_style = this->state_stack.back().state.get().style;
 
 		if(!match_rule){
-			// no rule has matched, extend current span to the end of the line an exit early
+			// no rule has matched, extend current span to the end of the line and exit early
 			spans.push(state_style, view.size());
 			break;
 		}
