@@ -208,7 +208,7 @@ void code_edit::line_widget::render(const morda::matrix4& matrix) const
 		const auto& font = this->owner.get_font().get(s.style->style);
 
 		morda::matrix4 matr(matrix);
-		matr.translate(cur_char_pos * this->owner.font_info.glyph_dims.x(), this->owner.font_info.baseline);
+		matr.translate(morda::real(cur_char_pos) * this->owner.font_info.glyph_dims.x(), this->owner.font_info.baseline);
 		auto res = font.render(
 			matr,
 			morda::color_to_vec4f(s.style->color),
@@ -342,7 +342,7 @@ void code_edit::erase_forward(cursor& c, size_t num)
 		if (cp.y() + 1 == this->lines.size()) {
 			return;
 		}
-		auto i = std::next(this->lines.begin(), cp.y() + 1);
+		auto i = utki::next(this->lines.begin(), cp.y() + 1);
 		auto ll = std::move(*i);
 		this->lines.erase(i);
 		l.append(std::move(ll));
@@ -371,7 +371,7 @@ void code_edit::erase_backward(cursor& c, size_t num)
 		if (cp.y() == 0) {
 			return;
 		}
-		auto i = std::next(this->lines.begin(), cp.y());
+		auto i = utki::next(this->lines.begin(), cp.y());
 		auto ll = std::move(*i);
 		this->lines.erase(i);
 		--cp.y();
@@ -407,7 +407,7 @@ void code_edit::put_new_line(cursor& c)
 
 	ASSERT(cp.y() < this->lines.size())
 
-	auto i = std::next(this->lines.begin(), cp.y());
+	auto i = utki::next(this->lines.begin(), cp.y());
 
 	auto nl = i->cut_tail(cp.x());
 	this->lines.insert(std::next(i), std::move(nl));
@@ -760,9 +760,9 @@ void code_edit::scroll_to(r4::vector2<size_t> pos_glyphs)
 	}
 
 	// horizontal
-	morda::real pos_x = pos_glyphs.x() * this->font_info.glyph_dims.x();
+	auto pos_x = morda::real(pos_glyphs.x()) * this->font_info.glyph_dims.x();
 
-	morda::real left = this->scroll_area->get_scroll_pos().x();
+	auto left = this->scroll_area->get_scroll_pos().x();
 	if (left > pos_x) {
 		this->scroll_area->set_scroll_pos({pos_x, 0});
 	} else {
@@ -868,7 +868,7 @@ size_t code_edit::calc_word_length_forward(const cursor& c) const noexcept
 	auto& l = this->lines[cp.y()].str;
 
 	bool non_ws_met = false;
-	for (auto i = std::next(l.begin(), cp.x()); i != l.end(); ++i, ++ret) {
+	for (auto i = utki::next(l.begin(), cp.x()); i != l.end(); ++i, ++ret) {
 		if (non_ws_met) {
 			// TODO: converting char32_t to int might not be the right thing to do here.
 			// Consider using ICU library for checking for whitespace.
@@ -907,7 +907,7 @@ size_t code_edit::calc_word_length_backward(const cursor& c) const noexcept
 	bool non_ws_met = false;
 
 	ASSERT(cp.x() <= l.size())
-	for (auto i = std::next(l.rbegin(), l.size() - cp.x()); i != l.rend(); ++i, ++ret) {
+	for (auto i = utki::next(l.rbegin(), l.size() - cp.x()); i != l.rend(); ++i, ++ret) {
 		if (non_ws_met) {
 			// TODO: converting char32_t to int might not be the right thing to do here.
 			// Consider using ICU library for checking for whitespace.
