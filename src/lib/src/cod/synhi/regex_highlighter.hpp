@@ -89,8 +89,14 @@ public:
 		std::vector<std::shared_ptr<const font_style>> styles;
 
 		struct parse_result {
-			std::shared_ptr<rule> rule_;
-			std::vector<std::tuple<operation::type, std::string>> operations;
+			std::shared_ptr<regex_highlighter_model::rule> rule;
+
+			struct operation_entry {
+				operation::type type;
+				std::string state;
+			};
+
+			std::vector<operation_entry> operations;
 			std::vector<std::string> styles;
 			std::string state_to_push;
 		};

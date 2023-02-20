@@ -157,7 +157,7 @@ struct parsing_context {
 			ss << "rule '" << name << "' not found";
 			throw std::invalid_argument(ss.str());
 		}
-		return i->second.rule_;
+		return i->second.rule;
 	}
 };
 } // namespace
@@ -206,7 +206,7 @@ regex_highlighter_model::matcher::match_result regex_highlighter_model::regex_ma
 regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse(const treeml::forest& desc)
 {
 	parse_result ret;
-	ret.rule_ = std::make_shared<rule>();
+	ret.rule = std::make_shared<rule>();
 
 	for (const auto& n : desc) {
 		if (n.value == "styles") {
@@ -216,17 +216,19 @@ regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse
 							 })
 							 .get();
 		} else if (n.value == "regex") {
-			ret.rule_->matcher_ = std::make_shared<regex_highlighter_model::regex_matcher>(
+			ret.rule->matcher_ = std::make_shared<regex_highlighter_model::regex_matcher>(
 				utki::to_utf32(treeml::crawler(n.children).get().value.to_string())
 			);
 		} else if (n.value == "ppregex") {
-			ret.rule_->matcher_ = std::make_shared<regex_highlighter_model::ppregex_matcher>(
+			ret.rule->matcher_ = std::make_shared<regex_highlighter_model::ppregex_matcher>(
 				treeml::crawler(n.children).get().value.to_string()
 			);
 		} else if (n.value == "push") {
-			ret.operations.emplace_back(operation::type::push, treeml::crawler(n.children).get().value.to_string());
+			ret.operations.push_back(
+				{.type = operation::type::push, .state = treeml::crawler(n.children).get().value.to_string()}
+			);
 		} else if (n.value == "pop") {
-			ret.operations.emplace_back(operation::type::pop, std::string());
+			ret.operations.push_back({.type = operation::type::pop, .state = std::string()});
 		} else {
 			std::stringstream ss;
 			ss << "unknown rule keyword: " << n.value;
@@ -234,7 +236,7 @@ regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse
 		}
 	}
 
-	if (!ret.rule_->matcher_) {
+	if (!ret.rule->matcher_) {
 		throw std::invalid_argument("rule does not define any mtcher");
 	}
 
@@ -301,22 +303,21 @@ regex_highlighter_model::regex_highlighter_model(const treeml::forest& spec)
 
 	// set rule -> style and rule -> state references
 	for (const auto& n : c.rules) {
-		ASSERT(n.second.rule_)
+		ASSERT(n.second.rule)
 
-		auto& rule_ = *n.second.rule_;
+		auto& rule = *n.second.rule;
 		const auto& parsed = n.second;
 
 		// rule can have no style, then it inherits style from pushed state
-		rule_.styles = utki::linq(parsed.styles)
-						   .select([&](const auto& p) {
-							   return c.get_style(p);
-						   })
-						   .get();
+		rule.styles = utki::linq(parsed.styles)
+						  .select([&](const auto& p) {
+							  return c.get_style(p);
+						  })
+						  .get();
 
 		for (const auto& o : parsed.operations) {
-			auto op = std::get<rule::operation::type>(o);
-			rule_.operations.push_back(
-				{op, op == rule::operation::type::push ? c.get_state(std::get<std::string>(o)).get() : nullptr}
+			rule.operations.push_back(
+				{o.type, o.type == rule::operation::type::push ? c.get_state(o.state).get() : nullptr}
 			);
 		}
 	}
