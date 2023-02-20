@@ -135,7 +135,7 @@ struct parsing_context {
 		return i->second;
 	}
 
-	std::shared_ptr<regex_highlighter_model::state> get_state(const std::string& name)
+	const utki::shared_ref<regex_highlighter_model::state>& get_state(const std::string& name)
 	{
 		auto i = std::find_if(this->states.begin(), this->states.end(), [&](const auto& v) {
 			return v.first == name;
@@ -148,7 +148,7 @@ struct parsing_context {
 		return i->second.state;
 	}
 
-	std::shared_ptr<regex_highlighter_model::rule> get_rule(const std::string& name)
+	const utki::shared_ref<regex_highlighter_model::rule>& get_rule(const std::string& name)
 	{
 		auto i = this->rules.find(name);
 		if (i == this->rules.end()) {
@@ -226,7 +226,8 @@ regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse
 				{.type = operation::type::push, .state = treeml::crawler(n.children).get().value.to_string()}
 			);
 		} else if (n.value == "pop") {
-			ret.operations.push_back({.type = operation::type::pop, .state = std::string()});
+			// NOLINTNEXTLINE(modernize-use-emplace, "operation_entry has no suitable constructor")
+			ret.operations.push_back({.type = operation::type::pop, .state = {}});
 		} else {
 			std::stringstream ss;
 			ss << "unknown rule keyword: " << n.value;
@@ -285,15 +286,15 @@ regex_highlighter_model::regex_highlighter_model(const treeml::forest& spec)
 	// set state -> rules and state -> styles references
 	for (const auto& n : c.states) {
 		this->states.push_back(n.second.state);
-		auto& state_ = *n.second.state;
+		auto& state = *n.second.state;
 		const auto& parsed = n.second;
-		state_.rules = utki::linq(parsed.rules)
+		state.rules = utki::linq(parsed.rules)
 						   .select([&](const auto& m) -> std::shared_ptr<const rule> {
 							   return c.get_rule(m);
 						   })
 						   .get();
 
-		state_.style = c.get_style(parsed.style);
+		state.style = c.get_style(parsed.style);
 	}
 
 	// set rule -> style and rule -> state references
@@ -310,7 +311,7 @@ regex_highlighter_model::regex_highlighter_model(const treeml::forest& spec)
 
 		for (const auto& o : parsed.operations) {
 			rule.operations.push_back(
-				{o.type, o.type == rule::operation::type::push ? c.get_state(o.state).get() : nullptr}
+				{o.type, o.type == rule::operation::type::push ? &c.get_state(o.state).get() : nullptr}
 			);
 		}
 	}
