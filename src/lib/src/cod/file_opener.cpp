@@ -39,17 +39,22 @@ void file_opener::open(const std::string& file_name){
 	auto& ctx = context::inst();
 
 	auto page = ctx.plugins.open_file(file_name);
-	ASSERT(page)
 
-	ctx.gui.open_editor(page);
-
-	{
-#ifdef DEBUG
-		auto iter =
-#endif
-		this->open_files.insert(std::make_pair(file_name, std::move(page)));
-		ASSERT(iter.second)
+	if(!page){
+		// no plugin found which opens the file
+		return;
 	}
 
 	// on tear out the page will remove itself from open_files list
+	auto iter =	this->open_files.insert(std::make_pair(file_name, page));
+	ASSERT(iter.second)
+
+	// set the scope_exit in case opening the editor fails
+	utki::scope_exit open_files_scope_exit([this, &iter](){
+		this->open_files.erase(iter.first);
+	});
+
+	ctx.gui.open_editor(utki::shared_ref(std::move(page)));
+
+	open_files_scope_exit.release();
 }

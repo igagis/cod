@@ -46,8 +46,8 @@ void file_page::on_tear_out()noexcept{
 	}
 }
 
-std::shared_ptr<morda::widget> file_page::create_tab_content(){
-	auto t = std::make_shared<morda::text>(this->context, tml::forest());
+utki::shared_ref<morda::widget> file_page::create_tab_content(){
+	auto t = utki::make_shared_ref<morda::text>(this->context, tml::forest());
 	t->set_text(file_name);
 	return t;
 }

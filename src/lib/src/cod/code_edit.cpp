@@ -140,9 +140,8 @@ std::u32string code_edit::get_text()const{
 	return ret;
 }
 
-std::shared_ptr<morda::widget> code_edit::provider::get_widget(size_t index){
-	auto w = std::make_shared<code_edit::line_widget>(this->owner.context, this->owner, index);
-	return w;
+utki::shared_ref<morda::widget> code_edit::provider::get_widget(size_t index){
+	return utki::make_shared_ref<code_edit::line_widget>(this->owner.context, this->owner, index);
 }
 
 namespace{
@@ -618,7 +617,7 @@ r4::vector2<size_t> code_edit::cursor::get_pos_glyphs()const noexcept{
 	ASSERT(!this->owner.lines.empty())
 	auto p = this->get_pos_chars();
 
-	ASSERT_INFO(p.y() < this->owner.lines.size(), "this->owner.lines.size() = " << this->owner.lines.size() << ", p.y() = " << p.y())
+	ASSERT(p.y() < this->owner.lines.size(), [&](auto& o){o << "this->owner.lines.size() = " << this->owner.lines.size() << ", p.y() = " << p.y();})
 
 	return {
 		char_pos_to_glyph_pos(

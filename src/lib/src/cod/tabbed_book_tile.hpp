@@ -40,7 +40,7 @@ public:
 		this->tile::render(matrix);
 	}
 
-	void add(std::shared_ptr<page> p);
+	void add(const utki::shared_ref<page>& p);
 
 	size_t num_pages()const noexcept{
 		return this->get_book().size();

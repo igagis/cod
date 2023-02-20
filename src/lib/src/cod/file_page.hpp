@@ -32,7 +32,7 @@ public:
 
 	void on_tear_out()noexcept override;
 
-	std::shared_ptr<morda::widget> create_tab_content()override;
+	utki::shared_ref<morda::widget> create_tab_content()override;
 };
 
 }

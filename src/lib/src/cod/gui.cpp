@@ -51,7 +51,7 @@ gui::gui(mordavokne::application& app) :
     auto& c = *app.gui.get_root();
 
 	{
-		auto ft = std::make_shared<file_tree_page>(c.context);
+		auto ft = utki::make_shared_ref<file_tree_page>(c.context);
 
 		ft->file_select_handler = [](std::string file_name){
 			// std::cout << "file = " << file_name << '\n';
@@ -69,6 +69,6 @@ gui::gui(mordavokne::application& app) :
 	this->editors_tabbed_book = c.try_get_widget_as<tabbed_book_tile>("tabbed_book");
 }
 
-void gui::open_editor(std::shared_ptr<file_page> page){
+void gui::open_editor(utki::shared_ref<file_page> page){
 	this->editors_tabbed_book->add(page);
 }

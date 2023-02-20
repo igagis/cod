@@ -156,7 +156,7 @@ size_t file_tree_page::file_tree_provider::count(utki::span<const size_t> index)
 	return cur_file_list->size();
 }
 
-std::shared_ptr<morda::widget> file_tree_page::file_tree_provider::get_widget(utki::span<const size_t> index, bool is_collapsed){
+utki::shared_ref<morda::widget> file_tree_page::file_tree_provider::get_widget(utki::span<const size_t> index, bool is_collapsed){
 	auto tr = utki::make_traversal(this->cache);
 	ASSERT(tr.is_valid(index))
 	auto& file_entry = tr[index];
@@ -257,8 +257,8 @@ file_tree_page::file_tree_page(std::shared_ptr<morda::context> c) :
 	tv.set_provider(this->provider);
 }
 
-std::shared_ptr<morda::widget> file_tree_page::create_tab_content(){
-	auto t = std::make_shared<morda::text>(this->context, tml::forest());
+utki::shared_ref<morda::widget> file_tree_page::create_tab_content(){
+	auto t = utki::make_shared_ref<morda::text>(this->context, tml::forest());
 	t->set_text("file tree");
 	return t;
 }

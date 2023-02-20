@@ -32,7 +32,7 @@ public:
 
 	bool on_key(const morda::key_event& e)override;
 
-	virtual std::shared_ptr<morda::widget> create_tab_content() = 0;
+	virtual utki::shared_ref<morda::widget> create_tab_content() = 0;
 
 private:
 	void move_right();

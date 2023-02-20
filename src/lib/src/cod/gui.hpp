@@ -39,7 +39,7 @@ class gui{
 
     gui(mordavokne::application& app);
 
-    void open_editor(std::shared_ptr<file_page> page);
+    void open_editor(utki::shared_ref<file_page> page);
 public:
     const std::shared_ptr<morda::context> morda_context;
 };

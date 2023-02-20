@@ -136,6 +136,7 @@ tiling_area::tiling_area(std::shared_ptr<morda::context> c, const treeml::forest
 		tile(this->context, treeml::forest()),
 		morda::oriented_widget(this->context, treeml::forest(), false),
 		morda::container(this->context, treeml::forest()),
+		content_container(utki::make_shared_ref<morda::container>(this->context, treeml::forest())),
 		min_tile_size(this->context->units.dp_to_px(minimal_tile_size_dp)),
 		dragger_size(this->context->units.dp_to_px(dragger_size_dp))
 {
@@ -149,7 +150,6 @@ tiling_area::tiling_area(std::shared_ptr<morda::context> c, const treeml::forest
 		}
 	}
 
-	this->content_container = std::make_shared<morda::container>(this->context, treeml::forest());
 	this->morda::container::push_back(this->content_container);
 	this->content_container->move_to({0, 0});
 
@@ -231,7 +231,7 @@ void tiling_area::lay_out(){
 
 	// add missing draggers
 	while(this->size() - 1 < num_draggers){
-		this->push_back(std::make_shared<dragger>(this->context, *this));
+		this->push_back(utki::make_shared_ref<dragger>(this->context, *this));
 	}
 
 	morda::vector2 dragger_dims;

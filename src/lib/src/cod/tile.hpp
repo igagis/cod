@@ -34,11 +34,17 @@ class tile : virtual public morda::widget{
 	friend class tiling_area;
 
 	tile(std::shared_ptr<morda::context> c, const treeml::forest& desc);
+
+	void set_selection_vao();
 public:
 
 	void render(const morda::matrix4& matrix)const override;
 
 	bool on_key(const morda::key_event& e)override;
+
+	void on_focus_change()override;
+
+	void on_resize()override;
 };
 
 }

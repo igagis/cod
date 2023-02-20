@@ -120,7 +120,7 @@ class code_edit :
 			return this->owner.lines.size();
 		}
 
-		std::shared_ptr<morda::widget> get_widget(size_t index)override;
+		utki::shared_ref<morda::widget> get_widget(size_t index)override;
 	};
 
 	std::shared_ptr<provider> lines_provider;

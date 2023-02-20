@@ -57,7 +57,7 @@ class file_tree_page :
 	public:
 		file_tree_provider(file_tree_page& owner);
 		size_t count(utki::span<const size_t> index)const noexcept override;
-		std::shared_ptr<morda::widget> get_widget(utki::span<const size_t> index, bool is_collapsed)override;
+		utki::shared_ref<morda::widget> get_widget(utki::span<const size_t> index, bool is_collapsed)override;
 
 		std::string get_path(utki::span<const size_t> index)const; // TODO: make noexcept, right now linter is angry about it
 	};
@@ -77,7 +77,7 @@ public:
 		this->page::render(matrix);
 	}
 
-	std::shared_ptr<morda::widget> create_tab_content()override;
+	utki::shared_ref<morda::widget> create_tab_content()override;
 };
 
 }

@@ -38,7 +38,7 @@ class tiling_area :
 		public morda::oriented_widget,
 		private morda::container
 {
-	std::shared_ptr<morda::container> content_container;
+	utki::shared_ref<morda::container> content_container;
 	
 public:
 	const morda::real min_tile_size;

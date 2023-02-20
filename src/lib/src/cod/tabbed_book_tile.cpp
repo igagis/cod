@@ -59,7 +59,7 @@ const tml::forest tab_desc = tml::read(R"(
 
 }
 
-void tabbed_book_tile::add(std::shared_ptr<page> p){
+void tabbed_book_tile::add(const utki::shared_ref<page>& p){
 	auto tab = this->context->inflater.inflate_as<morda::tab>(tab_desc);
 
 	tab->get_widget("placeholder").replace_by(p->create_tab_content());
