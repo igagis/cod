@@ -114,7 +114,7 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& de
 void code_edit::set_text(std::u32string&& text)
 {
 	this->lines = utki::linq(utki::split(std::u32string_view(text), U'\n'))
-					  .select([this](auto&& s) {
+					  .select([this](auto s) {
 						  auto size = s.size();
 						  return line{
 							  .str = std::move(s),

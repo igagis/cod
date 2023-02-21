@@ -89,6 +89,10 @@ tst::set set("regex_highlighter", [](tst::suite& suite){
 (2)                        (3)attr1(4)=(5)"(6)qwe(5)"(2) (0)/>
 (2)                (0)</(1)tag(0)>)qwertyuiop"}
         },
+        // TODO: remove lint suppression when
+        // https://github.com/llvm/llvm-project/issues/55219
+        // is fixed
+        // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
         [model = std::make_shared<synhi::regex_highlighter_model>(
                 treeml::read(papki::fs_file("../../highlight/xml.tml"))
             )]

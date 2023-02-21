@@ -115,7 +115,7 @@ auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> ind
 		.order_by([](const auto& v) -> const auto& {
 			return v;
 		})
-		.select([](auto&& e) {
+		.select([](auto e) {
 			bool is_dir = papki::is_dir(e);
 			return typename decltype(this->cache
 			)::value_type(file_entry{

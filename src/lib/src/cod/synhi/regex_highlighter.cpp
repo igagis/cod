@@ -240,6 +240,9 @@ regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse
 	}
 
 	return ret;
+
+	// TODO: remove lint suppression when https://github.com/llvm/llvm-project/issues/60896 is fixed
+	// NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 }
 
 regex_highlighter_model::state::parse_result regex_highlighter_model::state::parse(const treeml::forest& desc)
@@ -263,6 +266,9 @@ regex_highlighter_model::state::parse_result regex_highlighter_model::state::par
 	}
 
 	return ret;
+
+	// TODO: remove lint suppression when https://github.com/llvm/llvm-project/issues/60896 is fixed
+	// NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 }
 
 regex_highlighter_model::regex_highlighter_model(const treeml::forest& spec)
