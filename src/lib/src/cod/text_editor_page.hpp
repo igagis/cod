@@ -31,7 +31,7 @@ namespace cod {
 class text_editor_page : public file_page, private code_edit
 {
 public:
-	text_editor_page(std::shared_ptr<morda::context> context, std::string&& file_name);
+	text_editor_page(const utki::shared_ref<morda::context>& context, std::string&& file_name);
 
 	void set_text(std::u32string&& text) override
 	{

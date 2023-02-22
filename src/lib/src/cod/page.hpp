@@ -29,7 +29,7 @@ namespace cod {
 class page : public morda::page
 {
 public:
-	page(std::shared_ptr<morda::context> context);
+	page(const utki::shared_ref<morda::context>& context);
 
 	bool on_key(const morda::key_event& e) override;
 

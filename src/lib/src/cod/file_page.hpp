@@ -30,7 +30,7 @@ class file_page : public page
 	std::string file_name;
 
 public:
-	file_page(std::shared_ptr<morda::context> context, std::string&& file_name);
+	file_page(const utki::shared_ref<morda::context>& context, std::string&& file_name);
 
 	void on_tear_out() noexcept override;
 

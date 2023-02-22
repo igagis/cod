@@ -106,7 +106,7 @@ class code_edit :
 		size_t line_num;
 
 	public:
-		line_widget(std::shared_ptr<morda::context> c, code_edit& owner, size_t line_num) :
+		line_widget(const utki::shared_ref<morda::context>& c, code_edit& owner, size_t line_num) :
 			widget(std::move(c), treeml::forest()),
 			owner(owner),
 			line_num(line_num)
@@ -236,7 +236,7 @@ class code_edit :
 	void scroll_to(r4::vector2<size_t> pos_glyphs);
 
 public:
-	code_edit(std::shared_ptr<morda::context> c, const treeml::forest& desc);
+	code_edit(const utki::shared_ref<morda::context>& c, const treeml::forest& desc);
 
 	code_edit(const code_edit&) = delete;
 	code_edit& operator=(const code_edit&) = delete;

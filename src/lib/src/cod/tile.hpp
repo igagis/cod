@@ -34,7 +34,7 @@ class tile : virtual public morda::widget
 	friend class tabbed_book_tile;
 	friend class tiling_area;
 
-	tile(std::shared_ptr<morda::context> c, const treeml::forest& desc);
+	tile(const utki::shared_ref<morda::context>& c, const treeml::forest& desc);
 
 	void set_selection_vao();
 

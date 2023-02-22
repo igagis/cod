@@ -142,7 +142,7 @@ public:
 	};
 
 	struct state {
-		std::vector<std::shared_ptr<const rule>> rules;
+		std::vector<utki::shared_ref<const rule>> rules;
 		std::shared_ptr<const font_style> style;
 
 		struct parse_result {
@@ -155,7 +155,7 @@ public:
 	};
 
 	// need to keep strong pointers to all states, because rules hold only plain pointer to the state_to_push
-	std::vector<std::shared_ptr<const state>> states;
+	std::vector<utki::shared_ref<const state>> states;
 };
 
 class regex_highlighter : public highlighter

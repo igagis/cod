@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-tabbed_book_tile::tabbed_book_tile(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
+tabbed_book_tile::tabbed_book_tile(const utki::shared_ref<morda::context>& c, const treeml::forest& desc) :
 	morda::widget(std::move(c), desc),
 	tile(this->context, desc),
 	tabbed_book(this->context, desc)
@@ -61,11 +61,11 @@ const tml::forest tab_desc = tml::read(R"(
 
 void tabbed_book_tile::add(const utki::shared_ref<page>& p)
 {
-	auto tab = this->context->inflater.inflate_as<morda::tab>(tab_desc);
+	auto tab = this->context.get().inflater.inflate_as<morda::tab>(tab_desc);
 
-	tab->get_widget("placeholder").replace_by(p->create_tab_content());
+	tab.get().get_widget("placeholder").replace_by(p.get().create_tab_content());
 
-	tab->get_widget_as<morda::push_button>("close_button").click_handler =
+	tab.get().get_widget_as<morda::push_button>("close_button").click_handler =
 		[tabbed_book_wp = utki::make_weak_from(*this), tab_wp = utki::make_weak(tab)](morda::push_button& btn) {
 			auto tb = tabbed_book_wp.lock();
 			ASSERT(tb)
@@ -73,7 +73,7 @@ void tabbed_book_tile::add(const utki::shared_ref<page>& p)
 			auto t = tab_wp.lock();
 			ASSERT(t)
 
-			btn.context->run_from_ui_thread([tb, t] {
+			btn.context.get().run_from_ui_thread([tb, t] {
 				tb->tear_out(*t);
 			});
 		};

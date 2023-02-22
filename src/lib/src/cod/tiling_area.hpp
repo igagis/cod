@@ -41,16 +41,16 @@ public:
 	const morda::real min_tile_size;
 	const morda::real dragger_size;
 
-	tiling_area(std::shared_ptr<morda::context> c, const treeml::forest& desc);
+	tiling_area(const utki::shared_ref<morda::context>& c, const treeml::forest& desc);
 
 	morda::container& content()
 	{
-		return *this->content_container;
+		return this->content_container.get();
 	}
 
 	const morda::container& content() const
 	{
-		return *this->content_container;
+		return this->content_container.get();
 	}
 
 	void lay_out() override;

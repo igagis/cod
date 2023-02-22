@@ -32,7 +32,7 @@ public:
 	virtual ~plugin() = default;
 
 	virtual std::shared_ptr<file_page> open_file(
-		const std::shared_ptr<morda::context>& context,
+		const utki::shared_ref<morda::context>& context,
 		std::string_view file_name
 	)
 	{

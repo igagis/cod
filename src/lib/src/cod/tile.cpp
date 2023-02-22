@@ -27,9 +27,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-tile::tile(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
+tile::tile(const utki::shared_ref<morda::context>& c, const treeml::forest& desc) :
 	morda::widget(std::move(c), desc),
-	selection_vao(this->context->renderer)
+	selection_vao(this->context.get().renderer)
 {}
 
 void tile::render(const morda::matrix4& matrix) const

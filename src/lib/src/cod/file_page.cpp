@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-file_page::file_page(std::shared_ptr<morda::context> context, std::string&& file_name) :
+file_page::file_page(const utki::shared_ref<morda::context>& context, std::string&& file_name) :
 	morda::widget(std::move(context), treeml::forest()),
 	page(this->context),
 	file_name(std::move(file_name))
@@ -48,7 +48,7 @@ void file_page::on_tear_out() noexcept
 
 utki::shared_ref<morda::widget> file_page::create_tab_content()
 {
-	auto t = utki::make_shared_ref<morda::text>(this->context, tml::forest());
-	t->set_text(file_name);
+	auto t = utki::make_shared<morda::text>(this->context, tml::forest());
+	t.get().set_text(file_name);
 	return t;
 }

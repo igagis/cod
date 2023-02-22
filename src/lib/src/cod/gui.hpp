@@ -43,7 +43,7 @@ class gui
 	void open_editor(utki::shared_ref<file_page> page);
 
 public:
-	const std::shared_ptr<morda::context> morda_context;
+	const utki::shared_ref<morda::context> morda_context;
 };
 
 } // namespace cod

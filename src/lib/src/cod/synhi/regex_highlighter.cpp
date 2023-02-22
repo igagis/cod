@@ -204,7 +204,7 @@ regex_highlighter_model::matcher::match_result regex_highlighter_model::regex_ma
 
 regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse(const treeml::forest& desc)
 {
-	parse_result ret{.rule = utki::make_shared_ref<rule>()};
+	parse_result ret{.rule = utki::make_shared<rule>()};
 
 	for (const auto& n : desc) {
 		if (n.value == "styles") {
@@ -214,11 +214,11 @@ regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse
 							 })
 							 .get();
 		} else if (n.value == "regex") {
-			ret.rule->matcher_ = std::make_shared<regex_highlighter_model::regex_matcher>(
+			ret.rule.get().matcher_ = std::make_shared<regex_highlighter_model::regex_matcher>(
 				utki::to_utf32(treeml::crawler(n.children).get().value.to_string())
 			);
 		} else if (n.value == "ppregex") {
-			ret.rule->matcher_ = std::make_shared<regex_highlighter_model::ppregex_matcher>(
+			ret.rule.get().matcher_ = std::make_shared<regex_highlighter_model::ppregex_matcher>(
 				treeml::crawler(n.children).get().value.to_string()
 			);
 		} else if (n.value == "push") {
@@ -235,7 +235,7 @@ regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse
 		}
 	}
 
-	if (!ret.rule->matcher_) {
+	if (!ret.rule.get().matcher_) {
 		throw std::invalid_argument("rule does not define any mtcher");
 	}
 
@@ -247,7 +247,7 @@ regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse
 
 regex_highlighter_model::state::parse_result regex_highlighter_model::state::parse(const treeml::forest& desc)
 {
-	parse_result ret{.state = utki::make_shared_ref<state>()};
+	parse_result ret{.state = utki::make_shared<state>()};
 
 	for (const auto& n : desc) {
 		if (n.value == "style") {
@@ -291,11 +291,11 @@ regex_highlighter_model::regex_highlighter_model(const treeml::forest& spec)
 
 	// set state -> rules and state -> styles references
 	for (const auto& n : c.states) {
-		this->states.push_back(n.second.state);
-		auto& state = *n.second.state;
+		this->states.emplace_back(n.second.state);
+		auto& state = n.second.state.get();
 		const auto& parsed = n.second;
 		state.rules = utki::linq(parsed.rules)
-						   .select([&](const auto& m) -> std::shared_ptr<const rule> {
+						   .select([&](const auto& m) -> utki::shared_ref<const rule> {
 							   return c.get_rule(m);
 						   })
 						   .get();
@@ -305,7 +305,7 @@ regex_highlighter_model::regex_highlighter_model(const treeml::forest& spec)
 
 	// set rule -> style and rule -> state references
 	for (const auto& n : c.rules) {
-		auto& rule = *n.second.rule;
+		auto& rule = n.second.rule.get();
 		const auto& parsed = n.second;
 
 		// rule can have no style, then it inherits style from pushed state
@@ -336,7 +336,7 @@ void regex_highlighter::reset()
 	ASSERT(this->model)
 	ASSERT(!this->model->states.empty());
 	// NOLINTNEXTLINE(modernize-use-emplace, "state_frame has no appropriate constructor")
-	this->state_stack.push_back(state_frame{.state = *this->model->states.front()});
+	this->state_stack.push_back(state_frame{.state = this->model->states.front().get()});
 }
 
 namespace {
@@ -387,7 +387,7 @@ std::vector<line_span> regex_highlighter::highlight(std::u32string_view str)
 		// position in the text line
 		ASSERT(!this->state_stack.empty())
 		for (const auto& r : this->state_stack.back().state.get().rules) {
-			auto matcher = r->matcher_.get();
+			auto matcher = r.get().matcher_.get();
 			ASSERT(matcher)
 			if (matcher->is_preprocessed) {
 				auto& cache = this->state_stack.back().preprocessed_rules_cache;
@@ -406,7 +406,7 @@ std::vector<line_span> regex_highlighter::highlight(std::u32string_view str)
 
 			if (m.begin < match.begin) {
 				match = std::move(m);
-				match_rule = r.get();
+				match_rule = &r.get();
 			}
 
 			if (match.begin == 0) {

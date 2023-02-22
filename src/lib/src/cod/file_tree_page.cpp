@@ -182,7 +182,7 @@ utki::shared_ref<morda::widget> file_tree_page::file_tree_provider::get_widget(
 	ASSERT(tr.is_valid(index))
 	auto& file_entry = tr[index];
 
-	auto w = this->owner.context->inflater.inflate(R"(
+	auto w = this->owner.context.get().inflater.inflate(R"(
 		@pile{
 			@click_proxy{
 				id{cp}
@@ -206,15 +206,15 @@ utki::shared_ref<morda::widget> file_tree_page::file_tree_provider::get_widget(
 		}
 	)");
 
-	w->get_widget_as<morda::text>("tx").set_text(file_entry.value.name);
+	w.get().get_widget_as<morda::text>("tx").set_text(file_entry.value.name);
 
 	if (utki::make_span(this->owner.cursor_index) == index) {
-		auto bg = w->try_get_widget_as<morda::color>("bg");
+		auto bg = w.get().try_get_widget_as<morda::color>("bg");
 		ASSERT(bg)
 		bg->set_visible(true);
 	}
 
-	auto& cp = w->get_widget_as<morda::click_proxy>("cp");
+	auto& cp = w.get().get_widget_as<morda::click_proxy>("cp");
 
 	cp.click_handler = [this, index = utki::make_vector(index)](morda::click_proxy& cp) {
 		if (this->owner.cursor_index == index) {
@@ -235,8 +235,8 @@ void file_tree_page::notify_file_select()
 	}
 }
 
-file_tree_page::file_tree_page(std::shared_ptr<morda::context> c) :
-	morda::widget(std::move(c), tml::forest()),
+file_tree_page::file_tree_page(const utki::shared_ref<morda::context>& c) :
+	morda::widget(c, tml::forest()),
 	page(this->context),
 	morda::column(this->context, layout)
 {
@@ -277,7 +277,7 @@ file_tree_page::file_tree_page(std::shared_ptr<morda::context> c) :
 
 utki::shared_ref<morda::widget> file_tree_page::create_tab_content()
 {
-	auto t = utki::make_shared_ref<morda::text>(this->context, tml::forest());
-	t->set_text("file tree");
+	auto t = utki::make_shared<morda::text>(this->context, tml::forest());
+	t.get().set_text("file tree");
 	return t;
 }

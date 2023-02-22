@@ -69,7 +69,7 @@ class file_tree_page : virtual public morda::widget, public page, private morda:
 	void notify_file_select();
 
 public:
-	file_tree_page(std::shared_ptr<morda::context> c);
+	file_tree_page(const utki::shared_ref<morda::context>& c);
 
 	std::function<void(std::string)> file_select_handler;
 

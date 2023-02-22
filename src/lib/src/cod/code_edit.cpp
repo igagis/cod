@@ -35,7 +35,7 @@ constexpr uint16_t cursor_blink_period_ms = 500;
 constexpr morda::real cursor_thickness_dp = 2.0f;
 } // namespace
 
-code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& desc) :
+code_edit::code_edit(const utki::shared_ref<morda::context>& c, const treeml::forest& desc) :
 	widget(std::move(c), desc),
 	character_input_widget(this->context),
 	text_widget(this->context, desc),
@@ -75,10 +75,10 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& de
 	scroll_area(utki::make_shared_from(this->get_widget_as<morda::scroll_area>("scroll_area"))),
 	lines_provider(std::make_shared<provider>(*this))
 {
-	this->set_font(this->context->loader.load<morda::res::font>("fnt_monospace"));
+	this->set_font(this->context.get().loader.load<morda::res::font>("fnt_monospace"));
 	this->code_edit::on_font_change();
 
-	this->list->set_provider(this->lines_provider);
+	this->list.get().set_provider(this->lines_provider);
 
 	auto& vs = this->get_widget_as<morda::fraction_band_widget>("vertical_scroll");
 
@@ -88,7 +88,7 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& de
 		}
 	};
 
-	this->list->scroll_change_handler = [sw = utki::make_weak_from(vs)](morda::list_widget& lw) {
+	this->list.get().scroll_change_handler = [sw = utki::make_weak_from(vs)](morda::list_widget& lw) {
 		if (auto s = sw.lock()) {
 			s->set_fraction(lw.get_scroll_factor(), false);
 			s->set_band_fraction(lw.get_scroll_band());
@@ -103,7 +103,7 @@ code_edit::code_edit(std::shared_ptr<morda::context> c, const treeml::forest& de
 		}
 	};
 
-	this->scroll_area->scroll_change_handler = [sw = utki::make_weak_from(hs)](morda::scroll_area& sa) {
+	this->scroll_area.get().scroll_change_handler = [sw = utki::make_weak_from(hs)](morda::scroll_area& sa) {
 		if (auto s = sw.lock()) {
 			s->set_fraction(sa.get_scroll_factor().x(), false);
 			s->set_band_fraction(sa.get_visible_area_fraction().x());
@@ -137,7 +137,7 @@ std::u32string code_edit::get_text() const
 
 utki::shared_ref<morda::widget> code_edit::provider::get_widget(size_t index)
 {
-	return utki::make_shared_ref<code_edit::line_widget>(this->owner.context, this->owner, index);
+	return utki::make_shared<code_edit::line_widget>(this->owner.context, this->owner, index);
 }
 
 namespace {
@@ -194,8 +194,8 @@ void code_edit::line_widget::render(const morda::matrix4& matrix) const
 		matr.translate(pos, 0);
 		matr.scale(morda::vector2(morda::real(length), 1).comp_mul(this->owner.font_info.glyph_dims));
 
-		auto& r = *this->context->renderer;
-		r.shader->color_pos->render(matr, *r.pos_quad_01_vao, 0xff804000);
+		auto& r = this->context.get().renderer.get();
+		r.shader->color_pos->render(matr, r.pos_quad_01_vao.get(), 0xff804000);
 	}
 
 	const auto& l = this->owner.lines[this->line_num];
@@ -237,12 +237,12 @@ void code_edit::line_widget::render(const morda::matrix4& matrix) const
 			auto pos = morda::real(cp.x()) * this->owner.font_info.glyph_dims.x();
 			matr.translate(pos, 0);
 			matr.scale(morda::vector2(
-				cursor_thickness_dp * this->context->units.dots_per_dp,
+				cursor_thickness_dp * this->context.get().units.dots_per_dp,
 				this->owner.font_info.glyph_dims.y()
 			));
 
-			auto& r = *this->context->renderer;
-			r.shader->color_pos->render(matr, *r.pos_quad_01_vao, 0xffffffff);
+			auto& r = this->context.get().renderer.get();
+			r.shader->color_pos->render(matr, r.pos_quad_01_vao.get(), 0xffffffff);
 		}
 	}
 }
@@ -273,15 +273,15 @@ void code_edit::on_focus_change()
 	if (this->is_focused()) {
 		this->start_cursor_blinking();
 	} else {
-		this->context->updater->stop(*this);
+		this->context.get().updater.get().stop(*this);
 	}
 }
 
 void code_edit::start_cursor_blinking()
 {
-	this->context->updater->stop(*this);
+	this->context.get().updater.get().stop(*this);
 	this->cursor_blink_visible = true;
-	this->context->updater->start(utki::make_weak_from(*static_cast<updateable*>(this)), cursor_blink_period_ms);
+	this->context.get().updater.get().start(utki::make_weak_from(*static_cast<updateable*>(this)), cursor_blink_period_ms);
 }
 
 void code_edit::for_each_cursor(const std::function<void(cursor&)>& func)
@@ -432,7 +432,7 @@ void code_edit::render(const morda::matrix4& matrix) const
 r4::vector2<size_t> code_edit::mouse_pos_to_glyph_pos(const morda::vector2& mouse_pos) const noexcept
 {
 	auto corrected_mouse_pos =
-		mouse_pos + morda::vector2{this->scroll_area->get_scroll_pos().x(), this->list->get_pos_offset()};
+		mouse_pos + morda::vector2{this->scroll_area.get().get_scroll_pos().x(), this->list.get().get_pos_offset()};
 
 	using std::max;
 	corrected_mouse_pos = max(corrected_mouse_pos, 0); // clamp to positive values
@@ -445,7 +445,7 @@ r4::vector2<size_t> code_edit::mouse_pos_to_glyph_pos(const morda::vector2& mous
 	glyph_pos_real.x() = round(glyph_pos_real.x());
 	glyph_pos_real.y() = floor(glyph_pos_real.y());
 	auto glyph_pos = glyph_pos_real.to<size_t>();
-	glyph_pos.y() += this->list->get_pos_index();
+	glyph_pos.y() += this->list.get().get_pos_index();
 
 	return glyph_pos;
 }
@@ -476,7 +476,7 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event)
 			[[fallthrough]];
 		case morda::mouse_button::wheel_down:
 			if (event.is_down) {
-				this->list->scroll_by(scroll_direction * this->font_info.glyph_dims.y() * 3);
+				this->list.get().scroll_by(scroll_direction * this->font_info.glyph_dims.y() * 3);
 			}
 			break;
 		case morda::mouse_button::wheel_left:
@@ -484,8 +484,8 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event)
 			[[fallthrough]];
 		case morda::mouse_button::wheel_right:
 			if (event.is_down) {
-				this->scroll_area->set_scroll_pos(
-					this->scroll_area->get_scroll_pos()
+				this->scroll_area.get().set_scroll_pos(
+					this->scroll_area.get().get_scroll_pos()
 					+ morda::vector2{scroll_direction * this->font_info.glyph_dims.x() * 3, 0}
 				);
 			}
@@ -746,17 +746,17 @@ code_edit::line code_edit::line::cut_tail(size_t pos)
 void code_edit::scroll_to(r4::vector2<size_t> pos_glyphs)
 {
 	// vertical
-	size_t top = this->list->get_pos_index();
+	size_t top = this->list.get().get_pos_index();
 	if (top >= pos_glyphs.y()) {
-		this->list->scroll_by(
-			-morda::real(top - pos_glyphs.y()) * this->font_info.glyph_dims.y() - this->list->get_pos_offset()
+		this->list.get().scroll_by(
+			-morda::real(top - pos_glyphs.y()) * this->font_info.glyph_dims.y() - this->list.get().get_pos_offset()
 		);
 	} else {
-		ASSERT(!this->list->children().empty())
-		size_t bottom = top + this->list->children().size() - 1;
+		ASSERT(!this->list.get().children().empty())
+		size_t bottom = top + this->list.get().children().size() - 1;
 		if (bottom <= pos_glyphs.y()) {
-			morda::real bottom_offset = this->list->children().back()->rect().y2() - this->list->rect().d.y();
-			this->list->scroll_by(
+			morda::real bottom_offset = this->list.get().children().back().get().rect().y2() - this->list.get().rect().d.y();
+			this->list.get().scroll_by(
 				morda::real(pos_glyphs.y() - bottom) * this->font_info.glyph_dims.y() + bottom_offset
 			);
 		}
@@ -765,13 +765,13 @@ void code_edit::scroll_to(r4::vector2<size_t> pos_glyphs)
 	// horizontal
 	auto pos_x = morda::real(pos_glyphs.x()) * this->font_info.glyph_dims.x();
 
-	auto left = this->scroll_area->get_scroll_pos().x();
+	auto left = this->scroll_area.get().get_scroll_pos().x();
 	if (left > pos_x) {
-		this->scroll_area->set_scroll_pos({pos_x, 0});
+		this->scroll_area.get().set_scroll_pos({pos_x, 0});
 	} else {
-		pos_x -= this->scroll_area->rect().d.x() - this->font_info.glyph_dims.x();
+		pos_x -= this->scroll_area.get().rect().d.x() - this->font_info.glyph_dims.x();
 		if (left < pos_x) {
-			this->scroll_area->set_scroll_pos({pos_x, 0});
+			this->scroll_area.get().set_scroll_pos({pos_x, 0});
 		}
 	}
 }
@@ -850,7 +850,7 @@ void code_edit::cursor::move_down_by(size_t dy) noexcept
 size_t code_edit::num_lines_on_page() const noexcept
 {
 	using std::floor;
-	return size_t(floor(this->list->rect().d.y() / this->font_info.glyph_dims.y()));
+	return size_t(floor(this->list.get().rect().d.y() / this->font_info.glyph_dims.y()));
 }
 
 size_t code_edit::calc_word_length_forward(const cursor& c) const noexcept

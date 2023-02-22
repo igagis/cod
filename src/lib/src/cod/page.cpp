@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-page::page(std::shared_ptr<morda::context> context) :
+page::page(const utki::shared_ref<morda::context>& context) :
 	morda::widget(std::move(context), treeml::forest()),
 	morda::page(this->context, treeml::forest())
 {}
@@ -41,8 +41,8 @@ bool page::on_key(const morda::key_event& e)
 		return true;
 	} else if (context::inst().shortcuts.get("cod.page.move_right").combo == e.combo) {
 		std::cout << "move page right" << std::endl;
-		this->context->run_from_ui_thread([p = utki::make_shared_from(*this)] {
-			p->move_right();
+		this->context.get().run_from_ui_thread([p = utki::make_shared_from(*this)] {
+			p.get().move_right();
 		});
 		return true;
 	} else if (context::inst().shortcuts.get("cod.page.move_up").combo == e.combo) {
