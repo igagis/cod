@@ -295,10 +295,10 @@ regex_highlighter_model::regex_highlighter_model(const treeml::forest& spec)
 		auto& state = n.second.state.get();
 		const auto& parsed = n.second;
 		state.rules = utki::linq(parsed.rules)
-						   .select([&](const auto& m) -> utki::shared_ref<const rule> {
-							   return c.get_rule(m);
-						   })
-						   .get();
+						  .select([&](const auto& m) -> utki::shared_ref<const rule> {
+							  return c.get_rule(m);
+						  })
+						  .get();
 
 		state.style = c.get_style(parsed.style);
 	}

@@ -118,10 +118,8 @@ auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> ind
 		.select([](auto e) {
 			bool is_dir = papki::is_dir(e);
 			return typename decltype(this->cache
-			)::value_type(file_entry{
-				.is_directory = is_dir,
-				.name = is_dir ? e.substr(0, e.size() - 1) : std::move(e)
-			});
+			)::value_type(file_entry{.is_directory = is_dir, .name = is_dir ? e.substr(0, e.size() - 1) : std::move(e)}
+			);
 		})
 		.get();
 }

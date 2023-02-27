@@ -281,7 +281,10 @@ void code_edit::start_cursor_blinking()
 {
 	this->context.get().updater.get().stop(*this);
 	this->cursor_blink_visible = true;
-	this->context.get().updater.get().start(utki::make_weak_from(*static_cast<updateable*>(this)), cursor_blink_period_ms);
+	this->context.get().updater.get().start(
+		utki::make_weak_from(*static_cast<updateable*>(this)),
+		cursor_blink_period_ms
+	);
 }
 
 void code_edit::for_each_cursor(const std::function<void(cursor&)>& func)
@@ -755,7 +758,8 @@ void code_edit::scroll_to(r4::vector2<size_t> pos_glyphs)
 		ASSERT(!this->list.get().children().empty())
 		size_t bottom = top + this->list.get().children().size() - 1;
 		if (bottom <= pos_glyphs.y()) {
-			morda::real bottom_offset = this->list.get().children().back().get().rect().y2() - this->list.get().rect().d.y();
+			morda::real bottom_offset =
+				this->list.get().children().back().get().rect().y2() - this->list.get().rect().d.y();
 			this->list.get().scroll_by(
 				morda::real(pos_glyphs.y() - bottom) * this->font_info.glyph_dims.y() + bottom_offset
 			);
