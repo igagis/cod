@@ -39,10 +39,9 @@ gui::gui(mordavokne::application& app) :
 
 	app.gui.context.get().loader.mount_res_pack(*app.get_res_file("res/"));
 
-	app.gui.set_root(app.gui.context.get().inflater.inflate(*app.get_res_file("res/main.gui")).to_shared_ptr());
+	app.gui.set_root(app.gui.context.get().inflater.inflate(*app.get_res_file("res/main.gui")));
 
-	ASSERT(app.gui.get_root())
-	auto& c = *app.gui.get_root();
+	auto& c = app.gui.get_root();
 
 	{
 		auto ft = utki::make_shared<file_tree_page>(c.context);
