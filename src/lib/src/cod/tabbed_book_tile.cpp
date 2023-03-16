@@ -46,7 +46,7 @@ const tml::forest tab_desc = tml::read(R"(
 				@push_button{
 					id{close_button}
 					@image{
-						layout{
+						lp{
 							dx { 8dp }
 							dy { 8dp }
 						}

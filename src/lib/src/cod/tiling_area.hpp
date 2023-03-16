@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <morda/widgets/base/oriented_widget.hpp>
-#include <morda/widgets/container.hpp>
+#include <morda/container.hpp>
 
 #include "tile.hpp"
 
@@ -53,7 +53,7 @@ public:
 		return this->content_container.get();
 	}
 
-	void lay_out() override;
+	void on_lay_out() override;
 
 	morda::vector2 measure(const morda::vector2& quotum) const override;
 

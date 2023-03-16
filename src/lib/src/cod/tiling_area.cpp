@@ -161,7 +161,7 @@ tiling_area::tiling_area(const utki::shared_ref<morda::context>& c, const treeml
 	this->content_container.get().push_back_inflate(desc);
 }
 
-void tiling_area::lay_out()
+void tiling_area::on_lay_out()
 {
 	auto long_index = this->get_long_index();
 	auto trans_index = this->get_trans_index();

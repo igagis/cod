@@ -37,15 +37,16 @@ using namespace cod;
 
 namespace {
 const treeml::forest layout = treeml::read(R"qwertyuiop(
+	layout{column}
 	@row{
-		layout{
+		lp{
 			dx{fill} dy{0}
 			weight{1}
 		}
 		@tree_view{
 			id{tree_view}
 			clip{true}
-			layout{
+			lp{
 				dx{0} dy{fill}
 				weight{1}
 			}
@@ -53,14 +54,14 @@ const treeml::forest layout = treeml::read(R"qwertyuiop(
 		@vertical_scroll_bar{
 			id{vertical_scroll}
 
-			layout{
+			lp{
 				dx{min} dy{max}
 			}
 		}
 	}
 	@horizontal_scroll_bar{
 		id{horizontal_scroll}
-		layout{
+		lp{
 			dx{max} dy{min}
 		}
 	}
@@ -184,14 +185,14 @@ utki::shared_ref<morda::widget> file_tree_page::file_tree_provider::get_widget(
 		@pile{
 			@click_proxy{
 				id{cp}
-				layout{
+				lp{
 					dx{fill}
 					dy{fill}
 				}
 			}
 			@color{
 				id{bg}
-				layout{
+				lp{
 					dx{fill}
 					dy{fill}
 				}
@@ -236,7 +237,7 @@ void file_tree_page::notify_file_select()
 file_tree_page::file_tree_page(const utki::shared_ref<morda::context>& c) :
 	morda::widget(c, tml::forest()),
 	page(this->context),
-	morda::column(this->context, layout)
+	morda::container(this->context, ::layout)
 {
 	auto& tv = this->get_widget_as<morda::tree_view>("tree_view");
 

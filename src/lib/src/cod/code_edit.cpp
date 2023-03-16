@@ -43,21 +43,21 @@ code_edit::code_edit(const utki::shared_ref<morda::context>& c, const treeml::fo
 		this->context,
 		treeml::read(R"qwertyuiop(
 			@row{
-				layout{dx{fill} dy{0} weight{1}}
+				lp{dx{fill} dy{0} weight{1}}
 
 				@scroll_area{
 					id{scroll_area}
-					layout{dx{0} dy{fill} weight{1}}
+					lp{dx{0} dy{fill} weight{1}}
 					clip{true}
 					@list{
 						id{lines}
-						layout{dx{min} dy{fill}}
+						lp{dx{min} dy{fill}}
 					}
 				}
 				@vertical_scroll_bar{
 					id{vertical_scroll}
 
-					layout{
+					lp{
 						dx{min} dy{max}
 					}
 				}
@@ -65,7 +65,7 @@ code_edit::code_edit(const utki::shared_ref<morda::context>& c, const treeml::fo
 			@horizontal_scroll_bar{
 				id{horizontal_scroll}
 
-				layout{
+				lp{
 					dx{fill} dy{min}
 				}
 			}

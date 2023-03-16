@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <morda/paint/frame_vao.hpp>
-#include <morda/widgets/widget.hpp>
+#include <morda/widget.hpp>
 
 namespace cod {
 

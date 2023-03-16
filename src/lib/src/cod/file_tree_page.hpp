@@ -25,13 +25,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <morda/widgets/group/book.hpp>
 #include <morda/widgets/group/column.hpp>
 #include <morda/widgets/group/tree_view.hpp>
-#include <morda/widgets/widget.hpp>
+#include <morda/widget.hpp>
 
 #include "page.hpp"
 
 namespace cod {
 
-class file_tree_page : virtual public morda::widget, public page, private morda::column
+class file_tree_page :
+	virtual public morda::widget,
+	public page,
+	private morda::container
 {
 	class file_tree_provider : public morda::tree_view::provider
 	{
@@ -75,7 +78,7 @@ public:
 
 	void render(const morda::matrix4& matrix) const override
 	{
-		this->morda::column::render(matrix);
+		this->morda::container::render(matrix);
 		this->page::render(matrix);
 	}
 
