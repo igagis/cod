@@ -237,7 +237,7 @@ void code_edit::line_widget::render(const morda::matrix4& matrix) const
 			auto pos = morda::real(cp.x()) * this->owner.font_info.glyph_dims.x();
 			matr.translate(pos, 0);
 			matr.scale(morda::vector2(
-				cursor_thickness_dp * this->context.get().units.dots_per_dp,
+				cursor_thickness_dp * this->context.get().units.dots_per_pp,
 				this->owner.font_info.glyph_dims.y()
 			));
 
