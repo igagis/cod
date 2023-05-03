@@ -56,6 +56,8 @@ void tile::on_focus_change()
 
 void tile::on_resize()
 {
+	this->morda::widget::on_resize();
+	
 	if (this->is_focused()) {
 		this->set_selection_vao();
 	}
