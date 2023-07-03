@@ -32,7 +32,7 @@ using namespace cod;
 gui::gui(mordavokne::application& app) :
 	morda_context(app.gui.context)
 {
-	app.gui.initStandardWidgets(*app.get_res_file());
+	app.gui.init_standard_widgets(*app.get_res_file());
 
 	app.gui.context.get().inflater.register_widget<tiling_area>("tiling_area");
 	app.gui.context.get().inflater.register_widget<tabbed_book_tile>("tabbed_book_tile");
