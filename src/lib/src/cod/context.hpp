@@ -36,7 +36,7 @@ class context : public utki::singleton<context>
 {
 	friend class application;
 
-	context(command_line_args&& cla, mordavokne::application& app);
+	context(command_line_args cla, mordavokne::application& app);
 
 public:
 	const std::string base_dir;

@@ -32,7 +32,7 @@ class application : public mordavokne::application
 public:
 	cod::context context;
 
-	application(command_line_args&& cla);
+	application(command_line_args cla);
 };
 
 } // namespace cod

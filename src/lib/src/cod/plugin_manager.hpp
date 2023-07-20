@@ -35,6 +35,7 @@ class plugin_manager : public utki::singleton<plugin_manager>
 {
 	friend class plugin;
 
+	// called by plugin during loading the plugin
 	static void register_plugin(plugin& p);
 	static void unregister_plugin(plugin& p);
 

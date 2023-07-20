@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-application::application(command_line_args&& cla) :
+application::application(command_line_args cla) :
 	mordavokne::application(
 		"cod",
 		[]() {
