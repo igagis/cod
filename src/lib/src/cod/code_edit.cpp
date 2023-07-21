@@ -35,6 +35,8 @@ constexpr uint16_t cursor_blink_period_ms = 500;
 constexpr morda::real cursor_thickness_dp = 2.0f;
 } // namespace
 
+// TODO: refactor to fix this lint issue
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 code_edit::code_edit(const utki::shared_ref<morda::context>& c, const treeml::forest& desc) :
 	widget(std::move(c), desc),
 	character_input_widget(this->context),
@@ -200,12 +202,14 @@ void code_edit::line_widget::render(const morda::matrix4& matrix) const
 		matr.translate(pos, 0);
 		matr.scale(morda::vector2(morda::real(length), 1).comp_mul(this->owner.font_info.glyph_dims));
 
+		constexpr auto selection_color = 0xff804000;
+
 		auto& r = this->context.get().renderer.get();
-		r.shader->color_pos->render(matr, r.pos_quad_01_vao.get(), 0xff804000);
+		r.shader->color_pos->render(matr, r.pos_quad_01_vao.get(), selection_color);
 	}
 
 	const auto& l = this->owner.lines[this->line_num];
-	const auto& str = l.str;
+	const auto str = std::u32string_view(l.str);
 
 	// render text
 	size_t cur_char_pos = 0;
@@ -221,7 +225,7 @@ void code_edit::line_widget::render(const morda::matrix4& matrix) const
 		auto res = font.render(
 			matr,
 			morda::color_to_vec4f(s.style->color),
-			std::u32string_view(str.c_str() + cur_char_index, s.length),
+			str.substr(cur_char_index, s.length),
 			this->owner.settings.tab_size,
 			cur_char_pos
 		);
@@ -247,8 +251,10 @@ void code_edit::line_widget::render(const morda::matrix4& matrix) const
 				this->owner.font_info.glyph_dims.y()
 			));
 
+			constexpr auto cursor_color = 0xffffffff;
+
 			auto& r = this->context.get().renderer.get();
-			r.shader->color_pos->render(matr, r.pos_quad_01_vao.get(), 0xffffffff);
+			r.shader->color_pos->render(matr, r.pos_quad_01_vao.get(), cursor_color);
 		}
 	}
 }
@@ -359,14 +365,15 @@ void code_edit::erase_forward(cursor& c, size_t num)
 		this->lines.erase(i);
 		l.append(std::move(ll));
 	} else {
-		size_t s;
-		ASSERT(cp.x() <= l.size());
-		size_t to_end = l.size() - cp.x();
-		if (num > to_end) {
-			s = to_end;
-		} else {
-			s = num;
-		}
+		size_t s = [&cp, &l, &num](){
+			ASSERT(cp.x() <= l.size());
+			size_t to_end = l.size() - cp.x();
+			if (num > to_end) {
+				return to_end;
+			} else {
+				return num;
+			}
+		}();
 		l.erase(cp.x(), s);
 	}
 
@@ -393,19 +400,24 @@ void code_edit::erase_backward(cursor& c, size_t num)
 		c.set_pos_chars(cp);
 	} else {
 		auto& l = this->lines[cp.y()];
-		size_t p;
-		size_t s;
-		if (cp.x() >= num) {
-			p = cp.x() - num;
-			s = num;
-		} else {
-			p = 0;
-			s = cp.x();
-		}
-		cp.x() -= s;
+
+		struct pos_and_size{
+			size_t pos;
+			size_t size;
+		};
+
+		auto ps = [&cp, &num]() -> pos_and_size{
+			if (cp.x() >= num) {
+				return {cp.x() - num, num};
+			} else {
+				return {0, cp.x()};
+			}
+		}();
+		
+		cp.x() -= ps.size;
 		c.set_pos_chars(cp);
 
-		l.erase(p, s);
+		l.erase(ps.pos, ps.size);
 	}
 
 	// TODO: correct cursors
@@ -535,13 +547,13 @@ size_t glyph_pos_to_char_pos(size_t p, const std::u32string& str, size_t tab_siz
 	size_t x = 0;
 	size_t i = 0;
 	for (; i != str.size(); ++i) {
-		size_t d;
-
-		if (str[i] == U'\t') {
-			d = tab_size - x % tab_size;
-		} else {
-			d = 1;
-		}
+		auto d = [&str, &i, &tab_size, &x]() -> size_t {
+			if (str[i] == U'\t') {
+				return tab_size - x % tab_size;
+			} else {
+				return 1;
+			}
+		}();
 
 		size_t px = p - x;
 		if (px <= d) {
@@ -568,22 +580,20 @@ size_t code_edit::cursor::get_line_num() const noexcept
 
 code_edit::cursor::selection code_edit::cursor::get_selection_glyphs() const noexcept
 {
-	selection ret;
-
 	auto cp = this->get_pos_glyphs();
 
 	if (cp.y() < this->sel_pos_glyphs.y() || (cp.y() == this->sel_pos_glyphs.y() && cp.x() < this->sel_pos_glyphs.x()))
 	{
-		ret.segment.p1 = cp;
-		ret.segment.p2 = this->sel_pos_glyphs;
-		ret.is_left_to_right = false;
+		return {
+			.segment{cp, this->sel_pos_glyphs},
+			.is_left_to_right = false
+		};
 	} else {
-		ret.segment.p1 = this->sel_pos_glyphs;
-		ret.segment.p2 = cp;
-		ret.is_left_to_right = true;
+		return {
+			.segment{this->sel_pos_glyphs, cp},
+			.is_left_to_right = true
+		};
 	}
-
-	return ret;
 }
 
 r4::vector2<size_t> code_edit::cursor::get_pos_chars() const noexcept
