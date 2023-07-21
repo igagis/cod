@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <morda/widgets/base/oriented_widget.hpp>
 #include <morda/container.hpp>
+#include <morda/widgets/base/oriented_widget.hpp>
 
 #include "tile.hpp"
 

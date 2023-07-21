@@ -43,6 +43,12 @@ public:
 	plugin_manager(utki::span<const std::string> plugins);
 	~plugin_manager() override;
 
+	plugin_manager(const plugin_manager&) = delete;
+	plugin_manager& operator=(const plugin_manager&) = delete;
+
+	plugin_manager(plugin_manager&&) = delete;
+	plugin_manager& operator=(plugin_manager&&) = delete;
+
 	std::shared_ptr<file_page> open_file(const std::string& file_name);
 };
 

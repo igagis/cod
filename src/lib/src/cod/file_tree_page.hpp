@@ -22,19 +22,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <morda/context.hpp>
+#include <morda/widget.hpp>
 #include <morda/widgets/group/book.hpp>
 #include <morda/widgets/group/column.hpp>
 #include <morda/widgets/group/tree_view.hpp>
-#include <morda/widget.hpp>
 
 #include "page.hpp"
 
 namespace cod {
 
-class file_tree_page :
-	virtual public morda::widget,
-	public page,
-	private morda::container
+class file_tree_page : virtual public morda::widget, public page, private morda::container
 {
 	class file_tree_provider : public morda::tree_view::provider
 	{

@@ -118,7 +118,8 @@ void code_edit::set_text(std::u32string&& text)
 						  auto size = s.size();
 						  return line{
 							  .str = std::move(s),
-							  .spans = {synhi::line_span{.length = size, .style = this->text_style}}};
+							  .spans = {synhi::line_span{.length = size, .style = this->text_style}}
+						  };
 					  })
 					  .get();
 	this->on_text_change();
@@ -176,17 +177,22 @@ void code_edit::line_widget::render(const morda::matrix4& matrix) const
 			continue;
 		}
 
-		size_t start, length;
-		if (sel.p1.y() == this->line_num) {
-			start = sel.p1.x();
-		} else {
-			start = 0;
-		}
-		if (sel.p2.y() == this->line_num) {
-			length = sel.p2.x() - start;
-		} else {
-			length = string_length_glyphs(this->owner.lines[this->line_num].str, this->owner.settings.tab_size) - start;
-		}
+		size_t start = [&sel, this]() -> size_t {
+			if (sel.p1.y() == this->line_num) {
+				return sel.p1.x();
+			} else {
+				return 0;
+			}
+		}();
+
+		size_t length = [&sel, &start, this]() {
+			if (sel.p2.y() == this->line_num) {
+				return sel.p2.x() - start;
+			} else {
+				return string_length_glyphs(this->owner.lines[this->line_num].str, this->owner.settings.tab_size)
+					- start;
+			}
+		}();
 
 		morda::matrix4 matr(matrix);
 
@@ -591,7 +597,8 @@ r4::vector2<size_t> code_edit::cursor::get_pos_chars() const noexcept
 	ASSERT(!this->owner.lines.empty())
 	return {
 		glyph_pos_to_char_pos(this->pos.x(), this->owner.lines[line_num].str, this->owner.settings.tab_size),
-		min(this->pos.y(), this->owner.lines.size() - 1)};
+		min(this->pos.y(), this->owner.lines.size() - 1)
+	};
 }
 
 void code_edit::cursor::set_pos_chars(r4::vector2<size_t> p) noexcept
@@ -693,7 +700,7 @@ void code_edit::line::erase_spans(size_t at_char_index, size_t by_length)
 	}
 }
 
-void code_edit::line::append(line&& l)
+void code_edit::line::append(line l)
 {
 	this->str.append(std::move(l.str));
 	this->spans
@@ -1041,4 +1048,14 @@ void code_edit::set_line_spans(decltype(line::spans)&& spans, size_t line_index)
 		throw std::out_of_range("code_edit::set_line_spans(): given line index is out of range");
 	}
 	this->lines[line_index].spans = std::move(spans);
+}
+
+void code_edit::on_font_change()
+{
+	const auto& font = this->get_font().get();
+
+	using std::round;
+
+	this->font_info.glyph_dims.set(font.get_advance(' '), font.get_height());
+	this->font_info.baseline = round((font.get_height() + font.get_ascender() - font.get_descender()) / 2);
 }

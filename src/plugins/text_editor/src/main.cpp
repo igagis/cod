@@ -24,5 +24,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 namespace {
-text_editor_plugin plugin_instance;
+const text_editor_plugin plugin_instance;
 } // namespace

@@ -29,7 +29,8 @@ struct font_style {
 	morda::res::font::style style = morda::res::font::style::normal;
 	bool underline = false;
 	bool stroke = false;
-	uint32_t color = 0xffffffff;
+	constexpr static auto default_color = 0xffffffff;
+	uint32_t color = default_color;
 };
 
 struct line_span {
@@ -43,6 +44,14 @@ public:
 	virtual std::vector<line_span> highlight(std::u32string_view str) = 0;
 
 	virtual void reset() = 0;
+
+	highlighter() = default;
+
+	highlighter(const highlighter&) = delete;
+	highlighter& operator=(const highlighter&) = delete;
+
+	highlighter(highlighter&&) = delete;
+	highlighter& operator=(highlighter&&) = delete;
 
 	virtual ~highlighter() = default;
 };

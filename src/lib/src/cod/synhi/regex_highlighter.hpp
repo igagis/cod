@@ -45,6 +45,12 @@ public:
 			is_preprocessed(is_preprocessed)
 		{}
 
+		matcher(const matcher&) = delete;
+		matcher& operator=(const matcher&) = delete;
+
+		matcher(matcher&&) = delete;
+		matcher& operator=(matcher&&) = delete;
+
 		virtual ~matcher() = default;
 
 		struct match_result {
@@ -78,7 +84,7 @@ public:
 				push,
 				pop
 			};
-			type type_;
+			type type_v = type::push;
 
 			// plain pointer to avoid circular references in case state refers a rule which pushes the same state
 			state* state_to_push = nullptr;

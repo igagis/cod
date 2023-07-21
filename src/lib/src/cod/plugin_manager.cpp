@@ -38,7 +38,9 @@ using namespace cod;
 // }
 
 namespace {
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 plugin* just_loaded_plugin = nullptr;
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 std::string_view just_loaded_plugin_file_name;
 
 struct plugin_info {
@@ -48,6 +50,8 @@ struct plugin_info {
 
 using plugin_list_type = std::list<plugin_info>;
 
+// TOOD: make plugin_manager a singleton
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 plugin_list_type plugin_list;
 } // namespace
 

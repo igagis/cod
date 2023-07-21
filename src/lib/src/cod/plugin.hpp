@@ -31,6 +31,12 @@ public:
 	plugin();
 	virtual ~plugin() = default;
 
+	plugin(const plugin&) = delete;
+	plugin& operator=(const plugin&) = delete;
+
+	plugin(plugin&&) = delete;
+	plugin& operator=(plugin&&) = delete;
+
 	virtual std::shared_ptr<file_page> open_file(
 		const utki::shared_ref<morda::context>& context,
 		std::string_view file_name

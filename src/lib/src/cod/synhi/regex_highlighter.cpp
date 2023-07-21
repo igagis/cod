@@ -192,14 +192,16 @@ regex_highlighter_model::matcher::match_result regex_highlighter_model::regex_ma
 			capture_groups.push_back(match_result::capture_group{
 				.matched = true,
 				.offset = size_t(std::distance(m[0].first, m[i].first)),
-				.str = std::u32string(m[i].first, m[i].second)});
+				.str = std::u32string(m[i].first, m[i].second)
+			});
 		}
 	}
 
 	return match_result{
 		.begin = size_t(std::distance(str.cbegin(), m[0].first)),
 		.size = size_t(std::distance(m[0].first, m[0].second)),
-		.capture_groups = std::move(capture_groups)};
+		.capture_groups = std::move(capture_groups)
+	};
 }
 
 regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse(const treeml::forest& desc)
@@ -468,7 +470,7 @@ std::vector<line_span> regex_highlighter::highlight(std::u32string_view str)
 
 		// apply rule operations
 		for (const auto& op : match_rule->operations) {
-			switch (op.type_) {
+			switch (op.type_v) {
 				case regex_highlighter_model::rule::operation::type::push:
 					ASSERT(op.state_to_push)
 					// NOLINTNEXTLINE(modernize-use-emplace, "state_frame has no appropriate constructor")
@@ -487,7 +489,7 @@ std::vector<line_span> regex_highlighter::highlight(std::u32string_view str)
 					break;
 				default:
 					ASSERT(false, [&](auto& o) {
-						o << "opeartion = " << unsigned(op.type_);
+						o << "opeartion = " << unsigned(op.type_v);
 					})
 					break;
 			}

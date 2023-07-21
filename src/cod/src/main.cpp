@@ -24,7 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "application.hpp"
 
 namespace {
-mordavokne::application_factory app_fac([](auto args) -> std::unique_ptr<mordavokne::application> {
+// TODO: fix this lint issue properly somehow?
+// NOLINTNEXTLINE(cppcoreguidelines-interfaces-global-init)
+const mordavokne::application_factory app_fac([](auto args) -> std::unique_ptr<mordavokne::application> {
 	cod::command_line_args cla;
 
 	clargs::parser p;

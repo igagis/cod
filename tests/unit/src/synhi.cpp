@@ -57,7 +57,7 @@ std::string to_markup(utki::span<const line> lines){
 }
 
 namespace{
-tst::set set("regex_highlighter", [](tst::suite& suite){
+const tst::set set("regex_highlighter", [](tst::suite& suite){
     suite.add(
         "parse",
         [](){

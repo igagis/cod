@@ -36,7 +36,8 @@ void tile::render(const morda::matrix4& matrix) const
 {
 	// draw selection
 	if (this->is_focused()) {
-		this->selection_vao.render(matrix, 0xffff8080);
+		constexpr auto selection_color = 0xffff8080;
+		this->selection_vao.render(matrix, selection_color);
 	}
 }
 
@@ -57,7 +58,7 @@ void tile::on_focus_change()
 void tile::on_resize()
 {
 	this->morda::widget::on_resize();
-	
+
 	if (this->is_focused()) {
 		this->set_selection_vao();
 	}

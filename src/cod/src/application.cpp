@@ -27,7 +27,9 @@ application::application(command_line_args cla) :
 	mordavokne::application(
 		"cod",
 		[]() {
-			return mordavokne::window_params(r4::vector2<unsigned>(1024, 768));
+			constexpr auto initial_window_width = 1024;
+			constexpr auto initial_window_height = 768;
+			return mordavokne::window_params(r4::vector2<unsigned>(initial_window_width, initial_window_height));
 		}()
 	),
 	context(std::move(cla), *this)
