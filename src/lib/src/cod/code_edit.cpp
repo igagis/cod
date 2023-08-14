@@ -365,7 +365,7 @@ void code_edit::erase_forward(cursor& c, size_t num)
 		this->lines.erase(i);
 		l.append(std::move(ll));
 	} else {
-		size_t s = [&cp, &l, &num](){
+		size_t s = [&cp, &l, &num]() {
 			ASSERT(cp.x() <= l.size());
 			size_t to_end = l.size() - cp.x();
 			if (num > to_end) {
@@ -401,19 +401,19 @@ void code_edit::erase_backward(cursor& c, size_t num)
 	} else {
 		auto& l = this->lines[cp.y()];
 
-		struct pos_and_size{
+		struct pos_and_size {
 			size_t pos;
 			size_t size;
 		};
 
-		auto ps = [&cp, &num]() -> pos_and_size{
+		auto ps = [&cp, &num]() -> pos_and_size {
 			if (cp.x() >= num) {
 				return {cp.x() - num, num};
 			} else {
 				return {0, cp.x()};
 			}
 		}();
-		
+
 		cp.x() -= ps.size;
 		c.set_pos_chars(cp);
 
