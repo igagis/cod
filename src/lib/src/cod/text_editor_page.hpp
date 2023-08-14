@@ -33,7 +33,7 @@ class text_editor_page : public file_page, private code_edit
 public:
 	text_editor_page(const utki::shared_ref<morda::context>& context, std::string&& file_name);
 
-	void set_text(std::u32string&& text) override
+	void set_text(std::u32string text) override
 	{
 		this->code_edit::set_text(std::move(text));
 	}

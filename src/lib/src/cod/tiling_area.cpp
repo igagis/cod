@@ -139,19 +139,15 @@ public:
 tiling_area::tiling_area(const utki::shared_ref<morda::context>& c, const treeml::forest& desc) :
 	morda::widget(std::move(c), desc),
 	tile(this->context, treeml::forest()),
-	morda::oriented_widget(this->context, treeml::forest(), false),
+	morda::oriented(false),
 	morda::container(this->context, treeml::forest()),
 	content_container(utki::make_shared<morda::container>(this->context, treeml::forest())),
-	min_tile_size(this->context.get().units.dp_to_px(minimal_tile_size_dp)),
-	dragger_size(this->context.get().units.dp_to_px(dragger_size_dp))
+	min_tile_size(this->context.get().units.pp_to_px(minimal_tile_size_dp)),
+	dragger_size(this->context.get().units.pp_to_px(dragger_size_dp))
 {
 	for (const auto& p : desc) {
 		if (!morda::is_property(p)) {
 			continue;
-		}
-
-		if (p.value == "vertical") {
-			this->set_vertical(morda::get_property_value(p).to_bool());
 		}
 	}
 

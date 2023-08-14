@@ -250,7 +250,7 @@ public:
 
 	using morda::text_widget::set_text;
 
-	void set_text(std::u32string&& text) override;
+	void set_text(std::u32string text) override;
 	std::u32string get_text() const override;
 
 	void set_line_spans(decltype(line::spans)&& spans, size_t line_index);

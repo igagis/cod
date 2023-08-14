@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <morda/container.hpp>
-#include <morda/widgets/base/oriented_widget.hpp>
+#include <morda/util/oriented.hpp>
 
 #include "tile.hpp"
 
@@ -33,7 +33,7 @@ The tile_area arranges tiles either vertially or horizontally.
 The tiles are stored in the content container which is the first container child of the tile_area.
 The rest of the children are dragger widgets for dragging tile borders within tile_area with mouse.
 */
-class tiling_area : public tile, public morda::oriented_widget, private morda::container
+class tiling_area : public tile, public morda::oriented, private morda::container
 {
 	utki::shared_ref<morda::container> content_container;
 
