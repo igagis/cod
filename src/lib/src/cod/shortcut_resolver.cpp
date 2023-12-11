@@ -54,8 +54,8 @@ shortcut_resolver::shortcut parse_shortcut(const treeml::tree& sc)
 		} else {
 			if (ret.combo.key != morda::key::unknown) {
 				throw std::invalid_argument(
-					"two non-modifier keys ("s + std::string(morda::to_string(ret.combo.key)) + ", " + name
-					+ ") specified in same shortcut"
+					"two non-modifier keys ("s + std::string(morda::to_string(ret.combo.key)) + ", " + name +
+					") specified in same shortcut"
 				);
 			}
 			ret.combo.key = key;

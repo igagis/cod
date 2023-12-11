@@ -41,9 +41,10 @@ code_edit::code_edit(const utki::shared_ref<morda::context>& c, const treeml::fo
 	widget(std::move(c), desc),
 	character_input_widget(this->context),
 	text_widget(this->context, desc),
-	column( //
+	container( //
 		this->context,
 		treeml::read(R"qwertyuiop(
+			layout{column}
 			@row{
 				lp{dx{fill} dy{0} weight{1}}
 
@@ -191,8 +192,8 @@ void code_edit::line_widget::render(const morda::matrix4& matrix) const
 			if (sel.p2.y() == this->line_num) {
 				return sel.p2.x() - start;
 			} else {
-				return string_length_glyphs(this->owner.lines[this->line_num].str, this->owner.settings.tab_size)
-					- start;
+				return string_length_glyphs(this->owner.lines[this->line_num].str, this->owner.settings.tab_size) -
+					start;
 			}
 		}();
 
@@ -506,8 +507,8 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event)
 		case morda::mouse_button::wheel_right:
 			if (event.is_down) {
 				this->scroll_area.get().set_scroll_pos(
-					this->scroll_area.get().get_scroll_pos()
-					+ morda::vector2{scroll_direction * this->font_info.glyph_dims.x() * 3, 0}
+					this->scroll_area.get().get_scroll_pos() +
+					morda::vector2{scroll_direction * this->font_info.glyph_dims.x() * 3, 0}
 				);
 			}
 			break;

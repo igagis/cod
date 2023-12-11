@@ -25,10 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <morda/updateable.hpp>
 #include <morda/widgets/base/text_widget.hpp>
-#include <morda/widgets/character_input_widget.hpp>
-#include <morda/widgets/group/column.hpp>
 #include <morda/widgets/group/list.hpp>
 #include <morda/widgets/group/scroll_area.hpp>
+#include <morda/widgets/input/character_input_widget.hpp>
 #include <r4/segment2.hpp>
 #include <utki/flags.hpp>
 
@@ -39,10 +38,10 @@ namespace cod {
 class code_edit :
 	public morda::character_input_widget,
 	public morda::text_widget,
-	private morda::column,
+	private morda::container,
 	private morda::updateable
 {
-	using base_container = morda::column;
+	using base_container = morda::container;
 
 	utki::shared_ref<morda::list_widget> list;
 	utki::shared_ref<morda::scroll_area> scroll_area;

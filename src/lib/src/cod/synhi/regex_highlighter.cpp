@@ -105,14 +105,9 @@ struct parsing_context {
 			this->initial_state = desc.front().value.to_string();
 		}
 		for (const auto& s : desc) {
-			if (std::find_if(
-					this->states.begin(),
-					this->states.end(),
-					[&](const auto& v) {
-						return v.first == s.value.to_string();
-					}
-				)
-				!= this->states.end())
+			if (std::find_if(this->states.begin(), this->states.end(), [&](const auto& v) {
+					return v.first == s.value.to_string();
+				}) != this->states.end())
 			{
 				std::stringstream ss;
 				ss << "state with name '" << s.value.to_string() << "' already exists";
