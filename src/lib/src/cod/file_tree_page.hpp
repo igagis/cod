@@ -21,21 +21,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <morda/context.hpp>
-#include <morda/widget.hpp>
-#include <morda/widgets/group/book.hpp>
-#include <morda/widgets/group/tree_view.hpp>
+#include <ruis/context.hpp>
+#include <ruis/widget.hpp>
+#include <ruis/widgets/group/book.hpp>
+#include <ruis/widgets/group/tree_view.hpp>
 
 #include "page.hpp"
 
 namespace cod {
 
 class file_tree_page :
-	virtual public morda::widget, //
+	virtual public ruis::widget, //
 	public page,
-	private morda::container
+	private ruis::container
 {
-	class file_tree_provider : public morda::tree_view::provider
+	class file_tree_provider : public ruis::tree_view::provider
 	{
 		file_tree_page& owner;
 
@@ -58,7 +58,7 @@ class file_tree_page :
 	public:
 		file_tree_provider(file_tree_page& owner);
 		size_t count(utki::span<const size_t> index) const noexcept override;
-		utki::shared_ref<morda::widget> get_widget(utki::span<const size_t> index, bool is_collapsed) override;
+		utki::shared_ref<ruis::widget> get_widget(utki::span<const size_t> index, bool is_collapsed) override;
 
 		std::string get_path(utki::span<const size_t> index
 		) const; // TODO: make noexcept, right now linter is angry about it
@@ -71,17 +71,17 @@ class file_tree_page :
 	void notify_file_select();
 
 public:
-	file_tree_page(const utki::shared_ref<morda::context>& c);
+	file_tree_page(const utki::shared_ref<ruis::context>& c);
 
 	std::function<void(std::string)> file_select_handler;
 
-	void render(const morda::matrix4& matrix) const override
+	void render(const ruis::matrix4& matrix) const override
 	{
-		this->morda::container::render(matrix);
+		this->ruis::container::render(matrix);
 		this->page::render(matrix);
 	}
 
-	utki::shared_ref<morda::widget> create_tab_content() override;
+	utki::shared_ref<ruis::widget> create_tab_content() override;
 };
 
 } // namespace cod

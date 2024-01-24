@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
 
-#include <morda/widgets/base/fraction_band_widget.hpp>
-#include <morda/widgets/label/text.hpp>
+#include <ruis/widgets/base/fraction_band_widget.hpp>
+#include <ruis/widgets/label/text.hpp>
 #include <utki/linq.hpp>
 #include <utki/string.hpp>
 
@@ -32,12 +32,12 @@ using namespace cod;
 
 namespace {
 constexpr uint16_t cursor_blink_period_ms = 500;
-constexpr morda::real cursor_thickness_dp = 2.0f;
+constexpr ruis::real cursor_thickness_pp = 2.0f;
 } // namespace
 
 // TODO: refactor to fix this lint issue
 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-code_edit::code_edit(const utki::shared_ref<morda::context>& c, const treeml::forest& desc) :
+code_edit::code_edit(const utki::shared_ref<ruis::context>& c, const treeml::forest& desc) :
 	widget(std::move(c), desc),
 	character_input_widget(this->context),
 	text_widget(this->context, desc),
@@ -74,39 +74,39 @@ code_edit::code_edit(const utki::shared_ref<morda::context>& c, const treeml::fo
 			}
 		)qwertyuiop")
 	),
-	list(utki::make_shared_from(this->get_widget_as<morda::list_widget>("lines"))),
-	scroll_area(utki::make_shared_from(this->get_widget_as<morda::scroll_area>("scroll_area"))),
+	list(utki::make_shared_from(this->get_widget_as<ruis::list_widget>("lines"))),
+	scroll_area(utki::make_shared_from(this->get_widget_as<ruis::scroll_area>("scroll_area"))),
 	lines_provider(std::make_shared<provider>(*this))
 {
-	this->set_font(this->context.get().loader.load<morda::res::font>("fnt_monospace"));
+	this->set_font_face(this->context.get().loader.load<ruis::res::font>("fnt_monospace"));
 	this->code_edit::on_font_change();
 
 	this->list.get().set_provider(this->lines_provider);
 
-	auto& vs = this->get_widget_as<morda::fraction_band_widget>("vertical_scroll");
+	auto& vs = this->get_widget_as<ruis::fraction_band_widget>("vertical_scroll");
 
-	vs.fraction_change_handler = [lw = utki::make_weak(this->list)](morda::fraction_widget& fw) {
+	vs.fraction_change_handler = [lw = utki::make_weak(this->list)](ruis::fraction_widget& fw) {
 		if (auto w = lw.lock()) {
 			w->set_scroll_factor(fw.fraction());
 		}
 	};
 
-	this->list.get().scroll_change_handler = [sw = utki::make_weak_from(vs)](morda::list_widget& lw) {
+	this->list.get().scroll_change_handler = [sw = utki::make_weak_from(vs)](ruis::list_widget& lw) {
 		if (auto s = sw.lock()) {
 			s->set_fraction(lw.get_scroll_factor(), false);
 			s->set_band_fraction(lw.get_scroll_band());
 		}
 	};
 
-	auto& hs = this->get_widget_as<morda::fraction_band_widget>("horizontal_scroll");
+	auto& hs = this->get_widget_as<ruis::fraction_band_widget>("horizontal_scroll");
 
-	hs.fraction_change_handler = [saw = utki::make_weak(this->scroll_area)](morda::fraction_widget& fw) {
+	hs.fraction_change_handler = [saw = utki::make_weak(this->scroll_area)](ruis::fraction_widget& fw) {
 		if (auto sa = saw.lock()) {
 			sa->set_scroll_factor(fw.fraction());
 		}
 	};
 
-	this->scroll_area.get().scroll_change_handler = [sw = utki::make_weak_from(hs)](morda::scroll_area& sa) {
+	this->scroll_area.get().scroll_change_handler = [sw = utki::make_weak_from(hs)](ruis::scroll_area& sa) {
 		if (auto s = sw.lock()) {
 			s->set_fraction(sa.get_scroll_factor().x(), false);
 			s->set_band_fraction(sa.get_visible_area_fraction().x());
@@ -139,7 +139,7 @@ std::u32string code_edit::get_text() const
 	return ret;
 }
 
-utki::shared_ref<morda::widget> code_edit::provider::get_widget(size_t index)
+utki::shared_ref<ruis::widget> code_edit::provider::get_widget(size_t index)
 {
 	return utki::make_shared<code_edit::line_widget>(this->owner.context, this->owner, index);
 }
@@ -167,7 +167,7 @@ size_t string_length_glyphs(const std::u32string& str, size_t tab_size)
 }
 } // namespace
 
-void code_edit::line_widget::render(const morda::matrix4& matrix) const
+void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 {
 	// find cursors
 	auto cursors = this->owner.find_cursors(this->line_num);
@@ -197,11 +197,11 @@ void code_edit::line_widget::render(const morda::matrix4& matrix) const
 			}
 		}();
 
-		morda::matrix4 matr(matrix);
+		ruis::matrix4 matr(matrix);
 
-		auto pos = morda::real(start) * this->owner.font_info.glyph_dims.x();
+		auto pos = ruis::real(start) * this->owner.font_info.glyph_dims.x();
 		matr.translate(pos, 0);
-		matr.scale(morda::vector2(morda::real(length), 1).comp_mul(this->owner.font_info.glyph_dims));
+		matr.scale(ruis::vector2(ruis::real(length), 1).comp_mul(this->owner.font_info.glyph_dims));
 
 		constexpr auto selection_color = 0xff804000;
 
@@ -216,16 +216,16 @@ void code_edit::line_widget::render(const morda::matrix4& matrix) const
 	size_t cur_char_pos = 0;
 	size_t cur_char_index = 0;
 	for (const auto& s : l.spans) {
-		const auto& font = this->owner.get_font().get(s.style->style);
+		const auto& font = this->owner.get_font(s.style->style);
 
-		morda::matrix4 matr(matrix);
+		ruis::matrix4 matr(matrix);
 		matr.translate(
-			morda::real(cur_char_pos) * this->owner.font_info.glyph_dims.x(),
+			ruis::real(cur_char_pos) * this->owner.font_info.glyph_dims.x(),
 			this->owner.font_info.baseline
 		);
 		auto res = font.render(
 			matr,
-			morda::color_to_vec4f(s.style->color),
+			ruis::color_to_vec4f(s.style->color),
 			str.substr(cur_char_index, s.length),
 			this->owner.settings.tab_size,
 			cur_char_pos
@@ -243,12 +243,12 @@ void code_edit::line_widget::render(const morda::matrix4& matrix) const
 				continue;
 			}
 
-			morda::matrix4 matr(matrix);
+			ruis::matrix4 matr(matrix);
 
-			auto pos = morda::real(cp.x()) * this->owner.font_info.glyph_dims.x();
+			auto pos = ruis::real(cp.x()) * this->owner.font_info.glyph_dims.x();
 			matr.translate(pos, 0);
-			matr.scale(morda::vector2(
-				cursor_thickness_dp * this->context.get().units.dots_per_pp,
+			matr.scale(ruis::vector2(
+				cursor_thickness_pp * this->context.get().units.dots_per_pp,
 				this->owner.font_info.glyph_dims.y()
 			));
 
@@ -260,10 +260,10 @@ void code_edit::line_widget::render(const morda::matrix4& matrix) const
 	}
 }
 
-morda::vector2 code_edit::line_widget::measure(const morda::vector2& quotum) const noexcept
+ruis::vector2 code_edit::line_widget::measure(const ruis::vector2& quotum) const noexcept
 {
-	morda::vector2 ret = this->owner.font_info.glyph_dims;
-	ret.x() *= morda::real(
+	ruis::vector2 ret = this->owner.font_info.glyph_dims;
+	ret.x() *= ruis::real(
 		this->owner.lines[this->line_num].str.size() + 1
 	); // for empty strings the widget will still have size of one glyph
 
@@ -446,15 +446,15 @@ void code_edit::put_new_line(cursor& c)
 	this->text_changed = true;
 }
 
-void code_edit::render(const morda::matrix4& matrix) const
+void code_edit::render(const ruis::matrix4& matrix) const
 {
 	this->base_container::render(matrix);
 }
 
-r4::vector2<size_t> code_edit::mouse_pos_to_glyph_pos(const morda::vector2& mouse_pos) const noexcept
+r4::vector2<size_t> code_edit::mouse_pos_to_glyph_pos(const ruis::vector2& mouse_pos) const noexcept
 {
 	auto corrected_mouse_pos =
-		mouse_pos + morda::vector2{this->scroll_area.get().get_scroll_pos().x(), this->list.get().get_pos_offset()};
+		mouse_pos + ruis::vector2{this->scroll_area.get().get_scroll_pos().x(), this->list.get().get_pos_offset()};
 
 	using std::max;
 	corrected_mouse_pos = max(corrected_mouse_pos, 0); // clamp to positive values
@@ -472,15 +472,15 @@ r4::vector2<size_t> code_edit::mouse_pos_to_glyph_pos(const morda::vector2& mous
 	return glyph_pos;
 }
 
-bool code_edit::on_mouse_button(const morda::mouse_button_event& event)
+bool code_edit::on_mouse_button(const ruis::mouse_button_event& event)
 {
 	if (this->base_container::on_mouse_button(event)) {
 		return true;
 	}
 
-	morda::real scroll_direction = 1;
+	ruis::real scroll_direction = 1;
 	switch (event.button) {
-		case morda::mouse_button::left:
+		case ruis::mouse_button::left:
 			if (event.is_down) {
 				this->cursors.clear();
 
@@ -493,22 +493,22 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event)
 				this->mouse_selection = false;
 			}
 			break;
-		case morda::mouse_button::wheel_up:
+		case ruis::mouse_button::wheel_up:
 			scroll_direction = -1;
 			[[fallthrough]];
-		case morda::mouse_button::wheel_down:
+		case ruis::mouse_button::wheel_down:
 			if (event.is_down) {
 				this->list.get().scroll_by(scroll_direction * this->font_info.glyph_dims.y() * 3);
 			}
 			break;
-		case morda::mouse_button::wheel_left:
+		case ruis::mouse_button::wheel_left:
 			scroll_direction = -1;
 			[[fallthrough]];
-		case morda::mouse_button::wheel_right:
+		case ruis::mouse_button::wheel_right:
 			if (event.is_down) {
 				this->scroll_area.get().set_scroll_pos(
 					this->scroll_area.get().get_scroll_pos() +
-					morda::vector2{scroll_direction * this->font_info.glyph_dims.x() * 3, 0}
+					ruis::vector2{scroll_direction * this->font_info.glyph_dims.x() * 3, 0}
 				);
 			}
 			break;
@@ -519,7 +519,7 @@ bool code_edit::on_mouse_button(const morda::mouse_button_event& event)
 	return true;
 }
 
-bool code_edit::on_mouse_move(const morda::mouse_move_event& event)
+bool code_edit::on_mouse_move(const ruis::mouse_move_event& event)
 {
 	if (this->base_container::on_mouse_move(event)) {
 		return true;
@@ -647,15 +647,15 @@ r4::vector2<size_t> code_edit::cursor::get_pos_glyphs() const noexcept
 	return {char_pos_to_glyph_pos(p.x(), this->owner.lines[p.y()].str, this->owner.settings.tab_size), p.y()};
 }
 
-bool code_edit::on_key(const morda::key_event& e)
+bool code_edit::on_key(const ruis::key_event& e)
 {
 	switch (e.combo.key) {
-		case morda::key::left_control:
-		case morda::key::right_control:
+		case ruis::key::left_control:
+		case ruis::key::right_control:
 			this->modifiers.set(modifier::word_navigation, e.is_down);
 			break;
-		case morda::key::left_shift:
-		case morda::key::right_shift:
+		case ruis::key::left_shift:
+		case ruis::key::right_shift:
 			this->modifiers.set(modifier::selection, e.is_down);
 			break;
 		default:
@@ -770,22 +770,22 @@ void code_edit::scroll_to(r4::vector2<size_t> pos_glyphs)
 	size_t top = this->list.get().get_pos_index();
 	if (top >= pos_glyphs.y()) {
 		this->list.get().scroll_by(
-			-morda::real(top - pos_glyphs.y()) * this->font_info.glyph_dims.y() - this->list.get().get_pos_offset()
+			-ruis::real(top - pos_glyphs.y()) * this->font_info.glyph_dims.y() - this->list.get().get_pos_offset()
 		);
 	} else {
 		ASSERT(!this->list.get().children().empty())
 		size_t bottom = top + this->list.get().children().size() - 1;
 		if (bottom <= pos_glyphs.y()) {
-			morda::real bottom_offset =
+			ruis::real bottom_offset =
 				this->list.get().children().back().get().rect().y2() - this->list.get().rect().d.y();
 			this->list.get().scroll_by(
-				morda::real(pos_glyphs.y() - bottom) * this->font_info.glyph_dims.y() + bottom_offset
+				ruis::real(pos_glyphs.y() - bottom) * this->font_info.glyph_dims.y() + bottom_offset
 			);
 		}
 	}
 
 	// horizontal
-	auto pos_x = morda::real(pos_glyphs.x()) * this->font_info.glyph_dims.x();
+	auto pos_x = ruis::real(pos_glyphs.x()) * this->font_info.glyph_dims.x();
 
 	auto left = this->scroll_area.get().get_scroll_pos().x();
 	if (left > pos_x) {
@@ -951,15 +951,15 @@ size_t code_edit::calc_word_length_backward(const cursor& c) const noexcept
 	return ret;
 }
 
-void code_edit::on_character_input(const morda::character_input_event& e)
+void code_edit::on_character_input(const ruis::character_input_event& e)
 {
 	switch (e.combo.key) {
-		case morda::key::enter:
+		case ruis::key::enter:
 			this->for_each_cursor([this](cursor& c) {
 				this->put_new_line(c);
 			});
 			break;
-		case morda::key::arrow_right:
+		case ruis::key::arrow_right:
 			this->for_each_cursor([this](cursor& c) {
 				size_t d = 1;
 				if (this->modifiers.get(code_edit::modifier::word_navigation)) {
@@ -968,7 +968,7 @@ void code_edit::on_character_input(const morda::character_input_event& e)
 				c.move_right_by(d);
 			});
 			break;
-		case morda::key::arrow_left:
+		case ruis::key::arrow_left:
 			this->for_each_cursor([this](cursor& c) {
 				size_t d = 1;
 				if (this->modifiers.get(code_edit::modifier::word_navigation)) {
@@ -977,34 +977,34 @@ void code_edit::on_character_input(const morda::character_input_event& e)
 				c.move_left_by(d);
 			});
 			break;
-		case morda::key::arrow_up:
+		case ruis::key::arrow_up:
 			this->for_each_cursor([](cursor& c) {
 				c.move_up_by(1);
 			});
 			break;
-		case morda::key::arrow_down:
+		case ruis::key::arrow_down:
 			this->for_each_cursor([](cursor& c) {
 				c.move_down_by(1);
 			});
 			break;
-		case morda::key::page_up:
+		case ruis::key::page_up:
 			this->for_each_cursor([n = this->num_lines_on_page()](cursor& c) {
 				c.move_up_by(n);
 			});
 			break;
-		case morda::key::page_down:
+		case ruis::key::page_down:
 			this->for_each_cursor([n = this->num_lines_on_page()](cursor& c) {
 				c.move_down_by(n);
 			});
 			break;
-		case morda::key::end:
+		case ruis::key::end:
 			this->for_each_cursor([this](cursor& c) {
 				auto p = c.get_pos_chars();
 				p.x() = this->lines[p.y()].str.size();
 				c.set_pos_chars(p);
 			});
 			break;
-		case morda::key::home:
+		case ruis::key::home:
 			this->for_each_cursor([this](cursor& c) {
 				auto p = c.get_pos_chars();
 				auto& l = this->lines[p.y()].str;
@@ -1017,20 +1017,20 @@ void code_edit::on_character_input(const morda::character_input_event& e)
 				c.set_pos_chars(p);
 			});
 			break;
-		case morda::key::backspace:
+		case ruis::key::backspace:
 			this->for_each_cursor([this](cursor& c) {
 				this->erase_backward(c, 1);
 			});
 			break;
-		case morda::key::deletion:
+		case ruis::key::deletion:
 			this->for_each_cursor([this](cursor& c) {
 				this->erase_forward(c, 1);
 			});
 			break;
-		case morda::key::escape:
+		case ruis::key::escape:
 			// do nothing
 			break;
-		case morda::key::a:
+		case ruis::key::a:
 			// if(this->ctrlPressed){
 			// 	this->selectionStartIndex = 0;
 			// 	this->set_cursor_index(this->get_text().size(), true);
@@ -1063,7 +1063,7 @@ void code_edit::set_line_spans(decltype(line::spans)&& spans, size_t line_index)
 
 void code_edit::on_font_change()
 {
-	const auto& font = this->get_font().get();
+	const auto& font = this->get_font();
 
 	using std::round;
 

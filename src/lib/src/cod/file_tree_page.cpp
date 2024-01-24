@@ -21,12 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "file_tree_page.hpp"
 
-#include <morda/widgets/label/color.hpp>
-#include <morda/widgets/label/text.hpp>
-#include <morda/widgets/proxy/click_proxy.hpp>
-#include <morda/widgets/proxy/mouse_proxy.hpp>
-#include <morda/widgets/proxy/resize_proxy.hpp>
-#include <morda/widgets/slider/scroll_bar.hpp>
+#include <ruis/widgets/label/color.hpp>
+#include <ruis/widgets/label/text.hpp>
+#include <ruis/widgets/proxy/click_proxy.hpp>
+#include <ruis/widgets/proxy/mouse_proxy.hpp>
+#include <ruis/widgets/proxy/resize_proxy.hpp>
+#include <ruis/widgets/slider/scroll_bar.hpp>
 #include <papki/fs_file.hpp>
 #include <utki/linq.hpp>
 #include <utki/tree.hpp>
@@ -172,7 +172,7 @@ size_t file_tree_page::file_tree_provider::count(utki::span<const size_t> index)
 	return cur_file_list->size();
 }
 
-utki::shared_ref<morda::widget> file_tree_page::file_tree_provider::get_widget(
+utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(
 	utki::span<const size_t> index,
 	bool is_collapsed
 )
@@ -196,7 +196,7 @@ utki::shared_ref<morda::widget> file_tree_page::file_tree_provider::get_widget(
 					dx{fill}
 					dy{fill}
 				}
-				color{${morda_color_highlight}}
+				color{${ruis_color_highlight}}
 				visible{false}
 			}
 			@text{
@@ -205,17 +205,17 @@ utki::shared_ref<morda::widget> file_tree_page::file_tree_provider::get_widget(
 		}
 	)");
 
-	w.get().get_widget_as<morda::text>("tx").set_text(file_entry.value.name);
+	w.get().get_widget_as<ruis::text>("tx").set_text(file_entry.value.name);
 
 	if (utki::make_span(this->owner.cursor_index) == index) {
-		auto bg = w.get().try_get_widget_as<morda::color>("bg");
+		auto bg = w.get().try_get_widget_as<ruis::color>("bg");
 		ASSERT(bg)
 		bg->set_visible(true);
 	}
 
-	auto& cp = w.get().get_widget_as<morda::click_proxy>("cp");
+	auto& cp = w.get().get_widget_as<ruis::click_proxy>("cp");
 
-	cp.click_handler = [this, index = utki::make_vector(index)](morda::click_proxy& cp) {
+	cp.click_handler = [this, index = utki::make_vector(index)](ruis::click_proxy& cp) {
 		if (this->owner.cursor_index == index) {
 			return;
 		}
@@ -234,17 +234,17 @@ void file_tree_page::notify_file_select()
 	}
 }
 
-file_tree_page::file_tree_page(const utki::shared_ref<morda::context>& c) :
-	morda::widget(c, tml::forest()),
+file_tree_page::file_tree_page(const utki::shared_ref<ruis::context>& c) :
+	ruis::widget(c, tml::forest()),
 	page(this->context),
-	morda::container(this->context, ::layout)
+	ruis::container(this->context, ::layout)
 {
-	auto& tv = this->get_widget_as<morda::tree_view>("tree_view");
+	auto& tv = this->get_widget_as<ruis::tree_view>("tree_view");
 
-	auto& vs = this->get_widget_as<morda::scroll_bar>("vertical_scroll");
-	auto& hs = this->get_widget_as<morda::scroll_bar>("horizontal_scroll");
+	auto& vs = this->get_widget_as<ruis::scroll_bar>("vertical_scroll");
+	auto& hs = this->get_widget_as<ruis::scroll_bar>("horizontal_scroll");
 
-	tv.scroll_change_handler = [vs = utki::make_weak_from(vs), hs = utki::make_weak_from(hs)](morda::tree_view& tv) {
+	tv.scroll_change_handler = [vs = utki::make_weak_from(vs), hs = utki::make_weak_from(hs)](ruis::tree_view& tv) {
 		auto f = tv.get_scroll_factor();
 		auto b = tv.get_scroll_band();
 		if (auto sb = hs.lock()) {
@@ -257,13 +257,13 @@ file_tree_page::file_tree_page(const utki::shared_ref<morda::context>& c) :
 		}
 	};
 
-	vs.fraction_change_handler = [tv = utki::make_weak_from(tv)](morda::fraction_widget& fw) {
+	vs.fraction_change_handler = [tv = utki::make_weak_from(tv)](ruis::fraction_widget& fw) {
 		if (auto w = tv.lock()) {
 			w->set_vertical_scroll_factor(fw.fraction());
 		}
 	};
 
-	hs.fraction_change_handler = [tv = utki::make_weak_from(tv)](morda::fraction_widget& fw) {
+	hs.fraction_change_handler = [tv = utki::make_weak_from(tv)](ruis::fraction_widget& fw) {
 		if (auto w = tv.lock()) {
 			w->set_horizontal_scroll_factor(fw.fraction());
 		}
@@ -274,9 +274,9 @@ file_tree_page::file_tree_page(const utki::shared_ref<morda::context>& c) :
 	tv.set_provider(this->provider);
 }
 
-utki::shared_ref<morda::widget> file_tree_page::create_tab_content()
+utki::shared_ref<ruis::widget> file_tree_page::create_tab_content()
 {
-	auto t = utki::make_shared<morda::text>(this->context, tml::forest());
+	auto t = utki::make_shared<ruis::text>(this->context, tml::forest());
 	t.get().set_text("file tree");
 	return t;
 }

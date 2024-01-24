@@ -21,42 +21,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "tiling_area.hpp"
 
-#include <morda/context.hpp>
-#include <morda/widgets/label/color.hpp>
+#include <ruis/context.hpp>
+#include <ruis/widgets/label/color.hpp>
 
 using namespace cod;
 
 namespace {
-const morda::real minimal_tile_size_dp = 100;
-const morda::real dragger_size_dp = 5;
+const ruis::real minimal_tile_size_pp = 100;
+const ruis::real dragger_size_pp = 5;
 const uint32_t dragger_color = 0xffff8080;
 } // namespace
 
 namespace {
-class dragger : public morda::color
+class dragger : public ruis::color
 {
 	bool grabbed = false;
-	morda::vector2 grab_point;
+	ruis::vector2 grab_point;
 
 	tiling_area& owner;
 
-	morda::mouse_cursor_manager::iterator arrows_cursor_iter;
+	ruis::mouse_cursor_manager::iterator arrows_cursor_iter;
 
 public:
-	std::shared_ptr<morda::widget> prev_widget;
-	std::shared_ptr<morda::widget> next_widget;
+	std::shared_ptr<ruis::widget> prev_widget;
+	std::shared_ptr<ruis::widget> next_widget;
 
-	dragger(const utki::shared_ref<morda::context>& c, tiling_area& owner) :
-		morda::widget(std::move(c), treeml::forest()),
-		morda::color(this->context, treeml::forest()),
+	dragger(const utki::shared_ref<ruis::context>& c, tiling_area& owner) :
+		ruis::widget(std::move(c), treeml::forest()),
+		ruis::color(this->context, treeml::forest()),
 		owner(owner)
 	{
 		this->set_color(dragger_color);
 	}
 
-	bool on_mouse_button(const morda::mouse_button_event& e) override
+	bool on_mouse_button(const ruis::mouse_button_event& e) override
 	{
-		if (e.button != morda::mouse_button::left) {
+		if (e.button != ruis::mouse_button::left) {
 			return false;
 		}
 
@@ -72,7 +72,7 @@ public:
 		return true;
 	}
 
-	bool on_mouse_move(const morda::mouse_move_event& e) override
+	bool on_mouse_move(const ruis::mouse_move_event& e) override
 	{
 		if (!this->grabbed) {
 			return false;
@@ -83,7 +83,7 @@ public:
 		auto trans_index = this->owner.get_trans_index();
 		auto long_index = this->owner.get_long_index();
 
-		delta[trans_index] = morda::real(0);
+		delta[trans_index] = ruis::real(0);
 
 		ASSERT(this->prev_widget)
 		ASSERT(this->next_widget)
@@ -93,8 +93,8 @@ public:
 		using std::max;
 
 		// clamp new tile dimensions to minimum tile size
-		new_prev_dims = max(new_prev_dims, morda::vector2(this->owner.min_tile_size));
-		new_next_dims = max(new_next_dims, morda::vector2(this->owner.min_tile_size));
+		new_prev_dims = max(new_prev_dims, ruis::vector2(this->owner.min_tile_size));
+		new_next_dims = max(new_next_dims, ruis::vector2(this->owner.min_tile_size));
 
 		if (delta[long_index] >= 0) {
 			delta = min(delta, this->next_widget->rect().d - new_next_dims);
@@ -120,38 +120,38 @@ public:
 
 		if (this->is_hovered() || grabbed) {
 			this->arrows_cursor_iter = this->context.get().cursor_manager.push(
-				this->owner.is_vertical() ? morda::mouse_cursor::up_down_arrow : morda::mouse_cursor::left_right_arrow
+				this->owner.is_vertical() ? ruis::mouse_cursor::up_down_arrow : ruis::mouse_cursor::left_right_arrow
 			);
 		} else {
 			this->context.get().cursor_manager.pop(this->arrows_cursor_iter);
 		}
 	}
 
-	void render(const morda::matrix4& matrix) const override
+	void render(const ruis::matrix4& matrix) const override
 	{
 		if (this->is_hovered() || this->grabbed) {
-			this->morda::color::render(matrix);
+			this->ruis::color::render(matrix);
 		}
 	}
 };
 } // namespace
 
-tiling_area::tiling_area(const utki::shared_ref<morda::context>& c, const treeml::forest& desc) :
-	morda::widget(std::move(c), desc),
+tiling_area::tiling_area(const utki::shared_ref<ruis::context>& c, const treeml::forest& desc) :
+	ruis::widget(std::move(c), desc),
 	tile(this->context, treeml::forest()),
-	morda::oriented(false),
-	morda::container(this->context, treeml::forest()),
-	content_container(utki::make_shared<morda::container>(this->context, treeml::forest())),
-	min_tile_size(this->context.get().units.pp_to_px(minimal_tile_size_dp)),
-	dragger_size(this->context.get().units.pp_to_px(dragger_size_dp))
+	ruis::oriented(false),
+	ruis::container(this->context, treeml::forest()),
+	content_container(utki::make_shared<ruis::container>(this->context, treeml::forest())),
+	min_tile_size(this->context.get().units.pp_to_px(minimal_tile_size_pp)),
+	dragger_size(this->context.get().units.pp_to_px(dragger_size_pp))
 {
 	for (const auto& p : desc) {
-		if (!morda::is_property(p)) {
+		if (!ruis::is_property(p)) {
 			continue;
 		}
 	}
 
-	this->morda::container::push_back(this->content_container);
+	this->ruis::container::push_back(this->content_container);
 	this->content_container.get().move_to({0, 0});
 
 	this->content_container.get().push_back_inflate(desc);
@@ -165,7 +165,7 @@ void tiling_area::on_lay_out()
 	using std::max;
 
 	// calculate current length of all tiles
-	morda::real tiles_length = 0;
+	ruis::real tiles_length = 0;
 
 	for (const auto& t : this->content_container.get()) {
 		tiles_length += max(t.get().rect().d[long_index], this->min_tile_size);
@@ -177,13 +177,13 @@ void tiling_area::on_lay_out()
 
 	// arrange tiles
 	if (content_dims[long_index] >= tiles_length) {
-		morda::vector2 pos{0, 0};
+		ruis::vector2 pos{0, 0};
 		for (auto& t : this->content_container.get()) {
-			morda::real tile_length = max(t.get().rect().d[long_index], this->min_tile_size);
+			ruis::real tile_length = max(t.get().rect().d[long_index], this->min_tile_size);
 
 			ASSERT(tiles_length > 0)
 
-			morda::vector2 dims;
+			ruis::vector2 dims;
 			dims[trans_index] = content_dims[trans_index];
 			dims[long_index] = content_dims[long_index] * (tile_length / tiles_length);
 			dims = round(dims);
@@ -192,16 +192,16 @@ void tiling_area::on_lay_out()
 			pos[long_index] += dims[long_index];
 		}
 	} else {
-		morda::real left_length = content_dims[long_index];
+		ruis::real left_length = content_dims[long_index];
 
-		morda::vector2 pos{0, 0};
+		ruis::vector2 pos{0, 0};
 
 		for (auto& t : this->content_container.get()) {
-			morda::real tile_length = max(t.get().rect().d[long_index], this->min_tile_size);
+			ruis::real tile_length = max(t.get().rect().d[long_index], this->min_tile_size);
 
 			ASSERT(tiles_length > 0)
 
-			morda::vector2 dims;
+			ruis::vector2 dims;
 			dims[trans_index] = content_dims[trans_index];
 			dims[long_index] = left_length * (tile_length / tiles_length);
 			if (dims[long_index] <= this->min_tile_size) {
@@ -236,7 +236,7 @@ void tiling_area::on_lay_out()
 		this->push_back(utki::make_shared<dragger>(this->context, *this));
 	}
 
-	morda::vector2 dragger_dims;
+	ruis::vector2 dragger_dims;
 	dragger_dims[long_index] = this->dragger_size;
 	dragger_dims[trans_index] = this->rect().d[trans_index];
 
@@ -252,25 +252,25 @@ void tiling_area::on_lay_out()
 
 		dragger.resize(dragger_dims);
 
-		morda::vector2 dragger_pos;
-		dragger_pos[trans_index] = morda::real(0);
+		ruis::vector2 dragger_pos;
+		dragger_pos[trans_index] = ruis::real(0);
 		dragger_pos[long_index] = round(dragger.next_widget->rect().p[long_index] - this->dragger_size / 2);
 		dragger.move_to(dragger_pos);
 	}
 }
 
-morda::vector2 tiling_area::measure(const morda::vector2& quotum) const
+ruis::vector2 tiling_area::measure(const ruis::vector2& quotum) const
 {
 	auto long_index = this->get_long_index();
 
-	morda::vector2 ret;
+	ruis::vector2 ret;
 
 	for (size_t i = 0; i != quotum.size(); ++i) {
 		if (quotum[i] < 0) {
 			ret[i] = this->min_tile_size;
 
 			if (i == long_index) {
-				ret[i] *= morda::real(this->content_container.get().size());
+				ret[i] *= ruis::real(this->content_container.get().size());
 			}
 		} else {
 			ret[i] = quotum[i];

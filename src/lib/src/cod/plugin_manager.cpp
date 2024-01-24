@@ -123,7 +123,7 @@ std::shared_ptr<file_page> plugin_manager::open_file(const std::string& file_nam
 	// std::cout << "plugin_manager::open_file(): enter" << std::endl;
 	for (auto i = plugin_list.rbegin(); i != plugin_list.rend(); ++i) {
 		// std::cout << "trying plugin" << std::endl;
-		auto page = i->instance.open_file(context::inst().gui.morda_context, file_name);
+		auto page = i->instance.open_file(context::inst().gui.ruis_context, file_name);
 		if (page) {
 			return page;
 		}

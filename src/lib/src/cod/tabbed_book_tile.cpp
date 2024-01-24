@@ -21,12 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "tabbed_book_tile.hpp"
 
-#include <morda/widgets/label/text.hpp>
+#include <ruis/widgets/label/text.hpp>
 
 using namespace cod;
 
-tabbed_book_tile::tabbed_book_tile(const utki::shared_ref<morda::context>& c, const treeml::forest& desc) :
-	morda::widget(std::move(c), desc),
+tabbed_book_tile::tabbed_book_tile(const utki::shared_ref<ruis::context>& c, const treeml::forest& desc) :
+	ruis::widget(std::move(c), desc),
 	tile(this->context, desc),
 	tabbed_book(this->context, desc)
 {}
@@ -47,10 +47,10 @@ const tml::forest tab_desc = tml::read(R"(
 					id{close_button}
 					@image{
 						lp{
-							dx { 8dp }
-							dy { 8dp }
+							dx { 8pp }
+							dy { 8pp }
 						}
-						image{morda_img_close}
+						image{ruis_img_close}
 					}
 				}
 			}
@@ -61,12 +61,12 @@ const tml::forest tab_desc = tml::read(R"(
 
 void tabbed_book_tile::add(const utki::shared_ref<page>& p)
 {
-	auto tab = this->context.get().inflater.inflate_as<morda::tab>(tab_desc);
+	auto tab = this->context.get().inflater.inflate_as<ruis::tab>(tab_desc);
 
 	tab.get().get_widget("placeholder").replace_by(p.get().create_tab_content());
 
-	tab.get().get_widget_as<morda::push_button>("close_button").click_handler =
-		[tabbed_book_wp = utki::make_weak_from(*this), tab_wp = utki::make_weak(tab)](morda::push_button& btn) {
+	tab.get().get_widget_as<ruis::push_button>("close_button").click_handler =
+		[tabbed_book_wp = utki::make_weak_from(*this), tab_wp = utki::make_weak(tab)](ruis::push_button& btn) {
 			auto tb = tabbed_book_wp.lock();
 			ASSERT(tb)
 
@@ -78,5 +78,5 @@ void tabbed_book_tile::add(const utki::shared_ref<page>& p)
 			});
 		};
 
-	this->morda::tabbed_book::add(tab, p);
+	this->ruis::tabbed_book::add(tab, p);
 }

@@ -24,12 +24,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 application::application(command_line_args cla) :
-	mordavokne::application(
+	ruisapp::application(
 		"cod",
 		[]() {
 			constexpr auto initial_window_width = 1024;
 			constexpr auto initial_window_height = 768;
-			return mordavokne::window_params(r4::vector2<unsigned>(initial_window_width, initial_window_height));
+			return ruisapp::window_params(r4::vector2<unsigned>(initial_window_width, initial_window_height));
 		}()
 	),
 	context(std::move(cla), *this)

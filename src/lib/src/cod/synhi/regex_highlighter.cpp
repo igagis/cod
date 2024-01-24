@@ -37,13 +37,13 @@ std::shared_ptr<font_style> parse_style(const treeml::forest& style)
 		} else if (n.value == "style") {
 			const auto& v = treeml::crawler(n.children).get().value;
 			if (v == "normal") {
-				ret->style = morda::res::font::style::normal;
+				ret->style = ruis::res::font::style::normal;
 			} else if (v == "bold") {
-				ret->style = morda::res::font::style::bold;
+				ret->style = ruis::res::font::style::bold;
 			} else if (v == "italic") {
-				ret->style = morda::res::font::style::italic;
+				ret->style = ruis::res::font::style::italic;
 			} else if (v == "bold_italic") {
-				ret->style = morda::res::font::style::bold_italic;
+				ret->style = ruis::res::font::style::bold_italic;
 			} else {
 				std::stringstream ss;
 				ss << "unknown font style value: " << v;

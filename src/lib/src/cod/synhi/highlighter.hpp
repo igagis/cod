@@ -21,12 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <morda/res/font.hpp>
+#include <ruis/res/font.hpp>
 
 namespace synhi {
 
 struct font_style {
-	morda::res::font::style style = morda::res::font::style::normal;
+	ruis::res::font::style style = ruis::res::font::style::normal;
 	bool underline = false;
 	bool stroke = false;
 	constexpr static auto default_color = 0xffffffff;

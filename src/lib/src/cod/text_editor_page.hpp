@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <morda/widgets/group/book.hpp>
+#include <ruis/widgets/group/book.hpp>
 
 #include "code_edit.hpp"
 #include "file_page.hpp"
@@ -31,7 +31,7 @@ namespace cod {
 class text_editor_page : public file_page, private code_edit
 {
 public:
-	text_editor_page(const utki::shared_ref<morda::context>& context, std::string&& file_name);
+	text_editor_page(const utki::shared_ref<ruis::context>& context, std::string&& file_name);
 
 	void set_text(std::u32string text) override
 	{
@@ -48,7 +48,7 @@ public:
 		this->unfocus();
 	}
 
-	bool on_key(const morda::key_event& e) override
+	bool on_key(const ruis::key_event& e) override
 	{
 		if (this->code_edit::on_key(e)) {
 			return true;

@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <morda/container.hpp>
-#include <morda/util/oriented.hpp>
+#include <ruis/container.hpp>
+#include <ruis/util/oriented.hpp>
 
 #include "tile.hpp"
 
@@ -33,29 +33,29 @@ The tile_area arranges tiles either vertially or horizontally.
 The tiles are stored in the content container which is the first container child of the tile_area.
 The rest of the children are dragger widgets for dragging tile borders within tile_area with mouse.
 */
-class tiling_area : public tile, public morda::oriented, private morda::container
+class tiling_area : public tile, public ruis::oriented, private ruis::container
 {
-	utki::shared_ref<morda::container> content_container;
+	utki::shared_ref<ruis::container> content_container;
 
 public:
-	const morda::real min_tile_size;
-	const morda::real dragger_size;
+	const ruis::real min_tile_size;
+	const ruis::real dragger_size;
 
-	tiling_area(const utki::shared_ref<morda::context>& c, const treeml::forest& desc);
+	tiling_area(const utki::shared_ref<ruis::context>& c, const treeml::forest& desc);
 
-	morda::container& content()
+	ruis::container& content()
 	{
 		return this->content_container.get();
 	}
 
-	const morda::container& content() const
+	const ruis::container& content() const
 	{
 		return this->content_container.get();
 	}
 
 	void on_lay_out() override;
 
-	morda::vector2 measure(const morda::vector2& quotum) const override;
+	ruis::vector2 measure(const ruis::vector2& quotum) const override;
 
 	// override in order to avoid invalidation of layout when children list changes,
 	// because default implementation of this method invalidates layout
@@ -64,9 +64,9 @@ public:
 		// do nothing
 	}
 
-	void render(const morda::matrix4& matrix) const override
+	void render(const ruis::matrix4& matrix) const override
 	{
-		this->morda::container::render(matrix);
+		this->ruis::container::render(matrix);
 		this->tile::render(matrix);
 	}
 

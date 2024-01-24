@@ -21,27 +21,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <morda/paint/frame_vao.hpp>
-#include <morda/widget.hpp>
+#include <ruis/paint/frame_vao.hpp>
+#include <ruis/widget.hpp>
 
 namespace cod {
 
-class tile : virtual public morda::widget
+class tile : virtual public ruis::widget
 {
-	mutable morda::frame_vao selection_vao;
+	mutable ruis::frame_vao selection_vao;
 
 	// only these 2 tiles are supposed to exist, so declare those as friends and make tile constructor private
 	friend class tabbed_book_tile;
 	friend class tiling_area;
 
-	tile(const utki::shared_ref<morda::context>& c, const treeml::forest& desc);
+	tile(const utki::shared_ref<ruis::context>& c, const treeml::forest& desc);
 
 	void set_selection_vao();
 
 public:
-	void render(const morda::matrix4& matrix) const override;
+	void render(const ruis::matrix4& matrix) const override;
 
-	bool on_key(const morda::key_event& e) override;
+	bool on_key(const ruis::key_event& e) override;
 
 	void on_focus_change() override;
 

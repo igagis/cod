@@ -21,21 +21,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <morda/widgets/group/tabbed_book.hpp>
+#include <ruis/widgets/group/tabbed_book.hpp>
 
 #include "page.hpp"
 #include "tile.hpp"
 
 namespace cod {
 
-class tabbed_book_tile : public tile, private morda::tabbed_book
+class tabbed_book_tile : public tile, private ruis::tabbed_book
 {
 public:
-	tabbed_book_tile(const utki::shared_ref<morda::context>& c, const treeml::forest& desc);
+	tabbed_book_tile(const utki::shared_ref<ruis::context>& c, const treeml::forest& desc);
 
-	void render(const morda::matrix4& matrix) const override
+	void render(const ruis::matrix4& matrix) const override
 	{
-		this->morda::tabbed_book::render(matrix);
+		this->ruis::tabbed_book::render(matrix);
 		this->tile::render(matrix);
 	}
 

@@ -27,8 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-text_editor_page::text_editor_page(const utki::shared_ref<morda::context>& context, std::string&& file_name) :
-	morda::widget(std::move(context), treeml::forest()),
+text_editor_page::text_editor_page(const utki::shared_ref<ruis::context>& context, std::string&& file_name) :
+	ruis::widget(std::move(context), treeml::forest()),
 	file_page(this->context, std::move(file_name)),
 	code_edit(this->context, treeml::forest())
 {
@@ -38,7 +38,7 @@ text_editor_page::text_editor_page(const utki::shared_ref<morda::context>& conte
 		[this,
 		 hl = std::make_shared<synhi::regex_highlighter>(
 			 std::make_shared<synhi::regex_highlighter_model>(treeml::read(papki::fs_file("highlight/xml.tml")))
-		 )](morda::text_widget& w) {
+		 )](ruis::text_widget& w) {
 			hl->reset();
 			const auto& lines = this->get_lines();
 			for (auto i = lines.begin(); i != lines.end(); ++i) {

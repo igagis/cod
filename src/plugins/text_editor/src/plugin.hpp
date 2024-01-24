@@ -28,7 +28,7 @@ namespace cod {
 class text_editor_plugin : public cod::plugin
 {
 public:
-	std::shared_ptr<file_page> open_file(const utki::shared_ref<morda::context>& context, std::string_view file_name)
+	std::shared_ptr<file_page> open_file(const utki::shared_ref<ruis::context>& context, std::string_view file_name)
 		override;
 };
 

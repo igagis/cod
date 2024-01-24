@@ -14,7 +14,7 @@ this_cxxflags += -I ../lib/src
 this_libcod := ../lib/out/$(c)/libcod.so
 
 this_ldflags += -L $(dir $(this_libcod))
-this_ldlibs += -lcod -lmordavokne-opengl -lmorda -ltreeml -lpapki -lclargs -lutki -rdynamic -lm
+this_ldlibs += -lcod -lruisapp-opengl -lruis -ltreeml -lpapki -lclargs -lutki -rdynamic -lm
 
 $(eval $(prorab-build-app))
 

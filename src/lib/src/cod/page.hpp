@@ -21,19 +21,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <morda/widgets/button/tab.hpp>
-#include <morda/widgets/group/book.hpp>
+#include <ruis/widgets/button/tab.hpp>
+#include <ruis/widgets/group/book.hpp>
 
 namespace cod {
 
-class page : public morda::page
+class page : public ruis::page
 {
 public:
-	page(const utki::shared_ref<morda::context>& context);
+	page(const utki::shared_ref<ruis::context>& context);
 
-	bool on_key(const morda::key_event& e) override;
+	bool on_key(const ruis::key_event& e) override;
 
-	virtual utki::shared_ref<morda::widget> create_tab_content() = 0;
+	virtual utki::shared_ref<ruis::widget> create_tab_content() = 0;
 
 private:
 	void move_right();

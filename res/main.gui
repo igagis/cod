@@ -1,11 +1,11 @@
 @tiling_area{
 	@tabbed_book_tile{
 		id{left_panel}
-		dx{200}
+		dx{200pp}
 	}
 
 	@tabbed_book_tile{
 		id{tabbed_book}
-		dx{600}
+		dx{600pp}
 	}
 }

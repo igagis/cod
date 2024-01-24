@@ -23,11 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <cod/command_line_args.hpp>
 #include <cod/context.hpp>
-#include <mordavokne/application.hpp>
+#include <ruisapp/application.hpp>
 
 namespace cod {
 
-class application : public mordavokne::application
+class application : public ruisapp::application
 {
 public:
 	cod::context context;

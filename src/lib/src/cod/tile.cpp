@@ -21,18 +21,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "tile.hpp"
 
-#include <morda/context.hpp>
+#include <ruis/context.hpp>
 
 #include "context.hpp"
 
 using namespace cod;
 
-tile::tile(const utki::shared_ref<morda::context>& c, const treeml::forest& desc) :
-	morda::widget(std::move(c), desc),
+tile::tile(const utki::shared_ref<ruis::context>& c, const treeml::forest& desc) :
+	ruis::widget(std::move(c), desc),
 	selection_vao(this->context.get().renderer)
 {}
 
-void tile::render(const morda::matrix4& matrix) const
+void tile::render(const ruis::matrix4& matrix) const
 {
 	// draw selection
 	if (this->is_focused()) {
@@ -57,14 +57,14 @@ void tile::on_focus_change()
 
 void tile::on_resize()
 {
-	this->morda::widget::on_resize();
+	this->ruis::widget::on_resize();
 
 	if (this->is_focused()) {
 		this->set_selection_vao();
 	}
 }
 
-bool tile::on_key(const morda::key_event& e)
+bool tile::on_key(const ruis::key_event& e)
 {
 	if (!e.is_down) {
 		return false;

@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <mordavokne/application.hpp>
+#include <ruisapp/application.hpp>
 
 #include "file_page.hpp"
 #include "tabbed_book_tile.hpp"
@@ -38,12 +38,12 @@ class gui
 
 	std::shared_ptr<tabbed_book_tile> editors_tabbed_book;
 
-	gui(mordavokne::application& app);
+	gui(ruisapp::application& app);
 
 	void open_editor(utki::shared_ref<file_page> page);
 
 public:
-	const utki::shared_ref<morda::context> morda_context;
+	const utki::shared_ref<ruis::context> ruis_context;
 };
 
 } // namespace cod

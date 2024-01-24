@@ -21,15 +21,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "file_page.hpp"
 
-#include <morda/widgets/label/text.hpp>
+#include <ruis/widgets/label/text.hpp>
 
 #include "context.hpp"
 #include "file_opener.hpp"
 
 using namespace cod;
 
-file_page::file_page(const utki::shared_ref<morda::context>& context, std::string&& file_name) :
-	morda::widget(std::move(context), treeml::forest()),
+file_page::file_page(const utki::shared_ref<ruis::context>& context, std::string&& file_name) :
+	ruis::widget(std::move(context), treeml::forest()),
 	page(this->context),
 	file_name(std::move(file_name))
 {}
@@ -46,9 +46,9 @@ void file_page::on_tear_out() noexcept
 	}
 }
 
-utki::shared_ref<morda::widget> file_page::create_tab_content()
+utki::shared_ref<ruis::widget> file_page::create_tab_content()
 {
-	auto t = utki::make_shared<morda::text>(this->context, tml::forest());
+	auto t = utki::make_shared<ruis::text>(this->context, tml::forest());
 	t.get().set_text(file_name);
 	return t;
 }

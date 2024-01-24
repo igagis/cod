@@ -38,7 +38,7 @@ public:
 	plugin& operator=(plugin&&) = delete;
 
 	virtual std::shared_ptr<file_page> open_file(
-		const utki::shared_ref<morda::context>& context,
+		const utki::shared_ref<ruis::context>& context,
 		std::string_view file_name
 	)
 	{

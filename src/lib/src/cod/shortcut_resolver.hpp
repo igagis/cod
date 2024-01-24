@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <unordered_map>
 
-#include <morda/util/key.hpp>
+#include <ruis/util/key.hpp>
 #include <papki/file.hpp>
 #include <utki/flags.hpp>
 
@@ -34,7 +34,7 @@ class shortcut_resolver
 public:
 	struct shortcut {
 		std::string name;
-		morda::key_combo combo = {morda::key::unknown};
+		ruis::key_combo combo = {ruis::key::unknown};
 	};
 
 private:

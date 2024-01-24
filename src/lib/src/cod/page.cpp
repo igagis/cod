@@ -25,12 +25,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-page::page(const utki::shared_ref<morda::context>& context) :
-	morda::widget(std::move(context), treeml::forest()),
-	morda::page(this->context, treeml::forest())
+page::page(const utki::shared_ref<ruis::context>& context) :
+	ruis::widget(std::move(context), treeml::forest()),
+	ruis::page(this->context, treeml::forest())
 {}
 
-bool page::on_key(const morda::key_event& e)
+bool page::on_key(const ruis::key_event& e)
 {
 	if (!e.is_down) {
 		return false;

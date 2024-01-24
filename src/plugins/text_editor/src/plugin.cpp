@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 std::shared_ptr<file_page> text_editor_plugin::open_file(
-	const utki::shared_ref<morda::context>& context,
+	const utki::shared_ref<ruis::context>& context,
 	std::string_view file_name
 )
 {

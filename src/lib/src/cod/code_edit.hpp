@@ -23,11 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <vector>
 
-#include <morda/updateable.hpp>
-#include <morda/widgets/base/text_widget.hpp>
-#include <morda/widgets/group/list.hpp>
-#include <morda/widgets/group/scroll_area.hpp>
-#include <morda/widgets/input/character_input_widget.hpp>
+#include <ruis/updateable.hpp>
+#include <ruis/widgets/base/text_widget.hpp>
+#include <ruis/widgets/group/list.hpp>
+#include <ruis/widgets/group/scroll_area.hpp>
+#include <ruis/widgets/input/character_input_widget.hpp>
 #include <r4/segment2.hpp>
 #include <utki/flags.hpp>
 
@@ -36,19 +36,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace cod {
 
 class code_edit :
-	public morda::character_input_widget,
-	public morda::text_widget,
-	private morda::container,
-	private morda::updateable
+	public ruis::character_input_widget,
+	public ruis::text_widget,
+	private ruis::container,
+	private ruis::updateable
 {
-	using base_container = morda::container;
+	using base_container = ruis::container;
 
-	utki::shared_ref<morda::list_widget> list;
-	utki::shared_ref<morda::scroll_area> scroll_area;
+	utki::shared_ref<ruis::list_widget> list;
+	utki::shared_ref<ruis::scroll_area> scroll_area;
 
 	struct {
-		morda::vector2 glyph_dims;
-		morda::real baseline;
+		ruis::vector2 glyph_dims;
+		ruis::real baseline;
 	} font_info;
 
 	void on_font_change() override;
@@ -91,24 +91,24 @@ class code_edit :
 
 	std::vector<line> lines;
 
-	class line_widget : public morda::widget
+	class line_widget : public ruis::widget
 	{
 		code_edit& owner;
 		size_t line_num;
 
 	public:
-		line_widget(const utki::shared_ref<morda::context>& c, code_edit& owner, size_t line_num) :
+		line_widget(const utki::shared_ref<ruis::context>& c, code_edit& owner, size_t line_num) :
 			widget(std::move(c), treeml::forest()),
 			owner(owner),
 			line_num(line_num)
 		{}
 
-		void render(const morda::matrix4& matrix) const override;
+		void render(const ruis::matrix4& matrix) const override;
 
-		morda::vector2 measure(const morda::vector2& quotum) const noexcept override;
+		ruis::vector2 measure(const ruis::vector2& quotum) const noexcept override;
 	};
 
-	struct provider : public morda::list_widget::provider {
+	struct provider : public ruis::list_widget::provider {
 		code_edit& owner;
 
 		provider(code_edit& owner) :
@@ -120,7 +120,7 @@ class code_edit :
 			return this->owner.lines.size();
 		}
 
-		utki::shared_ref<morda::widget> get_widget(size_t index) override;
+		utki::shared_ref<ruis::widget> get_widget(size_t index) override;
 	};
 
 	std::shared_ptr<provider> lines_provider;
@@ -215,7 +215,7 @@ class code_edit :
 	void on_focus_change() override;
 	void start_cursor_blinking();
 
-	r4::vector2<size_t> mouse_pos_to_glyph_pos(const morda::vector2& mouse_pos) const noexcept;
+	r4::vector2<size_t> mouse_pos_to_glyph_pos(const ruis::vector2& mouse_pos) const noexcept;
 
 	bool mouse_selection = false;
 
@@ -231,7 +231,7 @@ class code_edit :
 	void scroll_to(r4::vector2<size_t> pos_glyphs);
 
 public:
-	code_edit(const utki::shared_ref<morda::context>& c, const treeml::forest& desc);
+	code_edit(const utki::shared_ref<ruis::context>& c, const treeml::forest& desc);
 
 	code_edit(const code_edit&) = delete;
 	code_edit& operator=(const code_edit&) = delete;
@@ -241,13 +241,13 @@ public:
 
 	~code_edit() override = default;
 
-	void render(const morda::matrix4& matrix) const override;
-	bool on_mouse_button(const morda::mouse_button_event& event) override;
-	bool on_mouse_move(const morda::mouse_move_event& event) override;
-	bool on_key(const morda::key_event& e) override;
-	void on_character_input(const morda::character_input_event& e) override;
+	void render(const ruis::matrix4& matrix) const override;
+	bool on_mouse_button(const ruis::mouse_button_event& event) override;
+	bool on_mouse_move(const ruis::mouse_move_event& event) override;
+	bool on_key(const ruis::key_event& e) override;
+	void on_character_input(const ruis::character_input_event& e) override;
 
-	using morda::text_widget::set_text;
+	using ruis::text_widget::set_text;
 
 	void set_text(std::u32string text) override;
 	std::u32string get_text() const override;
