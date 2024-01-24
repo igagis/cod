@@ -79,6 +79,7 @@ code_edit::code_edit(const utki::shared_ref<ruis::context>& c, const treeml::for
 	lines_provider(std::make_shared<provider>(*this))
 {
 	this->set_font_face(this->context.get().loader.load<ruis::res::font>("fnt_monospace"));
+	// call overridden method explicitly because we are still in constructor 
 	this->code_edit::on_font_change();
 
 	this->list.get().set_provider(this->lines_provider);
