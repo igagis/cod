@@ -47,8 +47,8 @@ public:
 	std::shared_ptr<ruis::widget> next_widget;
 
 	dragger(const utki::shared_ref<ruis::context>& c, tiling_area& owner) :
-		ruis::widget(std::move(c), treeml::forest()),
-		ruis::color(this->context, treeml::forest()),
+		ruis::widget(std::move(c), tml::forest()),
+		ruis::color(this->context, tml::forest()),
 		owner(owner)
 	{
 		this->set_color(dragger_color);
@@ -112,7 +112,7 @@ public:
 		return true;
 	}
 
-	void on_hover_change(unsigned pointer_id) override
+	void on_hovered_change(unsigned pointer_id) override
 	{
 		if (this->grabbed) {
 			return;
@@ -136,12 +136,12 @@ public:
 };
 } // namespace
 
-tiling_area::tiling_area(const utki::shared_ref<ruis::context>& c, const treeml::forest& desc) :
+tiling_area::tiling_area(const utki::shared_ref<ruis::context>& c, const tml::forest& desc) :
 	ruis::widget(std::move(c), desc),
-	tile(this->context, treeml::forest()),
-	ruis::oriented(false),
-	ruis::container(this->context, treeml::forest()),
-	content_container(utki::make_shared<ruis::container>(this->context, treeml::forest())),
+	tile(this->context, tml::forest()),
+	ruis::oriented({.vertical = false}),
+	ruis::container(this->context, tml::forest()),
+	content_container(utki::make_shared<ruis::container>(this->context, tml::forest())),
 	min_tile_size(this->context.get().units.pp_to_px(minimal_tile_size_pp)),
 	dragger_size(this->context.get().units.pp_to_px(dragger_size_pp))
 {

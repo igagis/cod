@@ -28,16 +28,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 text_editor_page::text_editor_page(const utki::shared_ref<ruis::context>& context, std::string&& file_name) :
-	ruis::widget(std::move(context), treeml::forest()),
+	ruis::widget(std::move(context), tml::forest()),
 	file_page(this->context, std::move(file_name)),
-	code_edit(this->context, treeml::forest())
+	code_edit(this->context, tml::forest())
 {
 	// TODO: for now we set XML syntax highlighter for each code edit page,
 	//       later need to implement proper system
 	this->text_change_handler =
 		[this,
 		 hl = std::make_shared<synhi::regex_highlighter>(
-			 std::make_shared<synhi::regex_highlighter_model>(treeml::read(papki::fs_file("highlight/xml.tml")))
+			 std::make_shared<synhi::regex_highlighter_model>(tml::read(papki::fs_file("highlight/xml.tml")))
 		 )](ruis::text_widget& w) {
 			hl->reset();
 			const auto& lines = this->get_lines();

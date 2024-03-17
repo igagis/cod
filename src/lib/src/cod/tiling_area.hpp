@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <ruis/container.hpp>
 #include <ruis/util/oriented.hpp>
+#include <ruis/widgets/container.hpp>
 
 #include "tile.hpp"
 
@@ -41,7 +41,7 @@ public:
 	const ruis::real min_tile_size;
 	const ruis::real dragger_size;
 
-	tiling_area(const utki::shared_ref<ruis::context>& c, const treeml::forest& desc);
+	tiling_area(const utki::shared_ref<ruis::context>& c, const tml::forest& desc);
 
 	ruis::container& content()
 	{

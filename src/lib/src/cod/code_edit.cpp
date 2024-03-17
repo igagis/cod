@@ -37,20 +37,20 @@ constexpr ruis::real cursor_thickness_pp = 2.0f;
 
 // TODO: refactor to fix this lint issue
 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-code_edit::code_edit(const utki::shared_ref<ruis::context>& c, const treeml::forest& desc) :
+code_edit::code_edit(const utki::shared_ref<ruis::context>& c, const tml::forest& desc) :
 	widget(std::move(c), desc),
 	character_input_widget(this->context),
 	text_widget(this->context, desc),
 	container( //
 		this->context,
-		treeml::read(R"qwertyuiop(
+		tml::read(R"qwertyuiop(
 			layout{column}
 			@row{
-				lp{dx{fill} dy{0} weight{1}}
+				lp{dx{fill} dy{fill} weight{1}}
 
 				@scroll_area{
 					id{scroll_area}
-					lp{dx{0} dy{fill} weight{1}}
+					lp{dx{fill} dy{fill} weight{1}}
 					clip{true}
 					@list{
 						id{lines}
@@ -74,12 +74,12 @@ code_edit::code_edit(const utki::shared_ref<ruis::context>& c, const treeml::for
 			}
 		)qwertyuiop")
 	),
-	list(utki::make_shared_from(this->get_widget_as<ruis::list_widget>("lines"))),
+	list(utki::make_shared_from(this->get_widget_as<ruis::list>("lines"))),
 	scroll_area(utki::make_shared_from(this->get_widget_as<ruis::scroll_area>("scroll_area"))),
 	lines_provider(std::make_shared<provider>(*this))
 {
 	this->set_font_face(this->context.get().loader.load<ruis::res::font>("fnt_monospace"));
-	// call overridden method explicitly because we are still in constructor 
+	// call overridden method explicitly because we are still in constructor
 	this->code_edit::on_font_change();
 
 	this->list.get().set_provider(this->lines_provider);
@@ -92,7 +92,7 @@ code_edit::code_edit(const utki::shared_ref<ruis::context>& c, const treeml::for
 		}
 	};
 
-	this->list.get().scroll_change_handler = [sw = utki::make_weak_from(vs)](ruis::list_widget& lw) {
+	this->list.get().scroll_change_handler = [sw = utki::make_weak_from(vs)](ruis::list& lw) {
 		if (auto s = sw.lock()) {
 			s->set_fraction(lw.get_scroll_factor(), false);
 			s->set_band_fraction(lw.get_scroll_band());
@@ -220,10 +220,7 @@ void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 		const auto& font = this->owner.get_font(s.style->style);
 
 		ruis::matrix4 matr(matrix);
-		matr.translate(
-			ruis::real(cur_char_pos) * this->owner.font_info.glyph_dims.x(),
-			this->owner.font_info.baseline
-		);
+		matr.translate(ruis::real(cur_char_pos) * this->owner.font_info.glyph_dims.x(), this->owner.font_info.baseline);
 		auto res = font.render(
 			matr,
 			ruis::color_to_vec4f(s.style->color),

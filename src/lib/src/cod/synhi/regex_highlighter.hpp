@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <treeml/tree.hpp>
+#include <tml/tree.hpp>
 
 #include "../../../../3rd_party/srell.hpp"
 
@@ -32,7 +32,7 @@ namespace synhi {
 class regex_highlighter_model
 {
 public:
-	regex_highlighter_model(const treeml::forest& spec);
+	regex_highlighter_model(const tml::forest& spec);
 
 	struct state;
 
@@ -107,7 +107,7 @@ public:
 			std::string state_to_push;
 		};
 
-		static parse_result parse(const treeml::forest& spec);
+		static parse_result parse(const tml::forest& spec);
 	};
 
 	class regex_matcher : public matcher
@@ -157,7 +157,7 @@ public:
 			std::string style;
 		};
 
-		static parse_result parse(const treeml::forest& spec);
+		static parse_result parse(const tml::forest& spec);
 	};
 
 	// need to keep strong pointers to all states, because rules hold only plain pointer to the state_to_push

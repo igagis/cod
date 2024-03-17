@@ -23,12 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <vector>
 
+#include <r4/segment2.hpp>
 #include <ruis/updateable.hpp>
 #include <ruis/widgets/base/text_widget.hpp>
 #include <ruis/widgets/group/list.hpp>
 #include <ruis/widgets/group/scroll_area.hpp>
 #include <ruis/widgets/input/character_input_widget.hpp>
-#include <r4/segment2.hpp>
 #include <utki/flags.hpp>
 
 #include "synhi/highlighter.hpp"
@@ -43,7 +43,7 @@ class code_edit :
 {
 	using base_container = ruis::container;
 
-	utki::shared_ref<ruis::list_widget> list;
+	utki::shared_ref<ruis::list> list;
 	utki::shared_ref<ruis::scroll_area> scroll_area;
 
 	struct {
@@ -98,7 +98,7 @@ class code_edit :
 
 	public:
 		line_widget(const utki::shared_ref<ruis::context>& c, code_edit& owner, size_t line_num) :
-			widget(std::move(c), treeml::forest()),
+			widget(std::move(c), tml::forest()),
 			owner(owner),
 			line_num(line_num)
 		{}
@@ -108,7 +108,7 @@ class code_edit :
 		ruis::vector2 measure(const ruis::vector2& quotum) const noexcept override;
 	};
 
-	struct provider : public ruis::list_widget::provider {
+	struct provider : public ruis::list::provider {
 		code_edit& owner;
 
 		provider(code_edit& owner) :
@@ -231,7 +231,7 @@ class code_edit :
 	void scroll_to(r4::vector2<size_t> pos_glyphs);
 
 public:
-	code_edit(const utki::shared_ref<ruis::context>& c, const treeml::forest& desc);
+	code_edit(const utki::shared_ref<ruis::context>& c, const tml::forest& desc);
 
 	code_edit(const code_edit&) = delete;
 	code_edit& operator=(const code_edit&) = delete;

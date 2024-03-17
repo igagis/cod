@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 file_page::file_page(const utki::shared_ref<ruis::context>& context, std::string&& file_name) :
-	ruis::widget(std::move(context), treeml::forest()),
+	ruis::widget(std::move(context), tml::forest()),
 	page(this->context),
 	file_name(std::move(file_name))
 {}

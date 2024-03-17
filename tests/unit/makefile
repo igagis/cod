@@ -13,7 +13,7 @@ this_srcs += ../../src/lib/src/cod/synhi/regex_highlighter.cpp
 
 this_cxxflags += -I../../src -I../../src/3rd_party
 
-this_ldlibs += -ltst -lpapki -ltreeml -lutki
+this_ldlibs += -ltst -lpapki -ltml -lutki
 
 $(eval $(prorab-build-app))
 

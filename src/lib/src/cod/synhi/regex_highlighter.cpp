@@ -21,21 +21,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "regex_highlighter.hpp"
 
-#include <treeml/crawler.hpp>
+#include <tml/crawler.hpp>
 #include <utki/linq.hpp>
 #include <utki/string.hpp>
 
 using namespace synhi;
 
 namespace {
-std::shared_ptr<font_style> parse_style(const treeml::forest& style)
+std::shared_ptr<font_style> parse_style(const tml::forest& style)
 {
 	auto ret = std::make_shared<font_style>();
 	for (const auto& n : style) {
 		if (n.value == "color") {
-			ret->color = treeml::crawler(n.children).get().value.to_uint32();
+			ret->color = tml::crawler(n.children).get().value.to_uint32();
 		} else if (n.value == "style") {
-			const auto& v = treeml::crawler(n.children).get().value;
+			const auto& v = tml::crawler(n.children).get().value;
 			if (v == "normal") {
 				ret->style = ruis::res::font::style::normal;
 			} else if (v == "bold") {
@@ -50,9 +50,9 @@ std::shared_ptr<font_style> parse_style(const treeml::forest& style)
 				throw std::invalid_argument(ss.str());
 			}
 		} else if (n.value == "underline") {
-			ret->underline = treeml::crawler(n.children).get().value.to_bool();
+			ret->underline = tml::crawler(n.children).get().value.to_bool();
 		} else if (n.value == "stroke") {
-			ret->stroke = treeml::crawler(n.children).get().value.to_bool();
+			ret->stroke = tml::crawler(n.children).get().value.to_bool();
 		} else {
 			std::stringstream ss;
 			ss << "unknown font style item: " << n.value;
@@ -73,48 +73,48 @@ struct parsing_context {
 
 	std::string initial_state;
 
-	void parse_styles(const treeml::forest& styles)
+	void parse_styles(const tml::forest& styles)
 	{
 		for (const auto& s : styles) {
-			if (this->styles.find(s.value.to_string()) != this->styles.end()) {
+			if (this->styles.find(s.value.string) != this->styles.end()) {
 				std::stringstream ss;
-				ss << "style with name '" << s.value.to_string() << "' already exists";
+				ss << "style with name '" << s.value.string << "' already exists";
 				throw std::invalid_argument(ss.str());
 			}
 
-			this->styles.insert(std::make_pair(s.value.to_string(), parse_style(s.children)));
+			this->styles.insert(std::make_pair(s.value.string, parse_style(s.children)));
 		}
 	}
 
-	void parse_rules(const treeml::forest& desc)
+	void parse_rules(const tml::forest& desc)
 	{
 		for (const auto& m : desc) {
-			if (this->rules.find(m.value.to_string()) != this->rules.end()) {
+			if (this->rules.find(m.value.string) != this->rules.end()) {
 				std::stringstream ss;
-				ss << "rule with name '" << m.value.to_string() << "' already exists";
+				ss << "rule with name '" << m.value.string << "' already exists";
 				throw std::invalid_argument(ss.str());
 			}
 
-			this->rules.insert(std::make_pair(m.value.to_string(), regex_highlighter_model::rule::parse(m.children)));
+			this->rules.insert(std::make_pair(m.value.string, regex_highlighter_model::rule::parse(m.children)));
 		}
 	}
 
-	void parse_states(const treeml::forest& desc)
+	void parse_states(const tml::forest& desc)
 	{
 		if (!desc.empty()) {
-			this->initial_state = desc.front().value.to_string();
+			this->initial_state = desc.front().value.string;
 		}
 		for (const auto& s : desc) {
 			if (std::find_if(this->states.begin(), this->states.end(), [&](const auto& v) {
-					return v.first == s.value.to_string();
+					return v.first == s.value.string;
 				}) != this->states.end())
 			{
 				std::stringstream ss;
-				ss << "state with name '" << s.value.to_string() << "' already exists";
+				ss << "state with name '" << s.value.string << "' already exists";
 				throw std::invalid_argument(ss.str());
 			}
 
-			this->states.emplace_back(s.value.to_string(), regex_highlighter_model::state::parse(s.children));
+			this->states.emplace_back(s.value.string, regex_highlighter_model::state::parse(s.children));
 		}
 	}
 
@@ -199,7 +199,7 @@ regex_highlighter_model::matcher::match_result regex_highlighter_model::regex_ma
 	};
 }
 
-regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse(const treeml::forest& desc)
+regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse(const tml::forest& desc)
 {
 	parse_result ret{.rule = utki::make_shared<rule>()};
 
@@ -207,20 +207,19 @@ regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse
 		if (n.value == "styles") {
 			ret.styles = utki::linq(n.children)
 							 .select([](const auto& p) {
-								 return p.value.to_string();
+								 return p.value.string;
 							 })
 							 .get();
 		} else if (n.value == "regex") {
 			ret.rule.get().matcher_ = std::make_shared<regex_highlighter_model::regex_matcher>(
-				utki::to_utf32(treeml::crawler(n.children).get().value.to_string())
+				utki::to_utf32(tml::crawler(n.children).get().value.string)
 			);
 		} else if (n.value == "ppregex") {
-			ret.rule.get().matcher_ = std::make_shared<regex_highlighter_model::ppregex_matcher>(
-				treeml::crawler(n.children).get().value.to_string()
-			);
+			ret.rule.get().matcher_ =
+				std::make_shared<regex_highlighter_model::ppregex_matcher>(tml::crawler(n.children).get().value.string);
 		} else if (n.value == "push") {
 			ret.operations.push_back(
-				{.type = operation::type::push, .state = treeml::crawler(n.children).get().value.to_string()}
+				{.type = operation::type::push, .state = tml::crawler(n.children).get().value.string}
 			);
 		} else if (n.value == "pop") {
 			// NOLINTNEXTLINE(modernize-use-emplace, "operation_entry has no suitable constructor")
@@ -242,17 +241,17 @@ regex_highlighter_model::rule::parse_result regex_highlighter_model::rule::parse
 	// NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 }
 
-regex_highlighter_model::state::parse_result regex_highlighter_model::state::parse(const treeml::forest& desc)
+regex_highlighter_model::state::parse_result regex_highlighter_model::state::parse(const tml::forest& desc)
 {
 	parse_result ret{.state = utki::make_shared<state>()};
 
 	for (const auto& n : desc) {
 		if (n.value == "style") {
-			ret.style = treeml::crawler(n.children).get().value.to_string();
+			ret.style = tml::crawler(n.children).get().value.string;
 		} else if (n.value == "rules") {
 			ret.rules = utki::linq(n.children)
 							.select([](const auto& c) {
-								return c.value.to_string();
+								return c.value.string;
 							})
 							.get();
 		} else {
@@ -268,7 +267,7 @@ regex_highlighter_model::state::parse_result regex_highlighter_model::state::par
 	// NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
 }
 
-regex_highlighter_model::regex_highlighter_model(const treeml::forest& spec)
+regex_highlighter_model::regex_highlighter_model(const tml::forest& spec)
 {
 	parsing_context c;
 

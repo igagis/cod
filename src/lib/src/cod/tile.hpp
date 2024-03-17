@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <ruis/paint/frame_vao.hpp>
-#include <ruis/widget.hpp>
+#include <ruis/widgets/widget.hpp>
 
 namespace cod {
 
@@ -34,7 +34,7 @@ class tile : virtual public ruis::widget
 	friend class tabbed_book_tile;
 	friend class tiling_area;
 
-	tile(const utki::shared_ref<ruis::context>& c, const treeml::forest& desc);
+	tile(const utki::shared_ref<ruis::context>& c, const tml::forest& desc);
 
 	void set_selection_vao();
 

@@ -40,7 +40,9 @@ const ruisapp::application_factory app_fac([](auto args) -> std::unique_ptr<ruis
 		cla.plugins.emplace_back(file_name);
 	});
 
-	auto fa = p.parse(args);
+	ASSERT(!args.empty()) // first item is the executable filename
+
+	auto fa = p.parse(args.subspan(1));
 
 	if (help) {
 		std::cout << p.description() << std::endl;
@@ -56,6 +58,8 @@ const ruisapp::application_factory app_fac([](auto args) -> std::unique_ptr<ruis
 	} else {
 		cla.base_dir = "./";
 	}
+
+	// TODO: check that cla.base_dir exists and is a directory
 
 	return std::make_unique<cod::application>(std::move(cla));
 });

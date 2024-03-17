@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "shortcut_resolver.hpp"
 
-#include <treeml/tree.hpp>
+#include <tml/tree.hpp>
 
 using namespace cod;
 
@@ -33,13 +33,13 @@ shortcut_resolver::shortcut_resolver(const papki::file& f)
 }
 
 namespace {
-shortcut_resolver::shortcut parse_shortcut(const treeml::tree& sc)
+shortcut_resolver::shortcut parse_shortcut(const tml::tree& sc)
 {
 	shortcut_resolver::shortcut ret;
-	ret.name = sc.value.to_string();
+	ret.name = sc.value.string;
 
 	for (const auto& k : sc.children) {
-		const auto& name = k.value.to_string();
+		const auto& name = k.value.string;
 		auto key = ruis::to_key(name);
 		if (key == ruis::key::unknown) {
 			throw std::invalid_argument("unknown key name: "s + name);
@@ -68,7 +68,7 @@ shortcut_resolver::shortcut parse_shortcut(const treeml::tree& sc)
 
 void shortcut_resolver::load(const papki::file& f)
 {
-	auto dom = treeml::read(f);
+	auto dom = tml::read(f);
 
 	for (const auto& s : dom) {
 		try {
@@ -77,7 +77,7 @@ void shortcut_resolver::load(const papki::file& f)
 		} catch (const std::invalid_argument& e) {
 			std::stringstream ss;
 			ss << e.what() << std::endl;
-			ss << "  while parsing shortcut: " << s.value.to_string() << std::endl;
+			ss << "  while parsing shortcut: " << s.value.string << std::endl;
 			ss << "  from file: " << f.path();
 			throw std::invalid_argument(ss.str());
 		}

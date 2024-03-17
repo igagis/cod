@@ -26,8 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 page::page(const utki::shared_ref<ruis::context>& context) :
-	ruis::widget(std::move(context), treeml::forest()),
-	ruis::page(this->context, treeml::forest())
+	ruis::widget(std::move(context), tml::forest()),
+	ruis::page(this->context, tml::forest())
 {}
 
 bool page::on_key(const ruis::key_event& e)

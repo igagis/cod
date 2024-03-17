@@ -21,13 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "file_tree_page.hpp"
 
+#include <papki/fs_file.hpp>
 #include <ruis/widgets/label/color.hpp>
 #include <ruis/widgets/label/text.hpp>
 #include <ruis/widgets/proxy/click_proxy.hpp>
 #include <ruis/widgets/proxy/mouse_proxy.hpp>
 #include <ruis/widgets/proxy/resize_proxy.hpp>
 #include <ruis/widgets/slider/scroll_bar.hpp>
-#include <papki/fs_file.hpp>
 #include <utki/linq.hpp>
 #include <utki/tree.hpp>
 
@@ -36,18 +36,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 namespace {
-const treeml::forest layout = treeml::read(R"qwertyuiop(
+const tml::forest layout = tml::read(R"qwertyuiop(
 	layout{column}
 	@row{
 		lp{
-			dx{fill} dy{0}
+			dx{fill} dy{fill}
 			weight{1}
 		}
 		@tree_view{
 			id{tree_view}
 			clip{true}
 			lp{
-				dx{0} dy{fill}
+				dx{fill} dy{fill}
 				weight{1}
 			}
 		}
@@ -106,7 +106,10 @@ auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> ind
 	})
 #endif
 
-	auto dir_name = cod::context::inst().base_dir + make_path(index, this->cache);
+	auto dir_name = utki::cat( //
+		cod::context::inst().base_dir,
+		make_path(index, this->cache)
+	);
 
 	LOG([&](auto& o) {
 		o << "dir_name = " << dir_name << std::endl;
@@ -118,8 +121,11 @@ auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> ind
 		})
 		.select([](auto e) {
 			bool is_dir = papki::is_dir(e);
-			return typename decltype(this->cache
-			)::value_type(file_entry{.is_directory = is_dir, .name = is_dir ? e.substr(0, e.size() - 1) : std::move(e)}
+			return typename decltype(this->cache)::value_type( //
+				file_entry{
+					.is_directory = is_dir, //
+					.name = is_dir ? e.substr(0, e.size() - 1) : std::move(e)
+				}
 			);
 		})
 		.get();

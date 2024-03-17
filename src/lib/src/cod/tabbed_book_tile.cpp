@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-tabbed_book_tile::tabbed_book_tile(const utki::shared_ref<ruis::context>& c, const treeml::forest& desc) :
+tabbed_book_tile::tabbed_book_tile(const utki::shared_ref<ruis::context>& c, const tml::forest& desc) :
 	ruis::widget(std::move(c), desc),
 	tile(this->context, desc),
 	tabbed_book(this->context, desc)

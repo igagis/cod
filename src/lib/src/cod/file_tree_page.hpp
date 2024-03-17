@@ -22,9 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <ruis/context.hpp>
-#include <ruis/widget.hpp>
 #include <ruis/widgets/group/book.hpp>
 #include <ruis/widgets/group/tree_view.hpp>
+#include <ruis/widgets/widget.hpp>
 
 #include "page.hpp"
 

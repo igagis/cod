@@ -63,7 +63,7 @@ const tst::set set("regex_highlighter", [](tst::suite& suite){
         [](){
             synhi::regex_highlighter sh(
                     std::make_shared<synhi::regex_highlighter_model>(
-                            treeml::read(papki::fs_file("../../highlight/xml.tml"))
+                            tml::read(papki::fs_file("../../highlight/xml.tml"))
                         )
                 );
         }
@@ -94,7 +94,7 @@ const tst::set set("regex_highlighter", [](tst::suite& suite){
         // is fixed
         // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
         [model = std::make_shared<synhi::regex_highlighter_model>(
-                treeml::read(papki::fs_file("../../highlight/xml.tml"))
+                tml::read(papki::fs_file("../../highlight/xml.tml"))
             )]
         (const auto& p)
         {
@@ -123,7 +123,7 @@ const tst::set set("regex_highlighter", [](tst::suite& suite){
             auto dir = "data/synhi/crash_1/"s;
             synhi::regex_highlighter highlighter(
                     std::make_shared<synhi::regex_highlighter_model>(
-                            treeml::read(papki::fs_file(dir + "xml.tml"))
+                            tml::read(papki::fs_file(dir + "xml.tml"))
                         )
                 );
 
