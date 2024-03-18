@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace {
 // TODO: fix this lint issue properly somehow?
 // NOLINTNEXTLINE(cppcoreguidelines-interfaces-global-init)
-const ruisapp::application_factory app_fac([](auto args) -> std::unique_ptr<ruisapp::application> {
+const ruisapp::application_factory app_fac([](auto executbale, auto args) -> std::unique_ptr<ruisapp::application> {
 	cod::command_line_args cla;
 
 	clargs::parser p;
@@ -42,7 +42,7 @@ const ruisapp::application_factory app_fac([](auto args) -> std::unique_ptr<ruis
 
 	ASSERT(!args.empty()) // first item is the executable filename
 
-	auto fa = p.parse(args.subspan(1));
+	auto fa = p.parse(args);
 
 	if (help) {
 		std::cout << p.description() << std::endl;
