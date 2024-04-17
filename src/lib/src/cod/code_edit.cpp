@@ -88,7 +88,7 @@ code_edit::code_edit(const utki::shared_ref<ruis::context>& c, const tml::forest
 
 	vs.fraction_change_handler = [lw = utki::make_weak(this->list)](ruis::fraction_widget& fw) {
 		if (auto w = lw.lock()) {
-			w->set_scroll_factor(fw.fraction());
+			w->set_scroll_factor(fw.get_fraction());
 		}
 	};
 
@@ -103,7 +103,7 @@ code_edit::code_edit(const utki::shared_ref<ruis::context>& c, const tml::forest
 
 	hs.fraction_change_handler = [saw = utki::make_weak(this->scroll_area)](ruis::fraction_widget& fw) {
 		if (auto sa = saw.lock()) {
-			sa->set_scroll_factor(fw.fraction());
+			sa->set_scroll_factor(fw.get_fraction());
 		}
 	};
 

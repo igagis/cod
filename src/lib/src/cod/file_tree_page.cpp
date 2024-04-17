@@ -265,13 +265,13 @@ file_tree_page::file_tree_page(const utki::shared_ref<ruis::context>& c) :
 
 	vs.fraction_change_handler = [tv = utki::make_weak_from(tv)](ruis::fraction_widget& fw) {
 		if (auto w = tv.lock()) {
-			w->set_vertical_scroll_factor(fw.fraction());
+			w->set_vertical_scroll_factor(fw.get_fraction());
 		}
 	};
 
 	hs.fraction_change_handler = [tv = utki::make_weak_from(tv)](ruis::fraction_widget& fw) {
 		if (auto w = tv.lock()) {
-			w->set_horizontal_scroll_factor(fw.fraction());
+			w->set_horizontal_scroll_factor(fw.get_fraction());
 		}
 	};
 
