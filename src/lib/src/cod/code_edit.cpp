@@ -246,7 +246,7 @@ void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 			auto pos = ruis::real(cp.x()) * this->owner.font_info.glyph_dims.x();
 			matr.translate(pos, 0);
 			matr.scale(ruis::vector2(
-				cursor_thickness_pp * this->context.get().units.dots_per_pp,
+				cursor_thickness_pp * this->context.get().units.dots_per_pp(),
 				this->owner.font_info.glyph_dims.y()
 			));
 
