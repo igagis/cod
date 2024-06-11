@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <ruis/widgets/proxy/mouse_proxy.hpp>
 #include <ruis/widgets/proxy/resize_proxy.hpp>
 #include <ruis/widgets/slider/scroll_bar.hpp>
+#include <ruis/widgets/group/tree_view.hpp>
 #include <utki/linq.hpp>
 #include <utki/tree.hpp>
 
@@ -240,10 +241,106 @@ void file_tree_page::notify_file_select()
 	}
 }
 
+namespace{
+std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(utki::shared_ref<ruis::context> c){
+	namespace m = ruis::make;
+	using ruis::lp;
+
+	// clang-format off
+	return {
+		m::row(c,
+			{
+				.widget_params = {
+					.lp ={
+						.dims = {lp::fill, lp::fill},
+						.weight = 1
+					}
+				}
+			},
+			{
+				m::tree_view(c,
+					{
+						.widget_params = {
+							.id = "tree_view"s,
+							.lp = {
+								.dims = {lp::fill, lp::fill},
+								.weight = 1
+							}
+							.clip = true
+						}
+					}
+				),
+				m::scroll_bar(c,
+					{
+						.widget_params = {
+							.id = "vertical_scroll"s,
+							.lp = {
+								.dims = {lp::min, lp::max}
+							}
+						},
+						.oriented_params = {
+							.vertical = true
+						}
+					}
+				)
+			}
+		),
+		m::scroll_bar(c,
+			{
+				.widget_params = {
+					.id = "horizontal_scroll"s,
+					.lp = {
+						.dims = {lp::max, lp::min}
+					}
+				},
+				.oriented_params = {
+					.vertical = false
+				}
+			}
+		)
+	};
+	// clang-format on
+}
+}
+
 file_tree_page::file_tree_page(const utki::shared_ref<ruis::context>& c) :
 	ruis::widget(c, tml::forest()),
 	page(this->context),
-	ruis::container(this->context, ::layout)
+	ruis::container(this->context,
+	{
+		.container_params = {
+			.layout = ruis::layout::column
+		}
+	},
+		make_page_widgets(this->context)
+			// @row{
+			// 	lp{
+			// 		dx{fill} dy{fill}
+			// 		weight{1}
+			// 	}
+			// 	@tree_view{
+			// 		id{tree_view}
+			// 		clip{true}
+			// 		lp{
+			// 			dx{fill} dy{fill}
+			// 			weight{1}
+			// 		}
+			// 	}
+			// 	@vertical_scroll_bar{
+			// 		id{vertical_scroll}
+
+			// 		lp{
+			// 			dx{min} dy{max}
+			// 		}
+			// 	}
+			// }
+			// @horizontal_scroll_bar{
+			// 	id{horizontal_scroll}
+			// 	lp{
+			// 		dx{max} dy{min}
+			// 	}
+			// }
+	)
 {
 	auto& tv = this->get_widget_as<ruis::tree_view>("tree_view");
 
