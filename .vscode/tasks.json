@@ -69,7 +69,6 @@
             "type": "shell",
             "command": "make run-cod",
             "group": "build",
-            "dependsOn": "build",
             "problemMatcher": []
 		},
 		{
@@ -77,7 +76,6 @@
             "type": "shell",
             "command": "make run-cod config=dbg",
             "group": "build",
-            "dependsOn": "build_dbg",
             "problemMatcher": []
         },
         {
@@ -85,7 +83,6 @@
             "type": "shell",
             "command": "make run-cod config=asan",
             "group": "build",
-            "dependsOn": "build_asan",
             "problemMatcher": []
         },
         {
@@ -94,7 +91,6 @@
             "command": "make test",
             "args": [],
             "group": "build",
-            "dependsOn": "build",
             "problemMatcher": [
                 "$gcc"
             ]
@@ -105,7 +101,6 @@
             "command": "make test config=dbg",
             "args": [],
             "group": "build",
-            "dependsOn": "build_dbg",
             "problemMatcher": [
                 "$gcc"
             ]

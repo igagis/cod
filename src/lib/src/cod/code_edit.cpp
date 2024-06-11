@@ -24,15 +24,94 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <algorithm>
 
 #include <ruis/widgets/base/fraction_band_widget.hpp>
+#include <ruis/widgets/group/scroll_area.hpp>
 #include <ruis/widgets/label/text.hpp>
+#include <ruis/widgets/slider/scroll_bar.hpp>
 #include <utki/linq.hpp>
 #include <utki/string.hpp>
+
+using namespace std::string_literals;
 
 using namespace cod;
 
 namespace {
 constexpr uint16_t cursor_blink_period_ms = 500;
 constexpr ruis::real cursor_thickness_pp = 2.0f;
+} // namespace
+
+namespace {
+std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<ruis::context> c)
+{
+	namespace m = ruis::make;
+	using lp = ruis::lp;
+
+	// clang-format off
+	return {
+		m::row(c,
+			{
+				.widget_params = {
+					.lp = {
+						.dims = {lp::fill, lp::fill},
+						.weight = 1
+					}
+				}
+			},
+			{
+				m::scroll_area(c,
+					{
+						.widget_params = {
+							.id = "scroll_area"s,
+							.lp = {
+								.dims = {lp::fill, lp::fill},
+								.weight = 1
+							},
+							.clip = true
+						}
+					},
+					{
+						m::list(c,
+							{
+								.widget_params = {
+									.id = "lines"s,
+									.lp = {
+										.dims = {lp::min, lp::fill}
+									}
+								}
+							}
+						)
+					}
+				),
+				m::scroll_bar(c,
+					{
+						.widget_params = {
+							.id = "vertical_scroll"s,
+							.lp = {
+								.dims = {lp::min, lp::max}
+							}
+						},
+						.oriented_params = {
+							.vertical = true
+						}
+					}
+				)
+			}
+		),
+		m::scroll_bar(c,
+			{
+				.widget_params = {
+					.id = "horizontal_scroll"s,
+					.lp = {
+						.dims = {lp::fill, lp::min}
+					}
+				},
+				.oriented_params = {
+					.vertical = false
+				}
+			}
+		)
+	};
+	// clang-format on
+}
 } // namespace
 
 // TODO: refactor to fix this lint issue
@@ -43,36 +122,8 @@ code_edit::code_edit(const utki::shared_ref<ruis::context>& c, const tml::forest
 	text_widget(this->context, desc),
 	container( //
 		this->context,
-		tml::read(R"qwertyuiop(
-			layout{column}
-			@row{
-				lp{dx{fill} dy{fill} weight{1}}
-
-				@scroll_area{
-					id{scroll_area}
-					lp{dx{fill} dy{fill} weight{1}}
-					clip{true}
-					@list{
-						id{lines}
-						lp{dx{min} dy{fill}}
-					}
-				}
-				@vertical_scroll_bar{
-					id{vertical_scroll}
-
-					lp{
-						dx{min} dy{max}
-					}
-				}
-			}
-			@horizontal_scroll_bar{
-				id{horizontal_scroll}
-
-				lp{
-					dx{fill} dy{min}
-				}
-			}
-		)qwertyuiop")
+		{.container_params = {.layout = ruis::layout::column}},
+		make_root_widgets(this->context)
 	),
 	list(utki::make_shared_from(this->get_widget_as<ruis::list>("lines"))),
 	scroll_area(utki::make_shared_from(this->get_widget_as<ruis::scroll_area>("scroll_area"))),
