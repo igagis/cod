@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tiling_area.hpp"
 
 #include <ruis/context.hpp>
-#include <ruis/widgets/label/color.hpp>
+#include <ruis/widgets/label/rectangle.hpp>
 
 using namespace cod;
 
@@ -33,7 +33,7 @@ const uint32_t dragger_color = 0xffff8080;
 } // namespace
 
 namespace {
-class dragger : public ruis::color
+class dragger : public ruis::rectangle
 {
 	bool grabbed = false;
 	ruis::vector2 grab_point;
@@ -47,8 +47,8 @@ public:
 	std::shared_ptr<ruis::widget> next_widget;
 
 	dragger(const utki::shared_ref<ruis::context>& c, tiling_area& owner) :
-		ruis::widget(std::move(c), tml::forest()),
-		ruis::color(this->context, tml::forest()),
+		ruis::widget(std::move(c), ruis::widget::all_parameters{}),
+		ruis::rectangle(this->context, {}),
 		owner(owner)
 	{
 		this->set_color(dragger_color);
@@ -130,7 +130,7 @@ public:
 	void render(const ruis::matrix4& matrix) const override
 	{
 		if (this->is_hovered() || this->grabbed) {
-			this->ruis::color::render(matrix);
+			this->ruis::rectangle::render(matrix);
 		}
 	}
 };
