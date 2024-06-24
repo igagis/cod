@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <papki/fs_file.hpp>
 #include <ruis/widgets/group/tree_view.hpp>
-#include <ruis/widgets/label/color.hpp>
+#include <ruis/widgets/label/rectangle.hpp>
 #include <ruis/widgets/label/text.hpp>
 #include <ruis/widgets/proxy/click_proxy.hpp>
 #include <ruis/widgets/proxy/mouse_proxy.hpp>
@@ -157,34 +157,55 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(
 	ASSERT(tr.is_valid(index))
 	auto& file_entry = tr[index];
 
-	auto w = this->owner.context.get().inflater.inflate(R"(
-		@pile{
-			@click_proxy{
-				id{cp}
-				lp{
-					dx{fill}
-					dy{fill}
+	namespace m = ruis::make;
+	using ruis::lp;
+
+	auto& c = this->owner.context;
+
+	// clang-format off
+	auto w = m::pile(c,
+		{},
+		{
+			m::click_proxy(c,
+				{
+					.widget_params = {
+						.id = "cp"s,
+						.lp = {
+							.dims = {lp::fill, lp::fill}
+						}
+					}
 				}
-			}
-			@color{
-				id{bg}
-				lp{
-					dx{fill}
-					dy{fill}
+			),
+			m::rectangle(c,
+				{
+					.widget_params = {
+						.id = "bg"s,
+						.lp = {
+							.dims = {lp::fill, lp::fill}
+						},
+						.visible = false
+					},
+					.color_params = {
+						.color = 0xffff8080
+					}
 				}
-				color{${ruis_color_highlight}}
-				visible{false}
-			}
-			@text{
-				id{tx}
-			}
+			),
+			m::text(c,
+				{
+					.widget_params = {
+						.id = "tx"s
+					}
+				},
+				{}
+			)
 		}
-	)");
+	);
+	// clang-format on
 
 	w.get().get_widget_as<ruis::text>("tx").set_text(file_entry.value.name);
 
 	if (utki::make_span(this->owner.cursor_index) == index) {
-		auto bg = w.get().try_get_widget_as<ruis::color>("bg");
+		auto bg = w.get().try_get_widget_as<ruis::rectangle>("bg");
 		ASSERT(bg)
 		bg->set_visible(true);
 	}
