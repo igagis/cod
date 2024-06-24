@@ -34,6 +34,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "context.hpp"
 
+using namespace std::string_literals;
+
 using namespace cod;
 
 namespace {
@@ -265,7 +267,7 @@ std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(utki::shared_ref<r
 							.lp = {
 								.dims = {lp::fill, lp::fill},
 								.weight = 1
-							}
+							},
 							.clip = true
 						}
 					}
