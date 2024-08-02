@@ -23,10 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
 
-#include <ruis/widgets/base/fraction_band_widget.hpp>
-#include <ruis/widgets/group/scroll_area.hpp>
-#include <ruis/widgets/label/text.hpp>
-#include <ruis/widgets/slider/scroll_bar.hpp>
+#include <ruis/widget/base/fraction_band_widget.hpp>
+#include <ruis/widget/group/scroll_area.hpp>
+#include <ruis/widget/label/text.hpp>
+#include <ruis/widget/slider/scroll_bar.hpp>
 #include <utki/linq.hpp>
 #include <utki/string.hpp>
 
@@ -49,33 +49,31 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<r
 	return {
 		m::row(c,
 			{
-				.widget_params = {
-					.lp = {
-						.dims = {lp::fill, lp::fill},
-						.weight = 1
-					}
+				.layout_params = {
+					.dims = {lp::fill, lp::fill},
+					.weight = 1
 				}
 			},
 			{
 				m::scroll_area(c,
 					{
+						.layout_params = {
+							.dims = {lp::fill, lp::fill},
+							.weight = 1
+						},
 						.widget_params = {
 							.id = "scroll_area"s,
-							.lp = {
-								.dims = {lp::fill, lp::fill},
-								.weight = 1
-							},
 							.clip = true
 						}
 					},
 					{
 						m::list(c,
 							{
+								.layout_params = {
+									.dims = {lp::min, lp::fill}
+								},
 								.widget_params = {
-									.id = "lines"s,
-									.lp = {
-										.dims = {lp::min, lp::fill}
-									}
+									.id = "lines"s
 								}
 							}
 						)
@@ -83,11 +81,11 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<r
 				),
 				m::scroll_bar(c,
 					{
+						.layout_params = {
+							.dims = {lp::min, lp::max}
+						},
 						.widget_params = {
-							.id = "vertical_scroll"s,
-							.lp = {
-								.dims = {lp::min, lp::max}
-							}
+							.id = "vertical_scroll"s
 						},
 						.oriented_params = {
 							.vertical = true
@@ -98,11 +96,11 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<r
 		),
 		m::scroll_bar(c,
 			{
+				.layout_params = {
+					.dims = {lp::fill, lp::min}
+				},
 				.widget_params = {
-					.id = "horizontal_scroll"s,
-					.lp = {
-						.dims = {lp::fill, lp::min}
-					}
+					.id = "horizontal_scroll"s
 				},
 				.oriented_params = {
 					.vertical = false
@@ -296,10 +294,12 @@ void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 
 			auto pos = ruis::real(cp.x()) * this->owner.font_info.glyph_dims.x();
 			matr.translate(pos, 0);
-			matr.scale(ruis::vector2(
-				cursor_thickness_pp * this->context.get().units.dots_per_pp(),
-				this->owner.font_info.glyph_dims.y()
-			));
+			matr.scale(
+				ruis::vector2(
+					cursor_thickness_pp * this->context.get().units.dots_per_pp(),
+					this->owner.font_info.glyph_dims.y()
+				)
+			);
 
 			constexpr auto cursor_color = 0xffffffff;
 

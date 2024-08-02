@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <list>
 
-#include <ruis/widgets/group/book.hpp>
+#include <ruis/widget/group/book.hpp>
 #include <utki/singleton.hpp>
 #include <utki/span.hpp>
 

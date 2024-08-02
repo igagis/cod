@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "file_page.hpp"
 
-#include <ruis/widgets/label/text.hpp>
+#include <ruis/widget/label/text.hpp>
 
 #include "context.hpp"
 #include "file_opener.hpp"

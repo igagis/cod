@@ -22,9 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <ruis/context.hpp>
-#include <ruis/widgets/group/book.hpp>
-#include <ruis/widgets/group/tree_view.hpp>
-#include <ruis/widgets/widget.hpp>
+#include <ruis/widget/group/book.hpp>
+#include <ruis/widget/group/tree_view.hpp>
+#include <ruis/widget/widget.hpp>
 
 #include "page.hpp"
 
@@ -60,7 +60,8 @@ class file_tree_page :
 		size_t count(utki::span<const size_t> index) const noexcept override;
 		utki::shared_ref<ruis::widget> get_widget(utki::span<const size_t> index, bool is_collapsed) override;
 
-		std::string get_path(utki::span<const size_t> index
+		std::string get_path(
+			utki::span<const size_t> index
 		) const; // TODO: make noexcept, right now linter is angry about it
 	};
 

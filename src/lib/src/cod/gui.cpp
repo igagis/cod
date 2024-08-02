@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "gui.hpp"
 
-#include <ruis/widgets/group/tabbed_book.hpp>
+#include <ruis/widget/group/tabbed_book.hpp>
 
 #include "context.hpp"
 #include "file_tree_page.hpp"

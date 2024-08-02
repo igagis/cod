@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "tabbed_book_tile.hpp"
 
-#include <ruis/widgets/label/text.hpp>
+#include <ruis/widget/label/text.hpp>
 
 using namespace cod;
 

@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <ruis/widgets/group/tabbed_book.hpp>
+#include <ruis/widget/group/tabbed_book.hpp>
 
 #include "page.hpp"
 #include "tile.hpp"

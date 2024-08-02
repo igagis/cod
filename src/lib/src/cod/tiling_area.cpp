@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tiling_area.hpp"
 
 #include <ruis/context.hpp>
-#include <ruis/widgets/label/color.hpp>
+#include <ruis/widget/label/color.hpp>
 
 using namespace cod;
 

@@ -22,12 +22,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "file_tree_page.hpp"
 
 #include <papki/fs_file.hpp>
-#include <ruis/widgets/label/color.hpp>
-#include <ruis/widgets/label/text.hpp>
-#include <ruis/widgets/proxy/click_proxy.hpp>
-#include <ruis/widgets/proxy/mouse_proxy.hpp>
-#include <ruis/widgets/proxy/resize_proxy.hpp>
-#include <ruis/widgets/slider/scroll_bar.hpp>
+#include <ruis/widget/label/color.hpp>
+#include <ruis/widget/label/text.hpp>
+#include <ruis/widget/proxy/click_proxy.hpp>
+#include <ruis/widget/proxy/mouse_proxy.hpp>
+#include <ruis/widget/proxy/resize_proxy.hpp>
+#include <ruis/widget/slider/scroll_bar.hpp>
 #include <utki/linq.hpp>
 #include <utki/tree.hpp>
 
@@ -106,10 +106,11 @@ auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> ind
 	})
 #endif
 
-	auto dir_name = utki::cat( //
-		cod::context::inst().base_dir,
-		make_path(index, this->cache)
-	);
+	auto dir_name = utki::
+		cat( //
+			cod::context::inst().base_dir,
+			make_path(index, this->cache)
+		);
 
 	LOG([&](auto& o) {
 		o << "dir_name = " << dir_name << std::endl;

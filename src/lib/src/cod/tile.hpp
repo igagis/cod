@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <ruis/paint/frame_vao.hpp>
-#include <ruis/widgets/widget.hpp>
+#include <ruis/widget/widget.hpp>
 
 namespace cod {
 

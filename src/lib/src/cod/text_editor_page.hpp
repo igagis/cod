@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <ruis/widgets/group/book.hpp>
+#include <ruis/widget/group/book.hpp>
 
 #include "code_edit.hpp"
 #include "file_page.hpp"
