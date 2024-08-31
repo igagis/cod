@@ -157,7 +157,9 @@ std::string file_tree_page::file_tree_provider::get_path(utki::span<const size_t
 file_tree_page::file_tree_provider::file_tree_provider(file_tree_page& owner) :
 	owner(owner),
 	cache(read_files(utki::make_span<size_t>(nullptr, 0)))
-{}
+{
+	std::cout << "cache.size() = " << this->cache.size() << std::endl;
+}
 
 size_t file_tree_page::file_tree_provider::count(utki::span<const size_t> index) const noexcept
 {

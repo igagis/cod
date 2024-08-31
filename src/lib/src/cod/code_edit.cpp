@@ -43,14 +43,13 @@ namespace {
 std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<ruis::context> c)
 {
 	namespace m = ruis::make;
-	using lp = ruis::lp;
 
 	// clang-format off
 	return {
 		m::row(c,
 			{
 				.layout_params = {
-					.dims = {lp::fill, lp::fill},
+					.dims = {ruis::dim::fill, ruis::dim::fill},
 					.weight = 1
 				}
 			},
@@ -58,7 +57,7 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<r
 				m::scroll_area(c,
 					{
 						.layout_params = {
-							.dims = {lp::fill, lp::fill},
+							.dims = {ruis::dim::fill, ruis::dim::fill},
 							.weight = 1
 						},
 						.widget_params = {
@@ -70,7 +69,7 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<r
 						m::list(c,
 							{
 								.layout_params = {
-									.dims = {lp::min, lp::fill}
+									.dims = {ruis::dim::min, ruis::dim::fill}
 								},
 								.widget_params = {
 									.id = "lines"s
@@ -82,7 +81,7 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<r
 				m::scroll_bar(c,
 					{
 						.layout_params = {
-							.dims = {lp::min, lp::max}
+							.dims = {ruis::dim::min, ruis::dim::max}
 						},
 						.widget_params = {
 							.id = "vertical_scroll"s
@@ -97,7 +96,7 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<r
 		m::scroll_bar(c,
 			{
 				.layout_params = {
-					.dims = {lp::fill, lp::min}
+					.dims = {ruis::dim::fill, ruis::dim::min}
 				},
 				.widget_params = {
 					.id = "horizontal_scroll"s
@@ -344,7 +343,8 @@ void code_edit::start_cursor_blinking()
 	this->context.get().updater.get().stop(*this);
 	this->cursor_blink_visible = true;
 	this->context.get().updater.get().start(
-		utki::make_weak_from(*static_cast<updateable*>(this)),
+		// explicit static_cast is needed because updateable is a private base of code_edit
+		utki::make_shared_from(*static_cast<updateable*>(this)),
 		cursor_blink_period_ms
 	);
 }
