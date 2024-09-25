@@ -216,7 +216,7 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(
 
 	w.get().get_widget_as<ruis::text>("tx").set_text(file_entry.value.name);
 
-	if (utki::make_span(this->owner.cursor_index) == index) {
+	if (utki::deep_equals(utki::make_span(this->owner.cursor_index), index)) {
 		auto bg = w.get().try_get_widget_as<ruis::color>("bg");
 		ASSERT(bg)
 		bg->set_visible(true);
