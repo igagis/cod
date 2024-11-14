@@ -1102,7 +1102,7 @@ void code_edit::notify_text_change()
 	this->lines_provider->notify_data_set_change();
 }
 
-void code_edit::set_line_spans(decltype(line::spans)&& spans, size_t line_index)
+void code_edit::set_line_spans(decltype(line::spans) && spans, size_t line_index)
 {
 	if (line_index >= this->lines.size()) {
 		throw std::out_of_range("code_edit::set_line_spans(): given line index is out of range");
