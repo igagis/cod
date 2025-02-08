@@ -1,7 +1,7 @@
 /*
 cod - text editor
 
-Copyright (C) 2021  Ivan Gagis <igagis@gmail.com>
+Copyright (C) 2021-2024  Ivan Gagis <igagis@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -184,11 +184,13 @@ regex_highlighter_model::matcher::match_result regex_highlighter_model::regex_ma
 				match_result::capture_group{.matched = false, .offset = size_t(std::distance(m[0].first, m[0].second))}
 			);
 		} else {
-			capture_groups.push_back(match_result::capture_group{
-				.matched = true,
-				.offset = size_t(std::distance(m[0].first, m[i].first)),
-				.str = std::u32string(m[i].first, m[i].second)
-			});
+			capture_groups.push_back(
+				match_result::capture_group{
+					.matched = true,
+					.offset = size_t(std::distance(m[0].first, m[i].first)),
+					.str = std::u32string(m[i].first, m[i].second)
+				}
+			);
 		}
 	}
 

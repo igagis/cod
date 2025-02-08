@@ -1,7 +1,7 @@
 /*
 cod - text editor
 
-Copyright (C) 2021  Ivan Gagis <igagis@gmail.com>
+Copyright (C) 2021-2024  Ivan Gagis <igagis@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -68,7 +68,8 @@ public:
 
 		virtual match_result match(std::u32string_view str, bool line_begin) const = 0;
 
-		virtual std::shared_ptr<const matcher> preprocess(utki::span<const match_result::capture_group> capture_groups
+		virtual std::shared_ptr<const matcher> preprocess(
+			utki::span<const match_result::capture_group> capture_groups
 		) const
 		{
 			return nullptr;
@@ -143,7 +144,8 @@ public:
 			return {};
 		}
 
-		std::shared_ptr<const matcher> preprocess(utki::span<const match_result::capture_group> capture_groups
+		std::shared_ptr<const matcher> preprocess(
+			utki::span<const match_result::capture_group> capture_groups
 		) const override;
 	};
 

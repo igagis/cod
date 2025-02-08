@@ -1,7 +1,7 @@
 /*
 cod - text editor
 
-Copyright (C) 2021  Ivan Gagis <igagis@gmail.com>
+Copyright (C) 2021-2024  Ivan Gagis <igagis@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,10 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <r4/segment2.hpp>
 #include <ruis/updateable.hpp>
-#include <ruis/widgets/base/text_widget.hpp>
-#include <ruis/widgets/group/list.hpp>
-#include <ruis/widgets/group/scroll_area.hpp>
-#include <ruis/widgets/input/character_input_widget.hpp>
+#include <ruis/widget/base/text_widget.hpp>
+#include <ruis/widget/group/list.hpp>
+#include <ruis/widget/group/scroll_area.hpp>
+#include <ruis/widget/input/character_input_widget.hpp>
 #include <utki/flags.hpp>
 
 #include "synhi/highlighter.hpp"

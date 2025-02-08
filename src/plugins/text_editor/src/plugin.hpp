@@ -1,7 +1,7 @@
 /*
 cod - text editor
 
-Copyright (C) 2021  Ivan Gagis <igagis@gmail.com>
+Copyright (C) 2021-2024  Ivan Gagis <igagis@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,8 +28,10 @@ namespace cod {
 class text_editor_plugin : public cod::plugin
 {
 public:
-	std::shared_ptr<file_page> open_file(const utki::shared_ref<ruis::context>& context, std::string_view file_name)
-		override;
+	std::shared_ptr<file_page> open_file(
+		const utki::shared_ref<ruis::context>& context,
+		std::string_view file_name
+	) override;
 };
 
 } // namespace cod

@@ -1,7 +1,7 @@
 /*
 cod - text editor
 
-Copyright (C) 2021  Ivan Gagis <igagis@gmail.com>
+Copyright (C) 2021-2024  Ivan Gagis <igagis@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,10 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
 
-#include <ruis/widgets/base/fraction_band_widget.hpp>
-#include <ruis/widgets/group/scroll_area.hpp>
-#include <ruis/widgets/label/text.hpp>
-#include <ruis/widgets/slider/scroll_bar.hpp>
+#include <ruis/widget/base/fraction_band_widget.hpp>
+#include <ruis/widget/group/scroll_area.hpp>
+#include <ruis/widget/label/text.hpp>
+#include <ruis/widget/slider/scroll_bar.hpp>
 #include <utki/linq.hpp>
 #include <utki/string.hpp>
 
@@ -43,39 +43,36 @@ namespace {
 std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<ruis::context> c)
 {
 	namespace m = ruis::make;
-	using lp = ruis::lp;
 
 	// clang-format off
 	return {
 		m::row(c,
 			{
-				.widget_params = {
-					.lp = {
-						.dims = {lp::fill, lp::fill},
-						.weight = 1
-					}
+				.layout_params = {
+					.dims = {ruis::dim::fill, ruis::dim::fill},
+					.weight = 1
 				}
 			},
 			{
 				m::scroll_area(c,
 					{
+						.layout_params = {
+							.dims = {ruis::dim::fill, ruis::dim::fill},
+							.weight = 1
+						},
 						.widget_params = {
 							.id = "scroll_area"s,
-							.lp = {
-								.dims = {lp::fill, lp::fill},
-								.weight = 1
-							},
 							.clip = true
 						}
 					},
 					{
 						m::list(c,
 							{
+								.layout_params = {
+									.dims = {ruis::dim::min, ruis::dim::fill}
+								},
 								.widget_params = {
-									.id = "lines"s,
-									.lp = {
-										.dims = {lp::min, lp::fill}
-									}
+									.id = "lines"s
 								}
 							}
 						)
@@ -83,11 +80,11 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<r
 				),
 				m::scroll_bar(c,
 					{
+						.layout_params = {
+							.dims = {ruis::dim::min, ruis::dim::max}
+						},
 						.widget_params = {
-							.id = "vertical_scroll"s,
-							.lp = {
-								.dims = {lp::min, lp::max}
-							}
+							.id = "vertical_scroll"s
 						},
 						.oriented_params = {
 							.vertical = true
@@ -98,11 +95,11 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<r
 		),
 		m::scroll_bar(c,
 			{
+				.layout_params = {
+					.dims = {ruis::dim::fill, ruis::dim::min}
+				},
 				.widget_params = {
-					.id = "horizontal_scroll"s,
-					.lp = {
-						.dims = {lp::fill, lp::min}
-					}
+					.id = "horizontal_scroll"s
 				},
 				.oriented_params = {
 					.vertical = false
@@ -296,10 +293,12 @@ void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 
 			auto pos = ruis::real(cp.x()) * this->owner.font_info.glyph_dims.x();
 			matr.translate(pos, 0);
-			matr.scale(ruis::vector2(
-				cursor_thickness_pp * this->context.get().units.dots_per_pp(),
-				this->owner.font_info.glyph_dims.y()
-			));
+			matr.scale(
+				ruis::vector2(
+					cursor_thickness_pp * this->context.get().units.dots_per_pp(),
+					this->owner.font_info.glyph_dims.y()
+				)
+			);
 
 			constexpr auto cursor_color = 0xffffffff;
 
@@ -344,7 +343,8 @@ void code_edit::start_cursor_blinking()
 	this->context.get().updater.get().stop(*this);
 	this->cursor_blink_visible = true;
 	this->context.get().updater.get().start(
-		utki::make_weak_from(*static_cast<updateable*>(this)),
+		// explicit static_cast is needed because updateable is a private base of code_edit
+		utki::make_shared_from(*static_cast<updateable*>(this)),
 		cursor_blink_period_ms
 	);
 }

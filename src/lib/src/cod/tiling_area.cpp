@@ -1,7 +1,7 @@
 /*
 cod - text editor
 
-Copyright (C) 2021  Ivan Gagis <igagis@gmail.com>
+Copyright (C) 2021-2024  Ivan Gagis <igagis@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tiling_area.hpp"
 
 #include <ruis/context.hpp>
-#include <ruis/widgets/label/rectangle.hpp>
+#include <ruis/widget/label/color.hpp>
 
 using namespace cod;
 

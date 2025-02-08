@@ -1,7 +1,7 @@
 /*
 cod - text editor
 
-Copyright (C) 2021  Ivan Gagis <igagis@gmail.com>
+Copyright (C) 2021-2024  Ivan Gagis <igagis@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,13 +22,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "file_tree_page.hpp"
 
 #include <papki/fs_file.hpp>
-#include <ruis/widgets/group/tree_view.hpp>
-#include <ruis/widgets/label/rectangle.hpp>
-#include <ruis/widgets/label/text.hpp>
-#include <ruis/widgets/proxy/click_proxy.hpp>
-#include <ruis/widgets/proxy/mouse_proxy.hpp>
-#include <ruis/widgets/proxy/resize_proxy.hpp>
-#include <ruis/widgets/slider/scroll_bar.hpp>
+#include <ruis/widget/label/color.hpp>
+#include <ruis/widget/label/text.hpp>
+#include <ruis/widget/proxy/click_proxy.hpp>
+#include <ruis/widget/proxy/mouse_proxy.hpp>
+#include <ruis/widget/proxy/resize_proxy.hpp>
+#include <ruis/widget/slider/scroll_bar.hpp>
 #include <utki/linq.hpp>
 #include <utki/tree.hpp>
 
@@ -76,10 +75,11 @@ auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> ind
 	})
 #endif
 
-	auto dir_name = utki::cat( //
-		cod::context::inst().base_dir,
-		make_path(index, this->cache)
-	);
+	auto dir_name = utki::
+		cat( //
+			cod::context::inst().base_dir,
+			make_path(index, this->cache)
+		);
 
 	LOG([&](auto& o) {
 		o << "dir_name = " << dir_name << std::endl;
@@ -126,7 +126,9 @@ std::string file_tree_page::file_tree_provider::get_path(utki::span<const size_t
 file_tree_page::file_tree_provider::file_tree_provider(file_tree_page& owner) :
 	owner(owner),
 	cache(read_files(utki::make_span<size_t>(nullptr, 0)))
-{}
+{
+	std::cout << "cache.size() = " << this->cache.size() << std::endl;
+}
 
 size_t file_tree_page::file_tree_provider::count(utki::span<const size_t> index) const noexcept
 {
@@ -204,8 +206,8 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(
 
 	w.get().get_widget_as<ruis::text>("tx").set_text(file_entry.value.name);
 
-	if (utki::make_span(this->owner.cursor_index) == index) {
-		auto bg = w.get().try_get_widget_as<ruis::rectangle>("bg");
+	if (utki::deep_equals(utki::make_span(this->owner.cursor_index), index)) {
+		auto bg = w.get().try_get_widget_as<ruis::color>("bg");
 		ASSERT(bg)
 		bg->set_visible(true);
 	}
