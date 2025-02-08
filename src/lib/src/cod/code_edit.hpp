@@ -1,7 +1,7 @@
 /*
 cod - text editor
 
-Copyright (C) 2021  Ivan Gagis <igagis@gmail.com>
+Copyright (C) 2021-2024  Ivan Gagis <igagis@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -252,14 +252,14 @@ public:
 	void set_text(std::u32string text) override;
 	std::u32string get_text() const override;
 
-	void set_line_spans(decltype(line::spans) && spans, size_t line_index);
+	void set_line_spans(decltype(line::spans)&& spans, size_t line_index);
 
-	void set_line_spans(decltype(line::spans) && spans, decltype(lines)::const_iterator i)
+	void set_line_spans(decltype(line::spans)&& spans, decltype(lines)::const_iterator i)
 	{
 		this->set_line_spans(std::move(spans), std::distance(this->lines.cbegin(), i));
 	}
 
-	const decltype(lines) & get_lines() const
+	const decltype(lines)& get_lines() const
 	{
 		return this->lines;
 	}
