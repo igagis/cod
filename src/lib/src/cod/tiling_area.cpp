@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tiling_area.hpp"
 
 #include <ruis/context.hpp>
-#include <ruis/widget/label/color.hpp>
+#include <ruis/widget/label/rectangle.hpp>
 
 using namespace cod;
 
@@ -47,7 +47,7 @@ public:
 	std::shared_ptr<ruis::widget> next_widget;
 
 	dragger(const utki::shared_ref<ruis::context>& c, tiling_area& owner) :
-		ruis::widget(std::move(c), ruis::widget::all_parameters{}),
+		ruis::widget(std::move(c), {}, {}),
 		ruis::rectangle(this->context, {}),
 		owner(owner)
 	{

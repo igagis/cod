@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "file_tree_page.hpp"
 
 #include <papki/fs_file.hpp>
-#include <ruis/widget/label/color.hpp>
+#include <ruis/widget/label/rectangle.hpp>
 #include <ruis/widget/label/text.hpp>
 #include <ruis/widget/proxy/click_proxy.hpp>
 #include <ruis/widget/proxy/mouse_proxy.hpp>
@@ -160,7 +160,6 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(
 	auto& file_entry = tr[index];
 
 	namespace m = ruis::make;
-	using ruis::lp;
 
 	auto& c = this->owner.context;
 
@@ -170,21 +169,21 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(
 		{
 			m::click_proxy(c,
 				{
+					.layout_params = {
+						.dims = {ruis::dim::fill, ruis::dim::fill}
+					},
 					.widget_params = {
-						.id = "cp"s,
-						.lp = {
-							.dims = {lp::fill, lp::fill}
-						}
+						.id = "cp"s
 					}
 				}
 			),
 			m::rectangle(c,
 				{
+					.layout_params = {
+						.dims = {ruis::dim::fill, ruis::dim::fill}
+					},
 					.widget_params = {
 						.id = "bg"s,
-						.lp = {
-							.dims = {lp::fill, lp::fill}
-						},
 						.visible = false
 					},
 					.color_params = {
@@ -207,7 +206,7 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(
 	w.get().get_widget_as<ruis::text>("tx").set_text(file_entry.value.name);
 
 	if (utki::deep_equals(utki::make_span(this->owner.cursor_index), index)) {
-		auto bg = w.get().try_get_widget_as<ruis::color>("bg");
+		auto bg = w.get().try_get_widget_as<ruis::rectangle>("bg");
 		ASSERT(bg)
 		bg->set_visible(true);
 	}
@@ -237,39 +236,36 @@ namespace {
 std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(utki::shared_ref<ruis::context> c)
 {
 	namespace m = ruis::make;
-	using ruis::lp;
 
 	// clang-format off
 	return {
 		m::row(c,
 			{
-				.widget_params = {
-					.lp ={
-						.dims = {lp::fill, lp::fill},
-						.weight = 1
-					}
+				.layout_params{
+					.dims = {ruis::dim::fill, ruis::dim::fill},
+					.weight = 1
 				}
 			},
 			{
 				m::tree_view(c,
 					{
+						.layout_params{
+							.dims = {ruis::dim::fill, ruis::dim::fill},
+							.weight = 1
+						},
 						.widget_params = {
 							.id = "tree_view"s,
-							.lp = {
-								.dims = {lp::fill, lp::fill},
-								.weight = 1
-							},
 							.clip = true
 						}
 					}
 				),
 				m::scroll_bar(c,
 					{
+						.layout_params{
+							.dims = {ruis::dim::min, ruis::dim::max}
+						},
 						.widget_params = {
-							.id = "vertical_scroll"s,
-							.lp = {
-								.dims = {lp::min, lp::max}
-							}
+							.id = "vertical_scroll"s
 						},
 						.oriented_params = {
 							.vertical = true
@@ -280,11 +276,11 @@ std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(utki::shared_ref<r
 		),
 		m::scroll_bar(c,
 			{
+				.layout_params{
+					.dims = {ruis::dim::max, ruis::dim::min}
+				},
 				.widget_params = {
-					.id = "horizontal_scroll"s,
-					.lp = {
-						.dims = {lp::max, lp::min}
-					}
+					.id = "horizontal_scroll"s
 				},
 				.oriented_params = {
 					.vertical = false
