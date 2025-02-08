@@ -57,6 +57,15 @@ const tml::forest tab_desc = tml::read(R"(
 		}
 	)");
 
+// TODO: ruis::tab is not yet modernized
+// utki::shared_ref<ruis::tab> make_tab(utki::shared_ref<ruis::context> c, std::vector<utki::shared_ref<ruis::widget>>
+// contents){
+// 	// clang-format off
+// 	return ruis::tab(c,
+// 	);
+// 	// clang-format on
+// }
+
 } // namespace
 
 void tabbed_book_tile::add(const utki::shared_ref<page>& p)
