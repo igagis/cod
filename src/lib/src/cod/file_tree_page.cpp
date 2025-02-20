@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "file_tree_page.hpp"
 
 #include <papki/fs_file.hpp>
-#include <ruis/widget/label/color.hpp>
+#include <ruis/widget/label/rectangle.hpp>
 #include <ruis/widget/label/text.hpp>
 #include <ruis/widget/proxy/click_proxy.hpp>
 #include <ruis/widget/proxy/mouse_proxy.hpp>
@@ -32,6 +32,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <utki/tree.hpp>
 
 #include "context.hpp"
+#include "style.hpp"
+
+using namespace std::string_literals;
 
 using namespace cod;
 
@@ -191,36 +194,52 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(
 	ASSERT(tr.is_valid(index))
 	auto& file_entry = tr[index];
 
-	auto w = this->owner.context.get().inflater.inflate(R"(
-		@pile{
-			@click_proxy{
-				id{cp}
-				lp{
-					dx{fill}
-					dy{fill}
+	auto& c = this->owner.context;
+
+	// clang-format off
+	auto w = m::pile(c,
+		{},
+		{
+			m::click_proxy(c,
+				{
+					.layout_params{
+						.dims{ruis::dim::fill, ruis::dim::fill}
+					},
+					.widget_params{
+						.id = "cp"s
+					}
 				}
-			}
-			@color{
-				id{bg}
-				lp{
-					dx{fill}
-					dy{fill}
+			),
+			m::rectangle(c,
+				{
+					.layout_params{
+						.dims{ruis::dim::fill, ruis::dim::fill}
+					},
+					.widget_params{
+						.id = "bg"s,
+						.visible = false
+					},
+					.color_params{
+						.color = ruis::style::color_highlight
+					}
 				}
-				color{${ruis_color_highlight}}
-				visible{false}
-			}
-			@text{
-				id{tx}
-			}
+			),
+			m::text(c,
+				{
+					.widget_params{
+						.id = "tx"s
+					}
+				}
+			)
 		}
-	)");
+	);
+	// clang-format on
 
 	w.get().get_widget_as<ruis::text>("tx").set_text(file_entry.value.name);
 
 	if (utki::deep_equals(utki::make_span(this->owner.cursor_index), index)) {
-		auto bg = w.get().try_get_widget_as<ruis::color>("bg");
-		ASSERT(bg)
-		bg->set_visible(true);
+		auto& bg = w.get().get_widget_as<ruis::rectangle>("bg");
+		bg.set_visible(true);
 	}
 
 	auto& cp = w.get().get_widget_as<ruis::click_proxy>("cp");
@@ -247,7 +266,12 @@ void file_tree_page::notify_file_select()
 file_tree_page::file_tree_page(const utki::shared_ref<ruis::context>& c) :
 	ruis::widget(c, tml::forest()),
 	page(this->context),
-	ruis::container(this->context, ::layout)
+	// clang-format off
+	ruis::container(
+		this->context,
+		::layout
+	)
+	// clang-format on
 {
 	auto& tv = this->get_widget_as<ruis::tree_view>("tree_view");
 
