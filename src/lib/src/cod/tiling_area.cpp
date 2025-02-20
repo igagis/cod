@@ -22,7 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tiling_area.hpp"
 
 #include <ruis/context.hpp>
-#include <ruis/widget/label/color.hpp>
+#include <ruis/widget/label/rectangle.hpp>
+
+#include "style.hpp"
 
 using namespace cod;
 
@@ -33,7 +35,7 @@ const uint32_t dragger_color = 0xffff8080;
 } // namespace
 
 namespace {
-class dragger : public ruis::color
+class dragger : public ruis::rectangle
 {
 	bool grabbed = false;
 	ruis::vector2 grab_point;
@@ -46,9 +48,12 @@ public:
 	std::shared_ptr<ruis::widget> prev_widget;
 	std::shared_ptr<ruis::widget> next_widget;
 
-	dragger(const utki::shared_ref<ruis::context>& c, tiling_area& owner) :
-		ruis::widget(std::move(c), tml::forest()),
-		ruis::color(this->context, tml::forest()),
+	dragger(
+		utki::shared_ref<ruis::context> context, //
+		tiling_area& owner
+	) :
+		ruis::widget(std::move(context), {}, {}),
+		ruis::rectangle(this->context, ruis::rectangle::all_parameters{}),
 		owner(owner)
 	{
 		this->set_color(dragger_color);
@@ -130,31 +135,37 @@ public:
 	void render(const ruis::matrix4& matrix) const override
 	{
 		if (this->is_hovered() || this->grabbed) {
-			this->ruis::color::render(matrix);
+			this->ruis::rectangle::render(matrix);
 		}
 	}
 };
 } // namespace
 
-tiling_area::tiling_area(const utki::shared_ref<ruis::context>& c, const tml::forest& desc) :
-	ruis::widget(std::move(c), desc),
-	tile(this->context, tml::forest()),
+tiling_area::tiling_area(
+	utki::shared_ref<ruis::context> context, //
+	all_parameters params,
+	utki::span<const utki::shared_ref<ruis::widget>> children
+) :
+	ruis::widget(
+		std::move(context), //
+		std::move(params.layout_params),
+		std::move(params.widget_params)
+	),
+	tile(this->context),
 	ruis::oriented({.vertical = false}),
-	ruis::container(this->context, tml::forest()),
-	content_container(utki::make_shared<ruis::container>(this->context, tml::forest())),
+	ruis::container(this->context, ruis::container::all_parameters{}, {}),
+	content_container(
+		m::container(
+			this->context, //
+			{},
+			children
+		)
+	),
 	min_tile_size(this->context.get().units.pp_to_px(minimal_tile_size_pp)),
 	dragger_size(this->context.get().units.pp_to_px(dragger_size_pp))
 {
-	for (const auto& p : desc) {
-		if (!ruis::is_property(p)) {
-			continue;
-		}
-	}
-
 	this->ruis::container::push_back(this->content_container);
 	this->content_container.get().move_to({0, 0});
-
-	this->content_container.get().push_back_inflate(desc);
 }
 
 void tiling_area::on_lay_out()

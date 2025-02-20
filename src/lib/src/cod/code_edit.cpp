@@ -113,15 +113,20 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<r
 
 // TODO: refactor to fix this lint issue
 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-code_edit::code_edit(const utki::shared_ref<ruis::context>& c, const tml::forest& desc) :
-	widget(std::move(c), desc),
+code_edit::code_edit(utki::shared_ref<ruis::context> context) :
+	widget(std::move(context), {}, {}),
 	character_input_widget(this->context),
-	text_widget(this->context, desc),
-	container( //
-		this->context,
-		{.container_params = {.layout = ruis::layout::column}},
+	text_widget(this->context, ruis::text_widget::parameters{}),
+	// clang-format off
+	container(this->context,
+		{
+			.container_params{
+				.layout = ruis::layout::column
+			}
+		},
 		make_root_widgets(this->context)
 	),
+	// clang-format on
 	list(utki::make_shared_from(this->get_widget_as<ruis::list>("lines"))),
 	scroll_area(utki::make_shared_from(this->get_widget_as<ruis::scroll_area>("scroll_area"))),
 	lines_provider(std::make_shared<provider>(*this))

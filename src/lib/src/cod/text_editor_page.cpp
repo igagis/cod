@@ -27,10 +27,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-text_editor_page::text_editor_page(const utki::shared_ref<ruis::context>& context, std::string&& file_name) :
-	ruis::widget(std::move(context), tml::forest()),
+text_editor_page::text_editor_page(
+	utki::shared_ref<ruis::context> context, //
+	std::string file_name
+) :
+	ruis::widget(std::move(context), {}, {}),
 	file_page(this->context, std::move(file_name)),
-	code_edit(this->context, tml::forest())
+	code_edit(this->context)
 {
 	// TODO: for now we set XML syntax highlighter for each code edit page,
 	//       later need to implement proper system

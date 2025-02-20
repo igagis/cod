@@ -72,7 +72,7 @@ class file_tree_page :
 	void notify_file_select();
 
 public:
-	file_tree_page(const utki::shared_ref<ruis::context>& c);
+	file_tree_page(utki::shared_ref<ruis::context> context);
 
 	std::function<void(std::string)> file_select_handler;
 

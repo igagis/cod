@@ -230,8 +230,8 @@ void file_tree_page::notify_file_select()
 	}
 }
 
-file_tree_page::file_tree_page(const utki::shared_ref<ruis::context>& c) :
-	ruis::widget(c, tml::forest()),
+file_tree_page::file_tree_page(utki::shared_ref<ruis::context> context) :
+	ruis::widget(std::move(context), {}, {}),
 	page(this->context),
 	// clang-format off
 	ruis::container(
@@ -331,7 +331,7 @@ file_tree_page::file_tree_page(const utki::shared_ref<ruis::context>& c) :
 
 utki::shared_ref<ruis::widget> file_tree_page::create_tab_content()
 {
-	auto t = utki::make_shared<ruis::text>(this->context, tml::forest());
+	auto t = m::text(this->context, {});
 	t.get().set_text("file tree");
 	return t;
 }

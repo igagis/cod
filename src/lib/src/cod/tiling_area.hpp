@@ -41,7 +41,16 @@ public:
 	const ruis::real min_tile_size;
 	const ruis::real dragger_size;
 
-	tiling_area(const utki::shared_ref<ruis::context>& c, const tml::forest& desc);
+	struct all_parameters {
+		ruis::layout_parameters layout_params;
+		ruis::widget::parameters widget_params;
+	};
+
+	tiling_area(
+		utki::shared_ref<ruis::context> context, //
+		all_parameters params,
+		utki::span<const utki::shared_ref<ruis::widget>> children
+	);
 
 	ruis::container& content()
 	{
@@ -72,5 +81,20 @@ public:
 
 private:
 };
+
+namespace make {
+inline utki::shared_ref<cod::tiling_area> tiling_area(
+	utki::shared_ref<ruis::context> context, //
+	cod::tiling_area::all_parameters params,
+	utki::span<const utki::shared_ref<ruis::widget>> children
+)
+{
+	return utki::make_shared<cod::tiling_area>(
+		std::move(context), //
+		std::move(params),
+		children
+	);
+}
+} // namespace make
 
 } // namespace cod

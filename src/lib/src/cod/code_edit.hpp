@@ -97,8 +97,16 @@ class code_edit :
 		size_t line_num;
 
 	public:
-		line_widget(const utki::shared_ref<ruis::context>& c, code_edit& owner, size_t line_num) :
-			widget(std::move(c), tml::forest()),
+		line_widget(
+			utki::shared_ref<ruis::context> context, //
+			code_edit& owner,
+			size_t line_num
+		) :
+			widget(
+				std::move(context), //
+				{},
+				{}
+			),
 			owner(owner),
 			line_num(line_num)
 		{}
@@ -135,7 +143,10 @@ class code_edit :
 		void update_selection();
 
 	public:
-		cursor(code_edit& owner, r4::vector2<size_t> pos) :
+		cursor(
+			code_edit& owner, //
+			r4::vector2<size_t> pos
+		) :
 			owner(owner),
 			pos(pos)
 		{
@@ -232,7 +243,7 @@ class code_edit :
 	void scroll_to(r4::vector2<size_t> pos_glyphs);
 
 public:
-	code_edit(const utki::shared_ref<ruis::context>& c, const tml::forest& desc);
+	code_edit(utki::shared_ref<ruis::context> context);
 
 	code_edit(const code_edit&) = delete;
 	code_edit& operator=(const code_edit&) = delete;

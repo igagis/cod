@@ -33,14 +33,23 @@ using namespace ruis::length_literals;
 
 using namespace cod;
 
-tabbed_book_tile::tabbed_book_tile(const utki::shared_ref<ruis::context>& c, const tml::forest& desc) :
-	ruis::widget(std::move(c), desc),
-	tile(this->context, desc),
-	tabbed_book(this->context, desc)
+tabbed_book_tile::tabbed_book_tile(
+	utki::shared_ref<ruis::context> context, //
+	all_parameters params
+) :
+	ruis::widget(
+		std::move(context), //
+		std::move(params.layout_params),
+		std::move(params.widget_params)
+	),
+	tile(this->context),
+	tabbed_book(
+		this->context, //
+		ruis::tabbed_book::all_parameters{}
+	)
 {}
 
-// TODO: pass param by value?
-void tabbed_book_tile::add(const utki::shared_ref<page>& p)
+void tabbed_book_tile::add(utki::shared_ref<page> p)
 {
 	auto& c = this->context;
 
@@ -97,5 +106,8 @@ void tabbed_book_tile::add(const utki::shared_ref<page>& p)
 			});
 		};
 
-	this->ruis::tabbed_book::add(tab, p);
+	this->ruis::tabbed_book::add(
+		tab, //
+		std::move(p)
+	);
 }

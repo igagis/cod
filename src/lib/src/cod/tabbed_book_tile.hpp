@@ -28,11 +28,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace cod {
 
-class tabbed_book_tile : public tile, private ruis::tabbed_book
+class tabbed_book_tile :
+	public tile, //
+	private ruis::tabbed_book
 {
 public:
-	// TODO: modernize
-	tabbed_book_tile(const utki::shared_ref<ruis::context>& c, const tml::forest& desc);
+	struct all_parameters {
+		ruis::layout_parameters layout_params;
+		ruis::widget::parameters widget_params;
+	};
+
+	tabbed_book_tile(
+		utki::shared_ref<ruis::context> context, //
+		all_parameters params
+	);
 
 	void render(const ruis::matrix4& matrix) const override
 	{
@@ -40,12 +49,25 @@ public:
 		this->tile::render(matrix);
 	}
 
-	void add(const utki::shared_ref<page>& p);
+	void add(utki::shared_ref<page> p);
 
 	size_t num_pages() const noexcept
 	{
 		return this->get_book().size();
 	}
 };
+
+namespace make {
+inline utki::shared_ref<cod::tabbed_book_tile> tabbed_book_tile(
+	utki::shared_ref<ruis::context> context, //
+	cod::tabbed_book_tile::all_parameters params
+)
+{
+	return utki::make_shared<cod::tabbed_book_tile>(
+		std::move(context), //
+		std::move(params)
+	);
+}
+} // namespace make
 
 } // namespace cod
