@@ -1099,7 +1099,7 @@ void code_edit::on_character_input(const ruis::character_input_event& e)
 void code_edit::notify_text_change()
 {
 	this->on_text_change();
-	this->lines_provider->notify_data_set_change();
+	this->lines_provider->notify_model_change();
 }
 
 void code_edit::set_line_spans(decltype(line::spans) && spans, size_t line_index)

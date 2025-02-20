@@ -108,10 +108,11 @@ class code_edit :
 		ruis::vector2 measure(const ruis::vector2& quotum) const noexcept override;
 	};
 
-	struct provider : public ruis::list::provider {
+	struct provider : public ruis::list_provider {
 		code_edit& owner;
 
 		provider(code_edit& owner) :
+			list_provider(owner.context),
 			owner(owner)
 		{}
 
