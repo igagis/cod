@@ -38,39 +38,6 @@ using namespace std::string_literals;
 
 using namespace cod;
 
-namespace {
-const tml::forest layout = tml::read(R"qwertyuiop(
-	layout{column}
-	@row{
-		lp{
-			dx{fill} dy{fill}
-			weight{1}
-		}
-		@tree_view{
-			id{tree_view}
-			clip{true}
-			lp{
-				dx{fill} dy{fill}
-				weight{1}
-			}
-		}
-		@vertical_scroll_bar{
-			id{vertical_scroll}
-
-			lp{
-				dx{min} dy{max}
-			}
-		}
-	}
-	@horizontal_scroll_bar{
-		id{horizontal_scroll}
-		lp{
-			dx{max} dy{min}
-		}
-	}
-)qwertyuiop");
-} // namespace
-
 std::string file_tree_page::file_tree_provider::make_path(
 	utki::span<const size_t> index,
 	const file_entry_forest_type& fef
@@ -269,9 +236,63 @@ file_tree_page::file_tree_page(const utki::shared_ref<ruis::context>& c) :
 	// clang-format off
 	ruis::container(
 		this->context,
-		::layout
+		{
+			.container_params{
+				.layout = ruis::layout::column
+			}
+		},
+		{
+			m::row(this->context,
+				{
+					.layout_params{
+						.dims{ruis::dim::fill, ruis::dim::fill},
+						.weight = 1
+					}
+				},
+				{
+					m::tree_view(this->context,
+						{
+							.layout_params{
+								.dims{ruis::dim::fill, ruis::dim::fill},
+								.weight = 1
+							},
+							.widget_params{
+								.id = "tree_view"s,
+								.clip = true
+							}
+						}
+					),
+					m::scroll_bar(this->context,
+						{
+							.layout_params{
+								.dims{ruis::dim::min, ruis::dim::max}
+							},
+							.widget_params{
+								.id = "vertical_scroll"s
+							},
+							.oriented_params{
+								.vertical = true
+							}
+						}
+					)
+				}
+			),
+			m::scroll_bar(this->context,
+				{
+					.layout_params{
+						.dims{ruis::dim::max, ruis::dim::min}
+					},
+					.widget_params{
+						.id = "horizontal_scroll"s
+					},
+					.oriented_params{
+						.vertical = false
+					}
+				}
+			)
+		}
 	)
-	// clang-format on
+// clang-format on
 {
 	auto& tv = this->get_widget_as<ruis::tree_view>("tree_view");
 

@@ -2,10 +2,10 @@
 
 #include <ruis/default_style.hpp>
 
-namespace cod{
+namespace cod {
 
-namespace m{
+namespace m {
 using namespace ruis::make;
-}
+} // namespace m
 
-}
+} // namespace cod
