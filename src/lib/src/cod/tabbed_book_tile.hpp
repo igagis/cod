@@ -31,6 +31,7 @@ namespace cod {
 class tabbed_book_tile : public tile, private ruis::tabbed_book
 {
 public:
+	// TODO: modernize
 	tabbed_book_tile(const utki::shared_ref<ruis::context>& c, const tml::forest& desc);
 
 	void render(const ruis::matrix4& matrix) const override

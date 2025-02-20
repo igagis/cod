@@ -21,7 +21,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "tabbed_book_tile.hpp"
 
+#include <ruis/widget/label/gap.hpp>
 #include <ruis/widget/label/text.hpp>
+
+#include "style.hpp"
+
+using namespace std::string_literals;
+using namespace std::string_view_literals;
+
+using namespace ruis::length_literals;
 
 using namespace cod;
 
@@ -31,37 +39,48 @@ tabbed_book_tile::tabbed_book_tile(const utki::shared_ref<ruis::context>& c, con
 	tabbed_book(this->context, desc)
 {}
 
-namespace {
-
-const tml::forest tab_desc = tml::read(R"(
-		@tab{
-			@row{
-				// @text{
-				// 	id{text}
-				// 	text{cube}
-				// }
-				@widget{
-					id{placeholder}
-				}
-				@push_button{
-					id{close_button}
-					@image{
-						lp{
-							dx { 8pp }
-							dy { 8pp }
-						}
-						image{ruis_img_close}
-					}
-				}
-			}
-		}
-	)");
-
-} // namespace
-
+// TODO: pass param by value?
 void tabbed_book_tile::add(const utki::shared_ref<page>& p)
 {
-	auto tab = this->context.get().inflater.inflate_as<ruis::tab>(tab_desc);
+	auto& c = this->context;
+
+	// clang-format off
+	auto tab = m::tab(c,
+		{
+			.container_params{
+				.layout = ruis::layout::row
+			}
+		},
+		{
+			m::gap(c,
+				{
+					.widget_params{
+						.id = "placeholder"s
+					}
+				}
+			),
+			m::push_button(c,
+				{
+					.widget_params{
+						.id = "close_button"s
+					}
+				},
+				{
+					m::image(c,
+						{
+							.layout_params{
+								.dims{8_pp, 8_pp}
+							},
+							.image_params{
+								.img = c.get().loader.load<ruis::res::image>("ruis_img_close"sv)
+							}
+						}
+					)
+				}
+			)
+		}
+	);
+	// clang-format on
 
 	tab.get().get_widget("placeholder").replace_by(p.get().create_tab_content());
 
