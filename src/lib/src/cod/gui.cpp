@@ -27,19 +27,56 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "file_tree_page.hpp"
 #include "tabbed_book_tile.hpp"
 
+using namespace std::string_literals;
+using namespace ruis::length_literals;
+
 using namespace cod;
+
+namespace m {
+using namespace ruis::make;
+using namespace cod::make;
+} // namespace m
+
+namespace {
+utki::shared_ref<ruis::widget> make_root_widget(const utki::shared_ref<ruis::context> c)
+{
+	// clang-format off
+	return m::tiling_area(c,
+		{
+			m::tabbed_book_tile(c,
+				{
+					.layout_params{
+						.dims = {200_pp, ruis::dim::min}
+					},
+					.widget_params{
+						.id = "left_panel"s
+					}
+				}
+			),
+			m::tabbed_book_tile(c,
+				{
+					.layout_params{
+						.dims = {600_pp, ruis::dim::min}
+					},
+					.widget_params{
+						.id = "tabbed_book"s
+					}
+				}
+			)
+		}
+	);
+	// clang-format on
+}
+} // namespace
 
 gui::gui(ruisapp::application& app) :
 	ruis_context(app.gui.context)
 {
 	app.gui.init_standard_widgets(*app.get_res_file());
 
-	app.gui.context.get().inflater.register_widget<tiling_area>("tiling_area");
-	app.gui.context.get().inflater.register_widget<tabbed_book_tile>("tabbed_book_tile");
+	app.gui.context.get().loader().mount_res_pack(*app.get_res_file("res/"));
 
-	app.gui.context.get().loader.mount_res_pack(*app.get_res_file("res/"));
-
-	app.gui.set_root(app.gui.context.get().inflater.inflate(*app.get_res_file("res/main.gui")));
+	app.gui.set_root(make_root_widget(app.gui.context));
 
 	auto& c = app.gui.get_root();
 

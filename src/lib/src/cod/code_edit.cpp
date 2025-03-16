@@ -113,20 +113,36 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<r
 
 // TODO: refactor to fix this lint issue
 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-code_edit::code_edit(const utki::shared_ref<ruis::context>& c, const tml::forest& desc) :
-	widget(std::move(c), desc),
+code_edit::code_edit(
+	utki::shared_ref<ruis::context> context, //
+	all_parameters params
+) :
+	widget(
+		std::move(context), //
+		std::move(params.layout_params),
+		std::move(params.widget_params)
+	),
 	character_input_widget(this->context),
-	text_widget(this->context, desc),
-	container( //
-		this->context,
-		{.container_params = {.layout = ruis::layout::column}},
+	text_widget(
+		this->context, //
+		std::move(params.text_params)
+	),
+	// clang-format off
+	container(
+		this->context, //
+		{
+			.container_params{
+				.layout = ruis::layout::column
+			}
+		},
 		make_root_widgets(this->context)
 	),
+	// clang-format on
 	list(utki::make_shared_from(this->get_widget_as<ruis::list>("lines"))),
 	scroll_area(utki::make_shared_from(this->get_widget_as<ruis::scroll_area>("scroll_area"))),
 	lines_provider(std::make_shared<provider>(*this))
 {
-	this->set_font_face(this->context.get().loader.load<ruis::res::font>("fnt_monospace"));
+	this->set_font_face(this->context.get().loader().load<ruis::res::font>("fnt_monospace"));
 	// call overridden method explicitly because we are still in constructor
 	this->code_edit::on_font_change();
 
@@ -255,7 +271,11 @@ void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 		constexpr auto selection_color = 0xff804000;
 
 		auto& r = this->context.get().renderer.get();
-		r.shader->color_pos->render(matr, r.pos_quad_01_vao.get(), selection_color);
+		r.shaders().color_pos->render(
+			matr, //
+			r.obj().pos_quad_01_vao.get(),
+			selection_color
+		);
 	}
 
 	const auto& l = this->owner.lines[this->line_num];
@@ -303,7 +323,7 @@ void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 			constexpr auto cursor_color = 0xffffffff;
 
 			auto& r = this->context.get().renderer.get();
-			r.shader->color_pos->render(matr, r.pos_quad_01_vao.get(), cursor_color);
+			r.shaders().color_pos->render(matr, r.obj().pos_quad_01_vao.get(), cursor_color);
 		}
 	}
 }
@@ -1099,7 +1119,7 @@ void code_edit::on_character_input(const ruis::character_input_event& e)
 void code_edit::notify_text_change()
 {
 	this->on_text_change();
-	this->lines_provider->notify_data_set_change();
+	this->lines_provider->notify_model_change();
 }
 
 void code_edit::set_line_spans(decltype(line::spans)&& spans, size_t line_index)

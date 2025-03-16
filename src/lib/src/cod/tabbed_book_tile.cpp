@@ -21,56 +21,78 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "tabbed_book_tile.hpp"
 
+#include <ruis/widget/label/gap.hpp>
 #include <ruis/widget/label/text.hpp>
 
+using namespace std::string_literals;
+using namespace std::string_view_literals;
+using namespace ruis::length_literals;
 using namespace cod;
 
-tabbed_book_tile::tabbed_book_tile(const utki::shared_ref<ruis::context>& c, const tml::forest& desc) :
-	ruis::widget(std::move(c), desc),
-	tile(this->context, desc),
-	tabbed_book(this->context, desc)
+namespace m {
+using namespace ruis::make;
+} // namespace m
+
+tabbed_book_tile::tabbed_book_tile(
+	utki::shared_ref<ruis::context> context,
+	all_parameters params
+) :
+	ruis::widget(
+		std::move(context), //
+		std::move(params.layout_params),
+		std::move(params.widget_params)
+	),
+	tile(this->context),
+	tabbed_book(this->context, {})
 {}
 
 namespace {
 
-const tml::forest tab_desc = tml::read(R"(
-		@tab{
-			@row{
-				// @text{
-				// 	id{text}
-				// 	text{cube}
-				// }
-				@widget{
-					id{placeholder}
-				}
-				@push_button{
-					id{close_button}
-					@image{
-						lp{
-							dx { 8pp }
-							dy { 8pp }
-						}
-						image{ruis_img_close}
+utki::shared_ref<ruis::tab> make_tab(const utki::shared_ref<ruis::context>& c)
+{
+	// clang-format off
+	return m::tab(c,
+		{
+			.container_params{
+				.layout = ruis::layout::row
+			}
+		},
+		{
+			m::gap(c,
+				{
+					.widget_params{
+						.id = "placeholder"s
 					}
 				}
-			}
+			),
+			m::push_button(c,
+				{
+					.widget_params{
+						.id = "close_button"s
+					}
+				},
+				{
+					m::image(c,
+						{
+							.layout_params{
+								.dims = {8_pp, 8_pp}
+							},
+							.image_params{
+								.img = c.get().loader().load<ruis::res::image>("ruis_img_close"sv)
+							}
+						}
+					)
+				}
+			)
 		}
-	)");
-
-// TODO: ruis::tab is not yet modernized
-// utki::shared_ref<ruis::tab> make_tab(utki::shared_ref<ruis::context> c, std::vector<utki::shared_ref<ruis::widget>>
-// contents){
-// 	// clang-format off
-// 	return ruis::tab(c,
-// 	);
-// 	// clang-format on
-// }
-
+	);
+	// clang-format on
+}
 } // namespace
 
 void tabbed_book_tile::add(const utki::shared_ref<page>& p)
 {
-	auto tab = this->context.get().inflater.inflate_as<ruis::tab>(tab_desc);
+	auto tab = make_tab(this->context);
 
 	tab.get().get_widget("placeholder").replace_by(p.get().create_tab_content());
 
@@ -82,7 +104,7 @@ void tabbed_book_tile::add(const utki::shared_ref<page>& p)
 			auto t = tab_wp.lock();
 			ASSERT(t)
 
-			btn.context.get().run_from_ui_thread([tb, t] {
+			btn.context.get().post_to_ui_thread([tb, t] {
 				tb->tear_out(*t);
 			});
 		};

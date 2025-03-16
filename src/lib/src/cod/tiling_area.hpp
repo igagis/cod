@@ -33,7 +33,10 @@ The tile_area arranges tiles either vertially or horizontally.
 The tiles are stored in the content container which is the first container child of the tile_area.
 The rest of the children are dragger widgets for dragging tile borders within tile_area with mouse.
 */
-class tiling_area : public tile, public ruis::oriented, private ruis::container
+class tiling_area :
+	public tile, //
+	public ruis::oriented,
+	private ruis::container
 {
 	utki::shared_ref<ruis::container> content_container;
 
@@ -41,7 +44,10 @@ public:
 	const ruis::real min_tile_size;
 	const ruis::real dragger_size;
 
-	tiling_area(const utki::shared_ref<ruis::context>& c, const tml::forest& desc);
+	tiling_area(
+		utki::shared_ref<ruis::context> context, //
+		utki::span<const utki::shared_ref<ruis::widget>> children
+	);
 
 	ruis::container& content()
 	{
@@ -72,5 +78,18 @@ public:
 
 private:
 };
+
+namespace make {
+inline utki::shared_ref<cod::tiling_area> tiling_area(
+	utki::shared_ref<ruis::context> context, //
+	utki::span<const utki::shared_ref<ruis::widget>> children
+)
+{
+	return utki::make_shared<cod::tiling_area>(
+		std::move(context), //
+		children
+	);
+}
+} // namespace make
 
 } // namespace cod

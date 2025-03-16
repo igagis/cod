@@ -28,8 +28,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-file_page::file_page(const utki::shared_ref<ruis::context>& context, std::string&& file_name) :
-	ruis::widget(std::move(context), tml::forest()),
+file_page::file_page(
+	utki::shared_ref<ruis::context> context, //
+	std::string file_name
+) :
+	ruis::widget(std::move(context), {}, {}),
 	page(this->context),
 	file_name(std::move(file_name))
 {}
@@ -48,7 +51,9 @@ void file_page::on_tear_out() noexcept
 
 utki::shared_ref<ruis::widget> file_page::create_tab_content()
 {
-	auto t = utki::make_shared<ruis::text>(this->context, tml::forest());
-	t.get().set_text(file_name);
-	return t;
+	return ruis::make::text(
+		this->context, //
+		{},
+		utki::to_utf32(this->file_name)
+	);
 }

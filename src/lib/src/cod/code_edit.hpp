@@ -97,8 +97,12 @@ class code_edit :
 		size_t line_num;
 
 	public:
-		line_widget(const utki::shared_ref<ruis::context>& c, code_edit& owner, size_t line_num) :
-			widget(std::move(c), tml::forest()),
+		line_widget(
+			utki::shared_ref<ruis::context> context, //
+			code_edit& owner,
+			size_t line_num
+		) :
+			widget(std::move(context), {}, {}),
 			owner(owner),
 			line_num(line_num)
 		{}
@@ -108,10 +112,11 @@ class code_edit :
 		ruis::vector2 measure(const ruis::vector2& quotum) const noexcept override;
 	};
 
-	struct provider : public ruis::list::provider {
+	struct provider : public ruis::list_provider {
 		code_edit& owner;
 
 		provider(code_edit& owner) :
+			list_provider(owner.context),
 			owner(owner)
 		{}
 
@@ -231,7 +236,16 @@ class code_edit :
 	void scroll_to(r4::vector2<size_t> pos_glyphs);
 
 public:
-	code_edit(const utki::shared_ref<ruis::context>& c, const tml::forest& desc);
+	struct all_parameters {
+		ruis::layout_parameters layout_params;
+		ruis::widget::parameters widget_params;
+		ruis::text_widget::parameters text_params;
+	};
+
+	code_edit(
+		utki::shared_ref<ruis::context> context, //
+		all_parameters params
+	);
 
 	code_edit(const code_edit&) = delete;
 	code_edit& operator=(const code_edit&) = delete;

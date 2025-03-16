@@ -27,8 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-tile::tile(const utki::shared_ref<ruis::context>& c, const tml::forest& desc) :
-	ruis::widget(std::move(c), desc),
+tile::tile(utki::shared_ref<ruis::context> context) :
+	ruis::widget(std::move(context), {}, {}),
 	selection_vao(this->context.get().renderer)
 {}
 

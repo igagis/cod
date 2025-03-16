@@ -40,7 +40,7 @@ class dragger : public ruis::rectangle
 
 	tiling_area& owner;
 
-	ruis::mouse_cursor_manager::iterator arrows_cursor_iter;
+	ruis::mouse_cursor_stack::iterator arrows_cursor_iter;
 
 public:
 	std::shared_ptr<ruis::widget> prev_widget;
@@ -65,7 +65,7 @@ public:
 
 		if (!this->grabbed) {
 			if (!this->is_hovered()) {
-				this->context.get().cursor_manager.pop(this->arrows_cursor_iter);
+				this->context.get().cursor_stack.pop(this->arrows_cursor_iter);
 			}
 		}
 
@@ -119,11 +119,11 @@ public:
 		}
 
 		if (this->is_hovered() || grabbed) {
-			this->arrows_cursor_iter = this->context.get().cursor_manager.push(
+			this->arrows_cursor_iter = this->context.get().cursor_stack.push(
 				this->owner.is_vertical() ? ruis::mouse_cursor::up_down_arrow : ruis::mouse_cursor::left_right_arrow
 			);
 		} else {
-			this->context.get().cursor_manager.pop(this->arrows_cursor_iter);
+			this->context.get().cursor_stack.pop(this->arrows_cursor_iter);
 		}
 	}
 
@@ -136,25 +136,20 @@ public:
 };
 } // namespace
 
-tiling_area::tiling_area(const utki::shared_ref<ruis::context>& c, const tml::forest& desc) :
-	ruis::widget(std::move(c), desc),
-	tile(this->context, tml::forest()),
+tiling_area::tiling_area(
+	utki::shared_ref<ruis::context> context, //
+	utki::span<const utki::shared_ref<ruis::widget>> children
+) :
+	ruis::widget(std::move(context), {}, {}),
+	tile(this->context),
 	ruis::oriented({.vertical = false}),
-	ruis::container(this->context, tml::forest()),
-	content_container(utki::make_shared<ruis::container>(this->context, tml::forest())),
+	ruis::container(this->context, {}, {}),
+	content_container(ruis::make::container(this->context, {}, children)),
 	min_tile_size(this->context.get().units.pp_to_px(minimal_tile_size_pp)),
 	dragger_size(this->context.get().units.pp_to_px(dragger_size_pp))
 {
-	for (const auto& p : desc) {
-		if (!ruis::is_property(p)) {
-			continue;
-		}
-	}
-
 	this->ruis::container::push_back(this->content_container);
 	this->content_container.get().move_to({0, 0});
-
-	this->content_container.get().push_back_inflate(desc);
 }
 
 void tiling_area::on_lay_out()

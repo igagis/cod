@@ -25,9 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-page::page(const utki::shared_ref<ruis::context>& context) :
-	ruis::widget(std::move(context), tml::forest()),
-	ruis::page(this->context, tml::forest())
+page::page(utki::shared_ref<ruis::context> context) :
+	ruis::widget(std::move(context), {}, {}),
+	ruis::page(this->context, {})
 {}
 
 bool page::on_key(const ruis::key_event& e)
@@ -41,7 +41,7 @@ bool page::on_key(const ruis::key_event& e)
 		return true;
 	} else if (context::inst().shortcuts.get("cod.page.move_right").combo == e.combo) {
 		std::cout << "move page right" << std::endl;
-		this->context.get().run_from_ui_thread([p = utki::make_shared_from(*this)] {
+		this->context.get().post_to_ui_thread([p = utki::make_shared_from(*this)] {
 			p.get().move_right();
 		});
 		return true;

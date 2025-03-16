@@ -124,6 +124,7 @@ std::string file_tree_page::file_tree_provider::get_path(utki::span<const size_t
 }
 
 file_tree_page::file_tree_provider::file_tree_provider(file_tree_page& owner) :
+	provider(owner.context),
 	owner(owner),
 	cache(read_files(utki::make_span<size_t>(nullptr, 0)))
 {
@@ -218,7 +219,7 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(
 			return;
 		}
 		this->owner.cursor_index = index;
-		this->notify_item_changed();
+		this->notify_item_change();
 		this->owner.notify_file_select();
 	};
 
@@ -292,8 +293,8 @@ std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(utki::shared_ref<r
 }
 } // namespace
 
-file_tree_page::file_tree_page(const utki::shared_ref<ruis::context>& c) :
-	ruis::widget(c, tml::forest()),
+file_tree_page::file_tree_page(utki::shared_ref<ruis::context> context) :
+	ruis::widget(std::move(context), {}, {}),
 	page(this->context),
 	ruis::container(
 		this->context,
@@ -338,7 +339,9 @@ file_tree_page::file_tree_page(const utki::shared_ref<ruis::context>& c) :
 
 utki::shared_ref<ruis::widget> file_tree_page::create_tab_content()
 {
-	auto t = utki::make_shared<ruis::text>(this->context, tml::forest());
-	t.get().set_text("file tree");
-	return t;
+	return ruis::make::text(
+		this->context, //
+		{},
+		U"file tree"s
+	);
 }
