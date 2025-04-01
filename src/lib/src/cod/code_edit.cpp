@@ -268,7 +268,7 @@ void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 		matr.translate(pos, 0);
 		matr.scale(ruis::vector2(ruis::real(length), 1).comp_mul(this->owner.font_info.glyph_dims));
 
-		constexpr auto selection_color = 0xff804000;
+		constexpr ruis::color selection_color = 0xff804000;
 
 		auto& r = this->context.get().renderer.get();
 		r.shaders().color_pos->render(
@@ -291,7 +291,7 @@ void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 		matr.translate(ruis::real(cur_char_pos) * this->owner.font_info.glyph_dims.x(), this->owner.font_info.baseline);
 		auto res = font.render(
 			matr,
-			ruis::color_to_vec4f(s.style->color),
+			s.style->color,
 			str.substr(cur_char_index, s.length),
 			this->owner.settings.tab_size,
 			cur_char_pos
@@ -320,10 +320,14 @@ void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 				)
 			);
 
-			constexpr auto cursor_color = 0xffffffff;
+			constexpr ruis::color cursor_color = 0xffffffff;
 
 			auto& r = this->context.get().renderer.get();
-			r.shaders().color_pos->render(matr, r.obj().pos_quad_01_vao.get(), cursor_color);
+			r.shaders().color_pos->render(
+				matr, //
+				r.obj().pos_quad_01_vao.get(),
+				cursor_color
+			);
 		}
 	}
 }

@@ -30,7 +30,7 @@ struct font_style {
 	bool underline = false;
 	bool stroke = false;
 	constexpr static auto default_color = 0xffffffff;
-	uint32_t color = default_color;
+	ruis::color color = default_color;
 };
 
 struct line_span {
