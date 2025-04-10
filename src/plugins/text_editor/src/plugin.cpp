@@ -1,7 +1,7 @@
 /*
 cod - text editor
 
-Copyright (C) 2021-2024  Ivan Gagis <igagis@gmail.com>
+Copyright (C) 2021-2025  Ivan Gagis <igagis@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -32,7 +32,13 @@ std::shared_ptr<file_page> text_editor_plugin::open_file(
 )
 {
 	auto page = std::make_shared<text_editor_page>(context, std::string(file_name));
-	page->set_text(utki::to_utf32(utki::make_string(papki::fs_file(file_name).load())));
+	page->set_text( //
+		utki::to_utf32( //
+			utki::make_string( //
+				papki::fs_file(file_name).load()
+			)
+		)
+	);
 
 	return page;
 }
