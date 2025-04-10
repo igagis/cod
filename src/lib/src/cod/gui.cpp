@@ -45,21 +45,23 @@ utki::shared_ref<ruis::widget> make_root_widget(const utki::shared_ref<ruis::con
 		{
 			m::tabbed_book_tile(c,
 				{
-					.layout_params{
-						.dims = {200_pp, ruis::dim::min}
-					},
 					.widget_params{
-						.id = "left_panel"s
+						.id = "left_panel"s,
+						.rectangle = {
+							{0, 0},
+							{(200_pp).get(c), 0}
+						}
 					}
 				}
 			),
 			m::tabbed_book_tile(c,
 				{
-					.layout_params{
-						.dims = {600_pp, ruis::dim::min}
-					},
 					.widget_params{
-						.id = "tabbed_book"s
+						.id = "tabbed_book"s,
+						.rectangle = {
+							{0, 0},
+							{(600_pp).get(c), 0}
+						}
 					}
 				}
 			)
