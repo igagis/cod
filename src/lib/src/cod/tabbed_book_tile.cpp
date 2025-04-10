@@ -48,7 +48,10 @@ tabbed_book_tile::tabbed_book_tile(
 
 namespace {
 
-utki::shared_ref<ruis::tab> make_tab(const utki::shared_ref<ruis::context>& c)
+utki::shared_ref<ruis::tab> make_tab(
+	const utki::shared_ref<ruis::context>& c, //
+	utki::shared_ref<ruis::widget> content
+)
 {
 	// clang-format off
 	return m::tab(c,
@@ -58,13 +61,7 @@ utki::shared_ref<ruis::tab> make_tab(const utki::shared_ref<ruis::context>& c)
 			}
 		},
 		{
-			m::gap(c,
-				{
-					.widget_params{
-						.id = "placeholder"s
-					}
-				}
-			),
+			std::move(content),
 			m::push_button(c,
 				{
 					.widget_params{
@@ -90,11 +87,12 @@ utki::shared_ref<ruis::tab> make_tab(const utki::shared_ref<ruis::context>& c)
 }
 } // namespace
 
-void tabbed_book_tile::add(const utki::shared_ref<page>& p)
+void tabbed_book_tile::add(utki::shared_ref<page> p)
 {
-	auto tab = make_tab(this->context);
-
-	tab.get().get_widget("placeholder").replace_by(p.get().create_tab_content());
+	auto tab = make_tab(
+		this->context, //
+		p.get().create_tab_content()
+	);
 
 	tab.get().get_widget_as<ruis::push_button>("close_button").click_handler =
 		[tabbed_book_wp = utki::make_weak_from(*this), tab_wp = utki::make_weak(tab)](ruis::push_button& btn) {
@@ -109,5 +107,8 @@ void tabbed_book_tile::add(const utki::shared_ref<page>& p)
 			});
 		};
 
-	this->ruis::tabbed_book::add(tab, p);
+	this->ruis::tabbed_book::add(
+		std::move(tab), //
+		std::move(p)
+	);
 }

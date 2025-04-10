@@ -49,7 +49,7 @@ utki::shared_ref<ruis::widget> make_root_widget(const utki::shared_ref<ruis::con
 						.id = "left_panel"s,
 						.rectangle = {
 							{0, 0},
-							{(200_pp).get(c), 0}
+							{(200_pp).get(c.get()), 0}
 						}
 					}
 				}
@@ -60,7 +60,7 @@ utki::shared_ref<ruis::widget> make_root_widget(const utki::shared_ref<ruis::con
 						.id = "tabbed_book"s,
 						.rectangle = {
 							{0, 0},
-							{(600_pp).get(c), 0}
+							{(600_pp).get(c.get()), 0}
 						}
 					}
 				}
@@ -103,5 +103,5 @@ gui::gui(ruisapp::application& app) :
 
 void gui::open_editor(utki::shared_ref<file_page> page)
 {
-	this->editors_tabbed_book->add(page);
+	this->editors_tabbed_book->add(std::move(page));
 }

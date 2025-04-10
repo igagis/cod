@@ -49,8 +49,7 @@ public:
 		this->tile::render(matrix);
 	}
 
-	// TODO: pass by value
-	void add(const utki::shared_ref<page>& p);
+	void add(utki::shared_ref<page> p);
 
 	size_t num_pages() const noexcept
 	{
