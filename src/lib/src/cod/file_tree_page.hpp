@@ -31,8 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace cod {
 
 class file_tree_page :
-	virtual public ruis::widget, //
-	public page,
+	public page, //
 	private ruis::container
 {
 	class file_tree_provider : public ruis::tree_view::provider
