@@ -296,11 +296,17 @@ std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(utki::shared_ref<r
 file_tree_page::file_tree_page(utki::shared_ref<ruis::context> context) :
 	ruis::widget(std::move(context), {}, {}),
 	page(this->context),
+	// clang-format off
 	ruis::container(
 		this->context,
-		{.container_params = {.layout = ruis::layout::column}},
+		{
+			.container_params{
+				.layout = ruis::layout::column
+			}
+		},
 		make_page_widgets(this->context)
 	)
+// clang-format on
 {
 	auto& tv = this->get_widget_as<ruis::tree_view>("tree_view");
 
