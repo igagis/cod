@@ -46,7 +46,7 @@ public:
 
 	tiling_area(
 		utki::shared_ref<ruis::context> context, //
-		utki::span<const utki::shared_ref<ruis::widget>> children
+		ruis::widget_list children
 	);
 
 	ruis::container& content()
@@ -82,12 +82,12 @@ private:
 namespace make {
 inline utki::shared_ref<cod::tiling_area> tiling_area(
 	utki::shared_ref<ruis::context> context, //
-	utki::span<const utki::shared_ref<ruis::widget>> children
+	ruis::widget_list children
 )
 {
 	return utki::make_shared<cod::tiling_area>(
 		std::move(context), //
-		children
+		std::move(children)
 	);
 }
 } // namespace make

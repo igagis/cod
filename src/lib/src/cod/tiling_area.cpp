@@ -138,13 +138,13 @@ public:
 
 tiling_area::tiling_area(
 	utki::shared_ref<ruis::context> context, //
-	utki::span<const utki::shared_ref<ruis::widget>> children
+	ruis::widget_list children
 ) :
 	ruis::widget(std::move(context), {}, {}),
 	tile(this->context),
 	ruis::oriented({.vertical = false}),
 	ruis::container(this->context, {}, {}),
-	content_container(ruis::make::container(this->context, {}, children)),
+	content_container(ruis::make::container(this->context, {}, std::move(children))),
 	min_tile_size(this->context.get().units.pp_to_px(minimal_tile_size_pp)),
 	dragger_size(this->context.get().units.pp_to_px(dragger_size_pp))
 {

@@ -43,7 +43,7 @@ tabbed_book_tile::tabbed_book_tile(
 		std::move(params.widget_params)
 	),
 	tile(this->context),
-	tabbed_book(this->context, {})
+	tabbed_book(this->context, {}, {})
 {}
 
 namespace {
