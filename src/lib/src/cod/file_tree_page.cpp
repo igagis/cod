@@ -313,18 +313,23 @@ file_tree_page::file_tree_page(utki::shared_ref<ruis::context> context) :
 	auto& vs = this->get_widget_as<ruis::scroll_bar>("vertical_scroll");
 	auto& hs = this->get_widget_as<ruis::scroll_bar>("horizontal_scroll");
 
-	tv.scroll_change_handler = [vs = utki::make_weak_from(vs), hs = utki::make_weak_from(hs)](ruis::tree_view& tv) {
-		auto f = tv.get_scroll_factor();
-		auto b = tv.get_scroll_band();
-		if (auto sb = hs.lock()) {
-			sb->set_fraction(f.x());
-			sb->set_band_fraction(b.x());
-		}
-		if (auto sb = vs.lock()) {
-			sb->set_fraction(f.y());
-			sb->set_band_fraction(b.y());
-		}
-	};
+	tv.scroll_change_handler = //
+		[ //
+			vs = utki::make_weak_from(vs), //
+			hs = utki::make_weak_from(hs) //
+	] //
+		(ruis::tree_view & tv) {
+			auto f = tv.get_scroll_factor();
+			auto b = tv.get_scroll_band();
+			if (auto sb = hs.lock()) {
+				sb->set_fraction(f.x());
+				sb->set_band_fraction(b.x());
+			}
+			if (auto sb = vs.lock()) {
+				sb->set_fraction(f.y());
+				sb->set_band_fraction(b.y());
+			}
+		};
 
 	vs.fraction_change_handler = [tv = utki::make_weak_from(tv)](ruis::fraction_widget& fw) {
 		if (auto w = tv.lock()) {
