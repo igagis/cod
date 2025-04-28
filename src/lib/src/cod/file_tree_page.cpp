@@ -75,11 +75,10 @@ auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> ind
 	})
 #endif
 
-	auto dir_name = utki::
-		cat( //
-			cod::context::inst().base_dir,
-			make_path(index, this->cache)
-		);
+	auto dir_name = utki::cat(
+		cod::context::inst().base_dir, //
+		make_path(index, this->cache)
+	);
 
 	LOG([&](auto& o) {
 		o << "dir_name = " << dir_name << std::endl;
@@ -207,9 +206,8 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(
 	w.get().get_widget_as<ruis::text>("tx").set_text(file_entry.value.name);
 
 	if (utki::deep_equals(utki::make_span(this->owner.cursor_index), index)) {
-		auto bg = w.get().try_get_widget_as<ruis::rectangle>("bg");
-		ASSERT(bg)
-		bg->set_visible(true);
+		auto& bg = w.get().get_widget_as<ruis::rectangle>("bg");
+		bg.set_visible(true);
 	}
 
 	auto& cp = w.get().get_widget_as<ruis::click_proxy>("cp");
@@ -234,7 +232,7 @@ void file_tree_page::notify_file_select()
 }
 
 namespace {
-std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(utki::shared_ref<ruis::context> c)
+std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(const utki::shared_ref<ruis::context>& c)
 {
 	namespace m = ruis::make;
 

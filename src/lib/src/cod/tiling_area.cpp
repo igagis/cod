@@ -48,7 +48,7 @@ public:
 
 	dragger(const utki::shared_ref<ruis::context>& c, tiling_area& owner) :
 		ruis::widget(std::move(c), {}, {}),
-		ruis::rectangle(this->context, {}),
+		ruis::rectangle(this->context, {}, {}),
 		owner(owner)
 	{
 		this->set_color(dragger_color);

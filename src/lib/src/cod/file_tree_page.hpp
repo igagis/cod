@@ -52,12 +52,20 @@ class file_tree_page :
 
 		decltype(cache) read_files(utki::span<const size_t> index) const;
 
-		static std::string make_path(utki::span<const size_t> index, const file_entry_forest_type& fef);
+		static std::string make_path(
+			utki::span<const size_t> index, //
+			const file_entry_forest_type& fef
+		);
 
 	public:
 		file_tree_provider(file_tree_page& owner);
+
 		size_t count(utki::span<const size_t> index) const noexcept override;
-		utki::shared_ref<ruis::widget> get_widget(utki::span<const size_t> index, bool is_collapsed) override;
+
+		utki::shared_ref<ruis::widget> get_widget(
+			utki::span<const size_t> index, //
+			bool is_collapsed
+		) override;
 
 		std::string get_path(
 			utki::span<const size_t> index
