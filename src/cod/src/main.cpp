@@ -40,8 +40,6 @@ const ruisapp::application_factory app_fac([](auto executbale, auto args) -> std
 		cla.plugins.emplace_back(file_name);
 	});
 
-	ASSERT(!args.empty()) // first item is the executable filename
-
 	auto fa = p.parse(args);
 
 	if (help) {
