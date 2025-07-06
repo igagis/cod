@@ -23,14 +23,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
+namespace {
+constexpr auto initial_window_width = 1024;
+constexpr auto initial_window_height = 768;
+} // namespace
+
 application::application(command_line_args cla) :
 	ruisapp::application(
 		"cod",
-		[]() {
-			constexpr auto initial_window_width = 1024;
-			constexpr auto initial_window_height = 768;
-			return ruisapp::window_params(r4::vector2<unsigned>(initial_window_width, initial_window_height));
-		}()
+		{
+			.dims = {initial_window_width, initial_window_height}
+}
 	),
 	context(std::move(cla), *this)
 {}
