@@ -34,7 +34,7 @@ class shortcut_resolver
 public:
 	struct shortcut {
 		std::string name;
-		ruis::key_combo combo = {ruis::key::unknown};
+		ruis::key_combo combo = {.key = ruis::key::unknown};
 	};
 
 private:

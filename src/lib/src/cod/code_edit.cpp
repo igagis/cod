@@ -486,9 +486,15 @@ void code_edit::erase_backward(cursor& c, size_t num)
 
 		auto ps = [&cp, &num]() -> pos_and_size {
 			if (cp.x() >= num) {
-				return {cp.x() - num, num};
+				return {
+					.pos = cp.x() - num, //
+					.size = num
+				};
 			} else {
-				return {0, cp.x()};
+				return {
+					.pos = 0, //
+					.size = cp.x()
+				};
 			}
 		}();
 
@@ -663,12 +669,18 @@ code_edit::cursor::selection code_edit::cursor::get_selection_glyphs() const noe
 	if (cp.y() < this->sel_pos_glyphs.y() || (cp.y() == this->sel_pos_glyphs.y() && cp.x() < this->sel_pos_glyphs.x()))
 	{
 		return {
-			.segment{cp, this->sel_pos_glyphs},
+			.segment{
+					 .p1 = cp, //
+				.p2 = this->sel_pos_glyphs
+			},
 			.is_left_to_right = false
 		};
 	} else {
 		return {
-			.segment{this->sel_pos_glyphs, cp},
+			.segment{
+					 .p1 = this->sel_pos_glyphs, //
+				.p2 = cp
+			},
 			.is_left_to_right = true
 		};
 	}

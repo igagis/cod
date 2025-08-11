@@ -39,7 +39,7 @@ using namespace std::string_view_literals;
 
 using namespace cod;
 
-auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> index) const -> decltype(cache)
+auto file_tree_page::file_tree_model::read_files(utki::span<const size_t> index) const -> decltype(cache)
 {
 #ifdef DEBUG
 	for (auto& i : index) {
@@ -77,7 +77,13 @@ auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> ind
 		.get();
 }
 
-std::string file_tree_page::file_tree_provider::get_path(utki::span<const size_t> index) const
+file_tree_page::file_tree_model::file_tree_model() :
+	cache(read_files(utki::make_span<size_t>(nullptr, 0)))
+{
+	std::cout << "cache.size() = " << this->cache.size() << std::endl;
+}
+
+std::string file_tree_page::file_tree_model::get_path(utki::span<const size_t> index) const
 {
 	if (index.empty()) {
 		return {};
@@ -105,17 +111,16 @@ std::string file_tree_page::file_tree_provider::get_path(utki::span<const size_t
 }
 
 file_tree_page::file_tree_provider::file_tree_provider(
-	file_tree_page& owner, //
-	utki::shared_ref<ruis::context> context
+	utki::shared_ref<ruis::context> context,
+	utki::shared_ref<file_tree_model> model,
+	file_tree_page& owner
 ) :
 	provider(std::move(context)),
 	owner(owner),
-	cache(read_files(utki::make_span<size_t>(nullptr, 0)))
-{
-	std::cout << "cache.size() = " << this->cache.size() << std::endl;
-}
+	model(std::move(model))
+{}
 
-size_t file_tree_page::file_tree_provider::count(utki::span<const size_t> index) const noexcept
+size_t file_tree_page::file_tree_model::count(utki::span<const size_t> index) const noexcept
 {
 	decltype(this->cache)* cur_file_list = &this->cache;
 	for (auto i = index.begin(); i != index.end(); ++i) {
@@ -135,11 +140,22 @@ size_t file_tree_page::file_tree_provider::count(utki::span<const size_t> index)
 	return cur_file_list->size();
 }
 
-utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(utki::span<const size_t> index)
+const file_tree_page::file_tree_model::file_entry& file_tree_page::file_tree_model::get(utki::span<const size_t> index
+) const noexcept
 {
 	auto tr = utki::make_traversal(this->cache);
-	ASSERT(tr.is_valid(index))
-	auto& file_entry = tr[index];
+	utki::assert(tr.is_valid(index));
+	return tr[index].value;
+}
+
+size_t file_tree_page::file_tree_provider::count(utki::span<const size_t> index) const noexcept
+{
+	return this->model.get().count(index);
+}
+
+utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(utki::span<const size_t> index)
+{
+	const auto& file_entry = this->model.get().get(index);
 
 	namespace m = ruis::make;
 
@@ -185,7 +201,7 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(ut
 	);
 	// clang-format on
 
-	w.get().get_widget_as<ruis::text>("tx").set_text(file_entry.value.name);
+	w.get().get_widget_as<ruis::text>("tx").set_text(file_entry.name);
 
 	if (utki::deep_equals(utki::make_span(this->owner.cursor_index), index)) {
 		auto& bg = w.get().get_widget_as<ruis::rectangle>("bg");
@@ -200,16 +216,16 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(ut
 		}
 		this->owner.cursor_index = index;
 		this->notify_item_changed();
-		this->owner.notify_file_select();
+		this->owner.notify_file_select(this->owner.model.get().get_path(index));
 	};
 
 	return w;
 }
 
-void file_tree_page::notify_file_select()
+void file_tree_page::notify_file_select(std::string file_path)
 {
 	if (this->file_select_handler) {
-		this->file_select_handler(this->provider.get().get_path(this->cursor_index));
+		this->file_select_handler(std::move(file_path));
 	}
 }
 
@@ -294,16 +310,13 @@ std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(
 file_tree_page::file_tree_page(utki::shared_ref<ruis::context> context) :
 	file_tree_page(
 		context, //
-		utki::make_shared<file_tree_provider>(
-			*this, //
-			context
-		)
+		utki::make_shared<file_tree_model>()
 	)
 {}
 
 file_tree_page::file_tree_page(
 	utki::shared_ref<ruis::context> context, //
-	utki::shared_ref<file_tree_provider> provider
+	utki::shared_ref<file_tree_model> model
 ) :
 	ruis::widget(std::move(context), {}, {}),
 	page(this->context),
@@ -317,11 +330,15 @@ file_tree_page::file_tree_page(
 		},
 		make_page_widgets(
 			this->context, //
-			provider
+			utki::make_shared<file_tree_provider>(
+				this->context,
+				model,
+				*this
+			)
 		)
 	),
 	// clang-format on
-	provider(provider)
+	model(std::move(model))
 {
 	auto& tv = this->get_widget_as<ruis::tree_view>("tree_view"sv);
 	auto& sa = this->get_widget_as<ruis::scroll_area>("scroll_area"sv);

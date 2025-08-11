@@ -105,9 +105,12 @@ struct parsing_context {
 			this->initial_state = desc.front().value.string;
 		}
 		for (const auto& s : desc) {
-			if (std::find_if(this->states.begin(), this->states.end(), [&](const auto& v) {
-					return v.first == s.value.string;
-				}) != this->states.end())
+			if (std::ranges::find_if(
+					this->states, //
+					[&](const auto& v) {
+						return v.first == s.value.string;
+					}
+				) != this->states.end())
 			{
 				std::stringstream ss;
 				ss << "state with name '" << s.value.string << "' already exists";
@@ -132,9 +135,12 @@ struct parsing_context {
 
 	const utki::shared_ref<regex_highlighter_model::state>& get_state(const std::string& name)
 	{
-		auto i = std::find_if(this->states.begin(), this->states.end(), [&](const auto& v) {
-			return v.first == name;
-		});
+		auto i = std::ranges::find_if(
+			this->states, //
+			[&](const auto& v) {
+				return v.first == name;
+			}
+		);
 		if (i == this->states.end()) {
 			std::stringstream ss;
 			ss << "state not found: " << name;
@@ -387,9 +393,12 @@ std::vector<line_span> regex_highlighter::highlight(std::u32string_view str)
 			ASSERT(matcher)
 			if (matcher->is_preprocessed) {
 				auto& cache = this->state_stack.back().preprocessed_rules_cache;
-				auto i = std::find_if(cache.begin(), cache.end(), [&](const auto& e) {
-					return e.first == matcher;
-				});
+				auto i = std::ranges::find_if(
+					cache, //
+					[&](const auto& e) {
+						return e.first == matcher;
+					}
+				);
 				if (i == cache.end()) {
 					cache.emplace_back(matcher, matcher->preprocess(this->state_stack.back().capture_groups));
 					matcher = cache.back().second.get();

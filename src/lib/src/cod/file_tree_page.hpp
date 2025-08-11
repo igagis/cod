@@ -37,12 +37,6 @@ class file_tree_page :
 	class file_tree_model
 	{
 	public:
-	};
-
-	class file_tree_provider : public ruis::tree_view::provider
-	{
-		file_tree_page& owner;
-
 		struct file_entry {
 			bool is_directory;
 			std::string name;
@@ -51,41 +45,51 @@ class file_tree_page :
 			bool children_read = false;
 		};
 
+	private:
 		using file_entry_forest_type = utki::tree<file_entry>::container_type;
 
 		mutable file_entry_forest_type cache;
 
 		decltype(cache) read_files(utki::span<const size_t> index) const;
 
-		static std::string make_path(
-			utki::span<const size_t> index, //
-			const file_entry_forest_type& fef
-		);
+	public:
+		file_tree_model();
+
+		// throws std::out_of_bounds if index is out of this->cache
+		std::string get_path(utki::span<const size_t> index) const;
+
+		size_t count(utki::span<const size_t> index) const noexcept;
+
+		const file_entry& get(utki::span<const size_t> index) const noexcept;
+	};
+
+	class file_tree_provider : public ruis::tree_view::provider
+	{
+		file_tree_page& owner;
+
+		utki::shared_ref<file_tree_model> model;
 
 	public:
 		file_tree_provider(
-			file_tree_page& owner, //
-			utki::shared_ref<ruis::context> context
+			utki::shared_ref<ruis::context> context, //
+			utki::shared_ref<file_tree_model> model,
+			file_tree_page& owner
 		);
 
 		size_t count(utki::span<const size_t> index) const noexcept override;
 
 		utki::shared_ref<ruis::widget> get_widget(utki::span<const size_t> index) override;
-
-		std::string get_path( //
-			utki::span<const size_t> index
-		) const; // TODO: make noexcept, right now linter is angry about it
 	};
 
 	std::vector<size_t> cursor_index;
 
-	utki::shared_ref<file_tree_provider> provider;
+	utki::shared_ref<file_tree_model> model;
 
-	void notify_file_select();
+	void notify_file_select(std::string file_path);
 
 	file_tree_page(
 		utki::shared_ref<ruis::context> context, //
-		utki::shared_ref<file_tree_provider> provider
+		utki::shared_ref<file_tree_model> model
 	);
 
 public:

@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "plugin_manager.hpp"
 
+#include <ranges>
+
 #include <dlfcn.h>
 
 #include "context.hpp"
@@ -121,9 +123,9 @@ plugin_manager::~plugin_manager()
 std::shared_ptr<file_page> plugin_manager::open_file(const std::string& file_name)
 {
 	// std::cout << "plugin_manager::open_file(): enter" << std::endl;
-	for (auto i = plugin_list.rbegin(); i != plugin_list.rend(); ++i) {
+	for (auto& plugin : std::views::reverse(plugin_list)) {
 		// std::cout << "trying plugin" << std::endl;
-		auto page = i->instance.open_file(context::inst().gui.ruis_context, file_name);
+		auto page = plugin.instance.open_file(context::inst().gui.ruis_context, file_name);
 		if (page) {
 			return page;
 		}
