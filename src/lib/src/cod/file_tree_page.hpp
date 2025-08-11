@@ -58,25 +58,26 @@ class file_tree_page :
 		);
 
 	public:
-		file_tree_provider(file_tree_page& owner);
+		file_tree_provider(file_tree_page& owner, utki::shared_ref<ruis::context> context);
 
 		size_t count(utki::span<const size_t> index) const noexcept override;
 
-		utki::shared_ref<ruis::widget> get_widget(
-			utki::span<const size_t> index, //
-			bool is_collapsed
-		) override;
+		utki::shared_ref<ruis::widget> get_widget(utki::span<const size_t> index) override;
 
-		std::string get_path(
-			utki::span<const size_t> index
+		std::string get_path(utki::span<const size_t> index
 		) const; // TODO: make noexcept, right now linter is angry about it
 	};
 
-	std::shared_ptr<file_tree_provider> provider;
-
 	std::vector<size_t> cursor_index;
 
+	utki::shared_ref<file_tree_provider> provider;
+
 	void notify_file_select();
+
+	file_tree_page(
+		utki::shared_ref<ruis::context> context, //
+		utki::shared_ref<file_tree_provider> provider
+	);
 
 public:
 	file_tree_page(utki::shared_ref<ruis::context> context);

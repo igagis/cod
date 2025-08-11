@@ -163,11 +163,10 @@ void tiling_area::on_lay_out()
 	ruis::real tiles_length = 0;
 
 	for (const auto& t : this->content_container.get()) {
-		tiles_length +=
-			max( //
-				t.get().rect().d[long_index],
-				this->min_tile_size
-			);
+		tiles_length += max( //
+			t.get().rect().d[long_index],
+			this->min_tile_size
+		);
 	}
 
 	const auto& content_dims = this->rect().d;
@@ -178,11 +177,10 @@ void tiling_area::on_lay_out()
 	if (content_dims[long_index] >= tiles_length) {
 		ruis::vector2 pos{0, 0};
 		for (auto& t : this->content_container.get()) {
-			ruis::real tile_length =
-				max( //
-					t.get().rect().d[long_index],
-					this->min_tile_size
-				);
+			ruis::real tile_length = max( //
+				t.get().rect().d[long_index],
+				this->min_tile_size
+			);
 
 			ASSERT(tiles_length > 0)
 

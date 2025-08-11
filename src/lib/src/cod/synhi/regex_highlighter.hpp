@@ -68,8 +68,7 @@ public:
 
 		virtual match_result match(std::u32string_view str, bool line_begin) const = 0;
 
-		virtual std::shared_ptr<const matcher> preprocess(
-			utki::span<const match_result::capture_group> capture_groups
+		virtual std::shared_ptr<const matcher> preprocess(utki::span<const match_result::capture_group> capture_groups
 		) const
 		{
 			return nullptr;
@@ -144,8 +143,7 @@ public:
 			return {};
 		}
 
-		std::shared_ptr<const matcher> preprocess(
-			utki::span<const match_result::capture_group> capture_groups
+		std::shared_ptr<const matcher> preprocess(utki::span<const match_result::capture_group> capture_groups
 		) const override;
 	};
 

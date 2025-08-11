@@ -40,7 +40,10 @@ constexpr ruis::real cursor_thickness_pp = 2.0f;
 } // namespace
 
 namespace {
-std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<ruis::context> c)
+std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(
+	utki::shared_ref<ruis::context> c, //
+	utki::shared_ref<ruis::list_provider> p
+)
 {
 	namespace m = ruis::make;
 
@@ -68,11 +71,14 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(utki::shared_ref<r
 					{
 						m::list(c,
 							{
-								.layout_params = {
+								.layout_params{
 									.dims = {ruis::dim::min, ruis::dim::fill}
 								},
-								.widget_params = {
+								.widget_params{
 									.id = "lines"s
+								},
+								.list_params{
+									.provider = std::move(p)
 								}
 							}
 						)
@@ -135,18 +141,18 @@ code_edit::code_edit(
 				.layout = ruis::layout::column
 			}
 		},
-		make_root_widgets(this->context)
+		make_root_widgets(
+			this->context, //
+			utki::make_shared<provider>(*this)
+		)
 	),
 	// clang-format on
 	list(utki::make_shared_from(this->get_widget_as<ruis::list>("lines"))),
-	scroll_area(utki::make_shared_from(this->get_widget_as<ruis::scroll_area>("scroll_area"))),
-	lines_provider(std::make_shared<provider>(*this))
+	scroll_area(utki::make_shared_from(this->get_widget_as<ruis::scroll_area>("scroll_area")))
 {
 	this->set_font_face(this->context.get().loader().load<ruis::res::font>("fnt_monospace"));
 	// call overridden method explicitly because we are still in constructor
 	this->code_edit::on_font_change();
-
-	this->list.get().set_provider(this->lines_provider);
 
 	auto& vs = this->get_widget_as<ruis::fraction_band_widget>("vertical_scroll");
 
@@ -313,12 +319,10 @@ void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 
 			auto pos = ruis::real(cp.x()) * this->owner.font_info.glyph_dims.x();
 			matr.translate(pos, 0);
-			matr.scale(
-				ruis::vector2(
-					cursor_thickness_pp * this->context.get().units.dots_per_pp(),
-					this->owner.font_info.glyph_dims.y()
-				)
-			);
+			matr.scale(ruis::vector2(
+				cursor_thickness_pp * this->context.get().units.dots_per_pp(),
+				this->owner.font_info.glyph_dims.y()
+			));
 
 			constexpr ruis::color cursor_color = 0xffffffff;
 
@@ -1123,7 +1127,7 @@ void code_edit::on_character_input(const ruis::character_input_event& e)
 void code_edit::notify_text_change()
 {
 	this->on_text_change();
-	this->lines_provider->notify_model_change();
+	this->list.get().get_provider().notify_model_change();
 }
 
 void code_edit::set_line_spans(decltype(line::spans)&& spans, size_t line_index)

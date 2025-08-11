@@ -49,7 +49,7 @@ utki::shared_ref<ruis::widget> make_root_widget(const utki::shared_ref<ruis::con
 						.id = "left_panel"s,
 						.rectangle = {
 							{0, 0},
-							{(200_pp).get(c.get()), 0}
+							{(200_pp).get(c.get()), 0} // NOLINT(cppcoreguidelines-avoid-magic-numbers)
 						}
 					}
 				}
@@ -60,7 +60,7 @@ utki::shared_ref<ruis::widget> make_root_widget(const utki::shared_ref<ruis::con
 						.id = "tabbed_book"s,
 						.rectangle = {
 							{0, 0},
-							{(600_pp).get(c.get()), 0}
+							{(600_pp).get(c.get()), 0} // NOLINT(cppcoreguidelines-avoid-magic-numbers)
 						}
 					}
 				}

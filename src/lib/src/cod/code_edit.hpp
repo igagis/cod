@@ -128,8 +128,6 @@ class code_edit :
 		utki::shared_ref<ruis::widget> get_widget(size_t index) override;
 	};
 
-	std::shared_ptr<provider> lines_provider;
-
 	class cursor
 	{
 		code_edit& owner;

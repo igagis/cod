@@ -105,13 +105,9 @@ struct parsing_context {
 			this->initial_state = desc.front().value.string;
 		}
 		for (const auto& s : desc) {
-			if (std::find_if(
-					this->states.begin(),
-					this->states.end(),
-					[&](const auto& v) {
-						return v.first == s.value.string;
-					}
-				) != this->states.end())
+			if (std::find_if(this->states.begin(), this->states.end(), [&](const auto& v) {
+					return v.first == s.value.string;
+				}) != this->states.end())
 			{
 				std::stringstream ss;
 				ss << "state with name '" << s.value.string << "' already exists";
@@ -188,13 +184,11 @@ regex_highlighter_model::matcher::match_result regex_highlighter_model::regex_ma
 				match_result::capture_group{.matched = false, .offset = size_t(std::distance(m[0].first, m[0].second))}
 			);
 		} else {
-			capture_groups.push_back(
-				match_result::capture_group{
-					.matched = true,
-					.offset = size_t(std::distance(m[0].first, m[i].first)),
-					.str = std::u32string(m[i].first, m[i].second)
-				}
-			);
+			capture_groups.push_back(match_result::capture_group{
+				.matched = true,
+				.offset = size_t(std::distance(m[0].first, m[i].first)),
+				.str = std::u32string(m[i].first, m[i].second)
+			});
 		}
 	}
 

@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "file_tree_page.hpp"
 
 #include <papki/fs_file.hpp>
+#include <ruis/widget/group/scroll_area.hpp>
 #include <ruis/widget/label/rectangle.hpp>
 #include <ruis/widget/label/text.hpp>
 #include <ruis/widget/proxy/click_proxy.hpp>
@@ -34,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "context.hpp"
 
 using namespace std::string_literals;
+using namespace std::string_view_literals;
 
 using namespace cod;
 
@@ -122,8 +124,11 @@ std::string file_tree_page::file_tree_provider::get_path(utki::span<const size_t
 	return ss.str();
 }
 
-file_tree_page::file_tree_provider::file_tree_provider(file_tree_page& owner) :
-	provider(owner.context),
+file_tree_page::file_tree_provider::file_tree_provider(
+	file_tree_page& owner, //
+	utki::shared_ref<ruis::context> context
+) :
+	provider(std::move(context)),
 	owner(owner),
 	cache(read_files(utki::make_span<size_t>(nullptr, 0)))
 {
@@ -150,10 +155,7 @@ size_t file_tree_page::file_tree_provider::count(utki::span<const size_t> index)
 	return cur_file_list->size();
 }
 
-utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(
-	utki::span<const size_t> index,
-	bool is_collapsed
-)
+utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(utki::span<const size_t> index)
 {
 	auto tr = utki::make_traversal(this->cache);
 	ASSERT(tr.is_valid(index))
@@ -187,7 +189,7 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(
 						.visible = false
 					},
 					.color_params = {
-						.color = 0xffff8080
+						.color = 0xffff8080 // NOLINT(cppcoreguidelines-avoid-magic-numbers, "TODO: fix")
 					}
 				}
 			),
@@ -217,7 +219,7 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(
 			return;
 		}
 		this->owner.cursor_index = index;
-		this->notify_item_change();
+		this->notify_item_changed();
 		this->owner.notify_file_select();
 	};
 
@@ -227,12 +229,15 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(
 void file_tree_page::notify_file_select()
 {
 	if (this->file_select_handler) {
-		this->file_select_handler(this->provider->get_path(utki::make_span(this->cursor_index)));
+		this->file_select_handler(this->provider.get().get_path(utki::make_span(this->cursor_index)));
 	}
 }
 
 namespace {
-std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(const utki::shared_ref<ruis::context>& c)
+std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(
+	const utki::shared_ref<ruis::context>& c, //
+	utki::shared_ref<ruis::tree_view::provider> p
+)
 {
 	namespace m = ruis::make;
 
@@ -246,16 +251,31 @@ std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(const utki::shared
 				}
 			},
 			{
-				m::tree_view(c,
+				m::scroll_area(c,
 					{
 						.layout_params{
 							.dims = {ruis::dim::fill, ruis::dim::fill},
 							.weight = 1
 						},
-						.widget_params = {
-							.id = "tree_view"s,
+						.widget_params{
+							.id = "scroll_area"s,
 							.clip = true
 						}
+					},
+					{
+						m::tree_view(c,
+							{
+								.layout_params{
+									.dims = {ruis::dim::min, ruis::dim::fill}
+								},
+								.widget_params{
+									.id = "tree_view"s
+								},
+								.tree_view_params{
+									.provider = std::move(p)
+								}
+							}
+						)
 					}
 				),
 				m::scroll_bar(c,
@@ -292,6 +312,19 @@ std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(const utki::shared
 } // namespace
 
 file_tree_page::file_tree_page(utki::shared_ref<ruis::context> context) :
+	file_tree_page(
+		context, //
+		utki::make_shared<file_tree_provider>(
+			*this, //
+			context
+		)
+	)
+{}
+
+file_tree_page::file_tree_page(
+	utki::shared_ref<ruis::context> context, //
+	utki::shared_ref<file_tree_provider> provider
+) :
 	ruis::widget(std::move(context), {}, {}),
 	page(this->context),
 	// clang-format off
@@ -302,48 +335,56 @@ file_tree_page::file_tree_page(utki::shared_ref<ruis::context> context) :
 				.layout = ruis::layout::column
 			}
 		},
-		make_page_widgets(this->context)
-	)
-// clang-format on
+		make_page_widgets(
+			this->context, //
+			provider
+		)
+	),
+	// clang-format on
+	provider(provider)
 {
-	auto& tv = this->get_widget_as<ruis::tree_view>("tree_view");
+	auto& tv = this->get_widget_as<ruis::tree_view>("tree_view"sv);
+	auto& sa = this->get_widget_as<ruis::scroll_area>("scroll_area"sv);
 
-	auto& vs = this->get_widget_as<ruis::scroll_bar>("vertical_scroll");
-	auto& hs = this->get_widget_as<ruis::scroll_bar>("horizontal_scroll");
+	auto& vs = this->get_widget_as<ruis::scroll_bar>("vertical_scroll"sv);
+	auto& hs = this->get_widget_as<ruis::scroll_bar>("horizontal_scroll"sv);
 
 	tv.scroll_change_handler = //
-		[ //
-			vs = utki::make_weak_from(vs), //
-			hs = utki::make_weak_from(hs) //
-	] //
-		(ruis::tree_view & tv) {
-			auto f = tv.get_scroll_factor();
-			auto b = tv.get_scroll_band();
-			if (auto sb = hs.lock()) {
-				sb->set_fraction(f.x());
-				sb->set_band_fraction(b.x());
-			}
-			if (auto sb = vs.lock()) {
-				sb->set_fraction(f.y());
-				sb->set_band_fraction(b.y());
-			}
-		};
+		[vs = utki::make_weak_from(vs)] //
+		(ruis::tree_view & tv) //
+	{
+		auto f = tv.get_scroll_factor();
+		auto b = tv.get_scroll_band();
+		if (auto sb = vs.lock()) {
+			sb->set_fraction(
+				f, //
+				false
+			);
+			sb->set_band_fraction(b);
+		}
+	};
+
+	sa.scroll_change_handler = [hs = utki::make_weak_from(hs)](ruis::scroll_area& sa) {
+		if (auto sb = hs.lock()) {
+			sb->set_fraction(
+				sa.get_scroll_factor().x(), //
+				false
+			);
+			sb->set_band_fraction(sa.get_visible_area_fraction().x());
+		}
+	};
 
 	vs.fraction_change_handler = [tv = utki::make_weak_from(tv)](ruis::fraction_widget& fw) {
 		if (auto w = tv.lock()) {
-			w->set_vertical_scroll_factor(fw.get_fraction());
+			w->set_scroll_factor(fw.get_fraction());
 		}
 	};
 
-	hs.fraction_change_handler = [tv = utki::make_weak_from(tv)](ruis::fraction_widget& fw) {
-		if (auto w = tv.lock()) {
-			w->set_horizontal_scroll_factor(fw.get_fraction());
+	hs.fraction_change_handler = [sa = utki::make_weak_from(sa)](ruis::fraction_widget& fw) {
+		if (auto w = sa.lock()) {
+			w->set_scroll_factor({fw.get_fraction(), 0});
 		}
 	};
-
-	this->provider = std::make_shared<file_tree_provider>(*this);
-
-	tv.set_provider(this->provider);
 }
 
 utki::shared_ref<ruis::widget> file_tree_page::create_tab_content()
