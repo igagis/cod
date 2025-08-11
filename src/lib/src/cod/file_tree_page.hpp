@@ -34,6 +34,11 @@ class file_tree_page :
 	public page, //
 	private ruis::container
 {
+	class file_tree_model
+	{
+	public:
+	};
+
 	class file_tree_provider : public ruis::tree_view::provider
 	{
 		file_tree_page& owner;
@@ -58,13 +63,17 @@ class file_tree_page :
 		);
 
 	public:
-		file_tree_provider(file_tree_page& owner, utki::shared_ref<ruis::context> context);
+		file_tree_provider(
+			file_tree_page& owner, //
+			utki::shared_ref<ruis::context> context
+		);
 
 		size_t count(utki::span<const size_t> index) const noexcept override;
 
 		utki::shared_ref<ruis::widget> get_widget(utki::span<const size_t> index) override;
 
-		std::string get_path(utki::span<const size_t> index
+		std::string get_path( //
+			utki::span<const size_t> index
 		) const; // TODO: make noexcept, right now linter is angry about it
 	};
 

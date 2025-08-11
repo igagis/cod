@@ -47,9 +47,9 @@ std::string file_tree_page::file_tree_provider::make_path(
 	auto cur_file_list = &fef;
 	std::string dir_name;
 	for (const auto& i : index) {
-		ASSERT(i < cur_file_list->size())
+		utki::assert(i < cur_file_list->size());
 		auto& f = (*cur_file_list)[i];
-		ASSERT(f.value.is_directory)
+		utki::assert(f.value.is_directory);
 		dir_name.append(f.value.name);
 		if (f.value.is_directory) {
 			dir_name.append("/");
@@ -57,7 +57,7 @@ std::string file_tree_page::file_tree_provider::make_path(
 			// It should be the last index.
 			// Since we are using range based for loop, at least check that
 			// it is equal to the last index of the span.
-			ASSERT(i == *index.rbegin())
+			utki::assert(i == index.back());
 		}
 		cur_file_list = &f.children;
 	}
@@ -82,9 +82,9 @@ auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> ind
 		make_path(index, this->cache)
 	);
 
-	LOG([&](auto& o) {
+	utki::log_debug([&](auto& o) {
 		o << "dir_name = " << dir_name << std::endl;
-	})
+	});
 
 	return utki::linq(papki::fs_file(dir_name).list_dir())
 		.order_by([](const auto& v) -> const auto& {
@@ -163,7 +163,7 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(ut
 
 	namespace m = ruis::make;
 
-	auto& c = this->owner.context;
+	auto& c = this->context;
 
 	// clang-format off
 	auto w = m::pile(c,
@@ -229,7 +229,7 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(ut
 void file_tree_page::notify_file_select()
 {
 	if (this->file_select_handler) {
-		this->file_select_handler(this->provider.get().get_path(utki::make_span(this->cursor_index)));
+		this->file_select_handler(this->provider.get().get_path(this->cursor_index));
 	}
 }
 
