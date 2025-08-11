@@ -8,11 +8,11 @@
             "name": "(gdb) cod",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/src/cod/out/dbg/cod",
-            "args": ["--plugin=src/plugins/text_editor/out/dbg/text_editor.so.0"],
+            "program": "${workspaceFolder}/src/cod/out/dev/cod",
+            "args": ["--plugin=src/plugins/text_editor/out/dev/text_editor.so.0"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [{"name": "LD_LIBRARY_PATH", "value": "src/lib/out/dbg"}],
+            "environment": [{"name": "LD_LIBRARY_PATH", "value": "src/lib/out/dev"}],
             "externalConsole": false,
             "MIMode": "gdb",
             "setupCommands": [
@@ -22,13 +22,13 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "build_dbg"
+            "preLaunchTask": "build-dev"
         },
         {
             "name": "(gdb) unit_test",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/tests/unit/out/dbg/unit_tests",
+            "program": "${workspaceFolder}/tests/unit/out/dev/unit_tests",
             "args": ["--suite=regex_highlighter", "--test=correctness[3]"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/tests/unit",
@@ -42,7 +42,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "build_dbg"
+            "preLaunchTask": "build-dev"
         }
     ]
 }

@@ -39,31 +39,6 @@ using namespace std::string_view_literals;
 
 using namespace cod;
 
-std::string file_tree_page::file_tree_provider::make_path(
-	utki::span<const size_t> index,
-	const file_entry_forest_type& fef
-)
-{
-	auto cur_file_list = &fef;
-	std::string dir_name;
-	for (const auto& i : index) {
-		utki::assert(i < cur_file_list->size());
-		auto& f = (*cur_file_list)[i];
-		utki::assert(f.value.is_directory);
-		dir_name.append(f.value.name);
-		if (f.value.is_directory) {
-			dir_name.append("/");
-		} else {
-			// It should be the last index.
-			// Since we are using range based for loop, at least check that
-			// it is equal to the last index of the span.
-			utki::assert(i == index.back());
-		}
-		cur_file_list = &f.children;
-	}
-	return dir_name;
-}
-
 auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> index) const -> decltype(cache)
 {
 #ifdef DEBUG
@@ -79,7 +54,7 @@ auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> ind
 
 	auto dir_name = utki::cat(
 		cod::context::inst().base_dir, //
-		make_path(index, this->cache)
+		this->get_path(index)
 	);
 
 	utki::log_debug([&](auto& o) {
@@ -104,12 +79,17 @@ auto file_tree_page::file_tree_provider::read_files(utki::span<const size_t> ind
 
 std::string file_tree_page::file_tree_provider::get_path(utki::span<const size_t> index) const
 {
+	if (index.empty()) {
+		return {};
+	}
+
 	auto tr = utki::make_traversal(this->cache);
 
 	auto iter = tr.make_iterator(index);
 
 	std::stringstream ss;
 
+	// TODO: refactor using ranges
 	for (size_t i = 0; i != iter.depth(); ++i) {
 		if (i != 0) {
 			ss << "/";
