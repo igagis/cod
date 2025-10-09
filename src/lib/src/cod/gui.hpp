@@ -38,7 +38,8 @@ class gui
 
 	std::shared_ptr<tabbed_book_tile> editors_tabbed_book;
 
-	gui(ruisapp::application& app);
+	gui(ruisapp::application& app, //
+		ruisapp::window& window);
 
 	void open_editor(utki::shared_ref<file_page> page);
 

@@ -296,6 +296,7 @@ void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 		ruis::matrix4 matr(matrix);
 		matr.translate(ruis::real(cur_char_pos) * this->owner.font_info.glyph_dims.x(), this->owner.font_info.baseline);
 		auto res = font.render(
+			this->context.get().ren(),
 			matr,
 			s.style->color,
 			str.substr(cur_char_index, s.length),

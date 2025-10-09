@@ -71,16 +71,19 @@ utki::shared_ref<ruis::widget> make_root_widget(const utki::shared_ref<ruis::con
 }
 } // namespace
 
-gui::gui(ruisapp::application& app) :
-	ruis_context(app.gui.context)
+gui::gui(
+	ruisapp::application& app, //
+	ruisapp::window& window
+) :
+	ruis_context(window.gui.context)
 {
-	app.gui.init_standard_widgets(*app.get_res_file());
+	window.gui.init_standard_widgets(*app.get_res_file());
 
-	app.gui.context.get().loader().mount_res_pack(*app.get_res_file("res/"));
+	window.gui.context.get().loader().mount_res_pack(*app.get_res_file("res/"));
 
-	app.gui.set_root(make_root_widget(app.gui.context));
+	window.gui.set_root(make_root_widget(window.gui.context));
 
-	auto& c = app.gui.get_root();
+	auto& c = window.gui.get_root();
 
 	{
 		auto ft = utki::make_shared<file_tree_page>(c.context);

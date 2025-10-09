@@ -40,7 +40,7 @@ class dragger : public ruis::rectangle
 
 	tiling_area& owner;
 
-	ruis::mouse_cursor_stack::iterator arrows_cursor_iter;
+	ruis::render::native_window::cursor_id arrows_cursor_id;
 
 public:
 	std::shared_ptr<ruis::widget> prev_widget;
@@ -65,7 +65,7 @@ public:
 
 		if (!this->grabbed) {
 			if (!this->is_hovered()) {
-				this->context.get().cursor_stack.pop(this->arrows_cursor_iter);
+				this->context.get().window().pop_mouse_cursor(this->arrows_cursor_id);
 			}
 		}
 
@@ -119,11 +119,11 @@ public:
 		}
 
 		if (this->is_hovered() || grabbed) {
-			this->arrows_cursor_iter = this->context.get().cursor_stack.push(
+			this->arrows_cursor_id = this->context.get().window().push_mouse_cursor(
 				this->owner.is_vertical() ? ruis::mouse_cursor::up_down_arrow : ruis::mouse_cursor::left_right_arrow
 			);
 		} else {
-			this->context.get().cursor_stack.pop(this->arrows_cursor_iter);
+			this->context.get().window().pop_mouse_cursor(this->arrows_cursor_id);
 		}
 	}
 

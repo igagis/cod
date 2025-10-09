@@ -23,10 +23,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-context::context(command_line_args cla, ruisapp::application& app) :
+context::context(
+	command_line_args cla, //
+	ruisapp::application& app,
+	ruisapp::window& window
+) :
 	base_dir(std::move(cla.base_dir)),
 	res_file(app.get_res_file()),
-	gui(app),
+	gui(app, //
+		window),
 	shortcuts(*app.get_res_file("res/shortcuts.tml")), // TODO: how to inject shortcuts filename?
 	plugins(cla.plugins)
 {}

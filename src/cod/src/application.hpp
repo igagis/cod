@@ -30,6 +30,8 @@ namespace cod {
 class application : public ruisapp::application
 {
 public:
+	ruisapp::window& window;
+
 	cod::context context;
 
 	application(command_line_args cla);

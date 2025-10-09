@@ -29,11 +29,21 @@ constexpr auto initial_window_height = 768;
 } // namespace
 
 application::application(command_line_args cla) :
-	ruisapp::application(
-		"cod",
-		{
-			.dims = {initial_window_width, initial_window_height}
+	ruisapp::application({
+		.name = "cod"
+}),
+	window(this->make_window({
+		.dims =
+			{initial_window_width, //
+			 initial_window_height} //
+	})),
+	context(
+		std::move(cla), //
+		*this,
+		this->window
+	)
+{
+	this->window.gui.context.get().window().close_handler = [this]() {
+		this->quit();
+	};
 }
-	),
-	context(std::move(cla), *this)
-{}

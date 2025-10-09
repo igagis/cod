@@ -36,7 +36,11 @@ class context : public utki::singleton<context>
 {
 	friend class application;
 
-	context(command_line_args cla, ruisapp::application& app);
+	context(
+		command_line_args cla, //
+		ruisapp::application& app,
+		ruisapp::window& window
+	);
 
 public:
 	const std::string base_dir;
