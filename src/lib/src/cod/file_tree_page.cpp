@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "file_tree_page.hpp"
 
-#include <papki/fs_file.hpp>
+#include <fsif/native_file.hpp>
 #include <ruis/widget/group/scroll_area.hpp>
 #include <ruis/widget/label/rectangle.hpp>
 #include <ruis/widget/label/text.hpp>
@@ -61,12 +61,12 @@ auto file_tree_page::file_tree_model::read_files(utki::span<const size_t> index)
 		o << "dir_name = " << dir_name << std::endl;
 	});
 
-	return utki::linq(papki::fs_file(dir_name).list_dir())
+	return utki::linq(fsif::native_file(dir_name).list_dir())
 		.order_by([](const auto& v) -> const auto& {
 			return v;
 		})
 		.select([](auto e) {
-			bool is_dir = papki::is_dir(e);
+			bool is_dir = fsif::is_dir(e);
 			return typename decltype(this->cache)::value_type( //
 				file_entry{
 					.is_directory = is_dir, //

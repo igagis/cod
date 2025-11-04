@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "plugin.hpp"
 
 #include <cod/text_editor_page.hpp>
-#include <papki/fs_file.hpp>
+#include <fsif/native_file.hpp>
 
 using namespace cod;
 
@@ -35,7 +35,7 @@ std::shared_ptr<file_page> text_editor_plugin::open_file(
 	page->set_text( //
 		utki::to_utf32( //
 			utki::make_string( //
-				papki::fs_file(file_name).load()
+				fsif::native_file(file_name).load()
 			)
 		)
 	);

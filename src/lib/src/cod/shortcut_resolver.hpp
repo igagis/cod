@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <unordered_map>
 
-#include <papki/file.hpp>
+#include <fsif/file.hpp>
 #include <ruis/util/key.hpp>
 #include <utki/flags.hpp>
 
@@ -41,9 +41,9 @@ private:
 	mutable std::unordered_map<std::string_view, shortcut> shortcuts;
 
 public:
-	shortcut_resolver(const papki::file& f);
+	shortcut_resolver(const fsif::file& f);
 
-	void load(const papki::file& f);
+	void load(const fsif::file& f);
 
 	const shortcut& get(std::string_view name) const;
 };

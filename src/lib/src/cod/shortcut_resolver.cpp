@@ -27,7 +27,7 @@ using namespace cod;
 
 using namespace std::string_literals;
 
-shortcut_resolver::shortcut_resolver(const papki::file& f)
+shortcut_resolver::shortcut_resolver(const fsif::file& f)
 {
 	this->load(f);
 }
@@ -66,7 +66,7 @@ shortcut_resolver::shortcut parse_shortcut(const tml::tree& sc)
 }
 } // namespace
 
-void shortcut_resolver::load(const papki::file& f)
+void shortcut_resolver::load(const fsif::file& f)
 {
 	auto dom = tml::read(f);
 

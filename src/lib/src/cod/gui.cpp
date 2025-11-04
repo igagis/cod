@@ -91,7 +91,7 @@ gui::gui(
 		ft.get().file_select_handler = [](std::string file_name) {
 			// std::cout << "file = " << file_name << '\n';
 
-			if (papki::is_dir(file_name)) {
+			if (fsif::is_dir(file_name)) {
 				return;
 			}
 

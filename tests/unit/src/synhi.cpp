@@ -5,7 +5,7 @@
 #include <utki/string.hpp>
 #include <utki/linq.hpp>
 
-#include <papki/fs_file.hpp>
+#include <fsif/native_file.hpp>
 
 #include <lib/src/cod/synhi/regex_highlighter.hpp>
 
@@ -63,7 +63,7 @@ const tst::set set("regex_highlighter", [](tst::suite& suite){
         [](){
             synhi::regex_highlighter sh(
                     std::make_shared<synhi::regex_highlighter_model>(
-                            tml::read(papki::fs_file("../../highlight/xml.tml"))
+                            tml::read(fsif::native_file("../../highlight/xml.tml"))
                         )
                 );
         }
@@ -94,7 +94,7 @@ const tst::set set("regex_highlighter", [](tst::suite& suite){
         // is fixed
         // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
         [model = std::make_shared<synhi::regex_highlighter_model>(
-                tml::read(papki::fs_file("../../highlight/xml.tml"))
+                tml::read(fsif::native_file("../../highlight/xml.tml"))
             )]
         (const auto& p)
         {
@@ -123,11 +123,11 @@ const tst::set set("regex_highlighter", [](tst::suite& suite){
             auto dir = "data/synhi/crash_1/"s;
             synhi::regex_highlighter highlighter(
                     std::make_shared<synhi::regex_highlighter_model>(
-                            tml::read(papki::fs_file(dir + "xml.tml"))
+                            tml::read(fsif::native_file(dir + "xml.tml"))
                         )
                 );
 
-            auto text = utki::to_utf32(utki::make_string(papki::fs_file(dir + "LICENSE_GPL3").load()));
+            auto text = utki::to_utf32(utki::make_string(fsif::native_file(dir + "LICENSE_GPL3").load()));
 
             auto lines = utki::split(
                     std::u32string_view(text),
