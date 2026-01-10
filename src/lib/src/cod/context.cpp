@@ -32,6 +32,6 @@ context::context(
 	res_file(app.get_res_file()),
 	gui(app, //
 		window),
-	shortcuts(*app.get_res_file("res/shortcuts.tml")), // TODO: how to inject shortcuts filename?
+	shortcuts(app.get_res_file("res/shortcuts.tml")), // TODO: how to inject shortcuts filename?
 	plugins(cla.plugins)
 {}

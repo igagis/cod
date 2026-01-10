@@ -77,9 +77,9 @@ gui::gui(
 ) :
 	ruis_context(window.gui.context)
 {
-	window.gui.init_standard_widgets(*app.get_res_file());
+	window.gui.init_standard_widgets(app.get_res_file());
 
-	window.gui.context.get().loader().mount_res_pack(*app.get_res_file("res/"));
+	window.gui.context.get().loader().mount_res_pack(app.get_res_file("res/"));
 
 	window.gui.set_root(make_root_widget(window.gui.context));
 

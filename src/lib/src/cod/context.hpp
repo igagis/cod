@@ -45,7 +45,7 @@ class context : public utki::singleton<context>
 public:
 	const std::string base_dir;
 
-	const std::unique_ptr<fsif::file> res_file;
+	const utki::unique_ref<fsif::file> res_file;
 
 	cod::gui gui;
 

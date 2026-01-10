@@ -28,7 +28,7 @@ namespace cod {
 
 class tile : virtual public ruis::widget
 {
-	mutable ruis::frame_vao selection_vao;
+	mutable ruis::paint::frame_vao selection_vao;
 
 	// only these 2 tiles are supposed to exist, so declare those as friends and make tile constructor private
 	friend class tabbed_book_tile;
