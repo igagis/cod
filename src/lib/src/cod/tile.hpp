@@ -39,9 +39,9 @@ class tile : virtual public ruis::widget
 	void set_selection_vao();
 
 public:
-	void render(const ruis::matrix4& matrix) const override;
+	void render(const ruis::mat4& matrix) const override;
 
-	bool on_key(const ruis::key_event& e) override;
+	ruis::event_status on_key(const ruis::key_event& e) override;
 
 	void on_focus_change() override;
 

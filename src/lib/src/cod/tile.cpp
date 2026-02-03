@@ -32,7 +32,7 @@ tile::tile(utki::shared_ref<ruis::context> context) :
 	selection_vao(this->context.get().renderer)
 {}
 
-void tile::render(const ruis::matrix4& matrix) const
+void tile::render(const ruis::mat4& matrix) const
 {
 	// draw selection
 	if (this->is_focused()) {
@@ -64,25 +64,25 @@ void tile::on_resize()
 	}
 }
 
-bool tile::on_key(const ruis::key_event& e)
+ruis::event_status tile::on_key(const ruis::key_event& e)
 {
-	if (!e.is_down) {
-		return false;
+	if (e.action == ruis::button_action::release) {
+		return ruis::event_status::propagate;
 	}
 
 	if (context::inst().shortcuts.get("cod.tile.focus_left").combo == e.combo) {
 		std::cout << "tile left" << std::endl;
-		return true;
+		return ruis::event_status::consumed;
 	} else if (context::inst().shortcuts.get("cod.tile.focus_right").combo == e.combo) {
 		std::cout << "tile right" << std::endl;
-		return true;
+		return ruis::event_status::consumed;
 	} else if (context::inst().shortcuts.get("cod.tile.focus_up").combo == e.combo) {
 		std::cout << "tile up" << std::endl;
-		return true;
+		return ruis::event_status::consumed;
 	} else if (context::inst().shortcuts.get("cod.tile.focus_down").combo == e.combo) {
 		std::cout << "tile down" << std::endl;
-		return true;
+		return ruis::event_status::consumed;
 	}
 
-	return false;
+	return ruis::event_status::propagate;
 }

@@ -238,7 +238,7 @@ size_t string_length_glyphs(const std::u32string& str, size_t tab_size)
 }
 } // namespace
 
-void code_edit::line_widget::render(const ruis::matrix4& matrix) const
+void code_edit::line_widget::render(const ruis::mat4& matrix) const
 {
 	// find cursors
 	auto cursors = this->owner.find_cursors(this->line_num);
@@ -268,11 +268,11 @@ void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 			}
 		}();
 
-		ruis::matrix4 matr(matrix);
+		ruis::mat4 matr(matrix);
 
 		auto pos = ruis::real(start) * this->owner.font_info.glyph_dims.x();
 		matr.translate(pos, 0);
-		matr.scale(ruis::vector2(ruis::real(length), 1).comp_mul(this->owner.font_info.glyph_dims));
+		matr.scale(ruis::vec2(ruis::real(length), 1).comp_mul(this->owner.font_info.glyph_dims));
 
 		constexpr ruis::color selection_color = 0xff804000;
 
@@ -293,7 +293,7 @@ void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 	for (const auto& s : l.spans) {
 		const auto& font = this->owner.get_font(s.style->style);
 
-		ruis::matrix4 matr(matrix);
+		ruis::mat4 matr(matrix);
 		matr.translate(ruis::real(cur_char_pos) * this->owner.font_info.glyph_dims.x(), this->owner.font_info.baseline);
 		auto res = font.render(
 			this->context.get().ren(),
@@ -316,11 +316,11 @@ void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 				continue;
 			}
 
-			ruis::matrix4 matr(matrix);
+			ruis::mat4 matr(matrix);
 
 			auto pos = ruis::real(cp.x()) * this->owner.font_info.glyph_dims.x();
 			matr.translate(pos, 0);
-			matr.scale(ruis::vector2(
+			matr.scale(ruis::vec2(
 				cursor_thickness_pp * this->context.get().units.dots_per_pp(),
 				this->owner.font_info.glyph_dims.y()
 			));
@@ -337,9 +337,9 @@ void code_edit::line_widget::render(const ruis::matrix4& matrix) const
 	}
 }
 
-ruis::vector2 code_edit::line_widget::measure(const ruis::vector2& quotum) const noexcept
+ruis::vec2 code_edit::line_widget::measure(const ruis::vec2& quotum) const noexcept
 {
-	ruis::vector2 ret = this->owner.font_info.glyph_dims;
+	ruis::vec2 ret = this->owner.font_info.glyph_dims;
 	ret.x() *= ruis::real(
 		this->owner.lines[this->line_num].str.size() + 1
 	); // for empty strings the widget will still have size of one glyph
@@ -530,15 +530,15 @@ void code_edit::put_new_line(cursor& c)
 	this->text_changed = true;
 }
 
-void code_edit::render(const ruis::matrix4& matrix) const
+void code_edit::render(const ruis::mat4& matrix) const
 {
 	this->base_container::render(matrix);
 }
 
-r4::vector2<size_t> code_edit::mouse_pos_to_glyph_pos(const ruis::vector2& mouse_pos) const noexcept
+r4::vector2<size_t> code_edit::mouse_pos_to_glyph_pos(const ruis::vec2& mouse_pos) const noexcept
 {
 	auto corrected_mouse_pos =
-		mouse_pos + ruis::vector2{this->scroll_area.get().get_scroll_pos().x(), this->list.get().get_pos_offset()};
+		mouse_pos + ruis::vec2{this->scroll_area.get().get_scroll_pos().x(), this->list.get().get_pos_offset()};
 
 	using std::max;
 	corrected_mouse_pos = max(corrected_mouse_pos, 0); // clamp to positive values
@@ -556,16 +556,16 @@ r4::vector2<size_t> code_edit::mouse_pos_to_glyph_pos(const ruis::vector2& mouse
 	return glyph_pos;
 }
 
-bool code_edit::on_mouse_button(const ruis::mouse_button_event& event)
+ruis::event_status code_edit::on_mouse_button(const ruis::mouse_button_event& event)
 {
-	if (this->base_container::on_mouse_button(event)) {
-		return true;
+	if (this->base_container::on_mouse_button(event) == ruis::event_status::consumed) {
+		return ruis::event_status::consumed;
 	}
 
 	ruis::real scroll_direction = 1;
 	switch (event.button) {
 		case ruis::mouse_button::left:
-			if (event.is_down) {
+			if (event.action == ruis::button_action::press) {
 				this->cursors.clear();
 
 				this->cursors.emplace_back(*this, this->mouse_pos_to_glyph_pos(event.pos));
@@ -581,7 +581,7 @@ bool code_edit::on_mouse_button(const ruis::mouse_button_event& event)
 			scroll_direction = -1;
 			[[fallthrough]];
 		case ruis::mouse_button::wheel_down:
-			if (event.is_down) {
+			if (event.action == ruis::button_action::press) {
 				this->list.get().scroll_by(scroll_direction * this->font_info.glyph_dims.y() * 3);
 			}
 			break;
@@ -589,32 +589,32 @@ bool code_edit::on_mouse_button(const ruis::mouse_button_event& event)
 			scroll_direction = -1;
 			[[fallthrough]];
 		case ruis::mouse_button::wheel_right:
-			if (event.is_down) {
+			if (event.action == ruis::button_action::press) {
 				this->scroll_area.get().set_scroll_pos(
 					this->scroll_area.get().get_scroll_pos() +
-					ruis::vector2{scroll_direction * this->font_info.glyph_dims.x() * 3, 0}
+					ruis::vec2{scroll_direction * this->font_info.glyph_dims.x() * 3, 0}
 				);
 			}
 			break;
 		default:
-			return false;
+			return ruis::event_status::propagate;
 	}
 
-	return true;
+	return ruis::event_status::consumed;
 }
 
-bool code_edit::on_mouse_move(const ruis::mouse_move_event& event)
+ruis::event_status code_edit::on_mouse_move(const ruis::mouse_move_event& event)
 {
-	if (this->base_container::on_mouse_move(event)) {
-		return true;
+	if (this->base_container::on_mouse_move(event) == ruis::event_status::consumed) {
+		return ruis::event_status::consumed;
 	}
 
 	if (this->mouse_selection) {
-		ASSERT(!this->cursors.empty())
+		utki::assert(!this->cursors.empty(), SL);
 		this->cursors.front().set_pos_glyphs(this->mouse_pos_to_glyph_pos(event.pos));
-		return true;
+		return ruis::event_status::consumed;
 	}
-	return false;
+	return ruis::event_status::propagate;
 }
 
 void code_edit::cursor::update_selection()
@@ -737,24 +737,27 @@ r4::vector2<size_t> code_edit::cursor::get_pos_glyphs() const noexcept
 	return {char_pos_to_glyph_pos(p.x(), this->owner.lines[p.y()].str, this->owner.settings.tab_size), p.y()};
 }
 
-bool code_edit::on_key(const ruis::key_event& e)
+ruis::event_status code_edit::on_key(const ruis::key_event& e)
 {
 	switch (e.combo.key) {
 		case ruis::key::left_control:
 		case ruis::key::right_control:
-			this->modifiers.set(modifier::word_navigation, e.is_down);
+			this->modifiers.set(modifier::word_navigation, e.action == ruis::button_action::press);
 			break;
 		case ruis::key::left_shift:
 		case ruis::key::right_shift:
-			this->modifiers.set(modifier::selection, e.is_down);
+			this->modifiers.set(modifier::selection, e.action == ruis::button_action::press);
 			break;
 		default:
 			break;
 	}
-	return false;
+	return ruis::event_status::propagate;
 }
 
-void code_edit::line::extend_span(size_t at_char_index, size_t by_length)
+void code_edit::line::extend_span(
+	size_t at_char_index, //
+	size_t by_length
+)
 {
 	size_t cur_span_end = 0;
 	for (auto& s : this->spans) {
@@ -863,11 +866,11 @@ void code_edit::scroll_to(r4::vector2<size_t> pos_glyphs)
 			-ruis::real(top - pos_glyphs.y()) * this->font_info.glyph_dims.y() - this->list.get().get_pos_offset()
 		);
 	} else {
-		ASSERT(!this->list.get().children().empty())
-		size_t bottom = top + this->list.get().children().size() - 1;
+		utki::assert(!this->list.get().get_visible_children().empty(), SL);
+		size_t bottom = top + this->list.get().get_visible_children().size() - 1;
 		if (bottom <= pos_glyphs.y()) {
 			ruis::real bottom_offset =
-				this->list.get().children().back().get().rect().y2() - this->list.get().rect().d.y();
+				this->list.get().get_visible_children().back().get().rect().y2() - this->list.get().rect().d.y();
 			this->list.get().scroll_by(
 				ruis::real(pos_glyphs.y() - bottom) * this->font_info.glyph_dims.y() + bottom_offset
 			);

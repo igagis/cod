@@ -51,10 +51,10 @@ public:
 		this->unfocus();
 	}
 
-	bool on_key(const ruis::key_event& e) override
+	ruis::event_status on_key(const ruis::key_event& e) override
 	{
-		if (this->code_edit::on_key(e)) {
-			return true;
+		if (this->code_edit::on_key(e) == ruis::event_status::consumed) {
+			return ruis::event_status::consumed;
 		}
 
 		return this->file_page::on_key(e);

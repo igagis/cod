@@ -47,7 +47,7 @@ class code_edit :
 	utki::shared_ref<ruis::scroll_area> scroll_area;
 
 	struct {
-		ruis::vector2 glyph_dims;
+		ruis::vec2 glyph_dims;
 		ruis::real baseline;
 	} font_info;
 
@@ -107,9 +107,9 @@ class code_edit :
 			line_num(line_num)
 		{}
 
-		void render(const ruis::matrix4& matrix) const override;
+		void render(const ruis::mat4& matrix) const override;
 
-		ruis::vector2 measure(const ruis::vector2& quotum) const noexcept override;
+		ruis::vec2 measure(const ruis::vec2& quotum) const noexcept override;
 	};
 
 	struct provider : public ruis::list_provider {
@@ -218,7 +218,7 @@ class code_edit :
 	void on_focus_change() override;
 	void start_cursor_blinking();
 
-	r4::vector2<size_t> mouse_pos_to_glyph_pos(const ruis::vector2& mouse_pos) const noexcept;
+	r4::vector2<size_t> mouse_pos_to_glyph_pos(const ruis::vec2& mouse_pos) const noexcept;
 
 	bool mouse_selection = false;
 
@@ -253,10 +253,10 @@ public:
 
 	~code_edit() override = default;
 
-	void render(const ruis::matrix4& matrix) const override;
-	bool on_mouse_button(const ruis::mouse_button_event& event) override;
-	bool on_mouse_move(const ruis::mouse_move_event& event) override;
-	bool on_key(const ruis::key_event& e) override;
+	void render(const ruis::mat4& matrix) const override;
+	ruis::event_status on_mouse_button(const ruis::mouse_button_event& event) override;
+	ruis::event_status on_mouse_move(const ruis::mouse_move_event& event) override;
+	ruis::event_status on_key(const ruis::key_event& e) override;
 	void on_character_input(const ruis::character_input_event& e) override;
 
 	using ruis::text_widget::set_text;

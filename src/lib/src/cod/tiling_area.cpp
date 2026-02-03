@@ -36,7 +36,7 @@ namespace {
 class dragger : public ruis::rectangle
 {
 	bool grabbed = false;
-	ruis::vector2 grab_point;
+	ruis::vec2 grab_point;
 
 	tiling_area& owner;
 
@@ -54,13 +54,13 @@ public:
 		this->set_color(dragger_color);
 	}
 
-	bool on_mouse_button(const ruis::mouse_button_event& e) override
+	ruis::event_status on_mouse_button(const ruis::mouse_button_event& e) override
 	{
 		if (e.button != ruis::mouse_button::left) {
-			return false;
+			return ruis::event_status::propagate;
 		}
 
-		this->grabbed = e.is_down;
+		this->grabbed = (e.action == ruis::button_action::press);
 		this->grab_point = e.pos;
 
 		if (!this->grabbed) {
@@ -69,13 +69,13 @@ public:
 			}
 		}
 
-		return true;
+		return ruis::event_status::consumed;
 	}
 
-	bool on_mouse_move(const ruis::mouse_move_event& e) override
+	ruis::event_status on_mouse_move(const ruis::mouse_move_event& e) override
 	{
 		if (!this->grabbed) {
-			return false;
+			return ruis::event_status::propagate;
 		}
 
 		auto delta = e.pos - this->grab_point;
@@ -93,8 +93,8 @@ public:
 		using std::max;
 
 		// clamp new tile dimensions to minimum tile size
-		new_prev_dims = max(new_prev_dims, ruis::vector2(this->owner.min_tile_size));
-		new_next_dims = max(new_next_dims, ruis::vector2(this->owner.min_tile_size));
+		new_prev_dims = max(new_prev_dims, ruis::vec2(this->owner.min_tile_size));
+		new_next_dims = max(new_next_dims, ruis::vec2(this->owner.min_tile_size));
 
 		if (delta[long_index] >= 0) {
 			delta = min(delta, this->next_widget->rect().d - new_next_dims);
@@ -109,7 +109,7 @@ public:
 		this->next_widget->resize_by(-delta);
 		this->next_widget->move_by(delta);
 
-		return true;
+		return ruis::event_status::consumed;
 	}
 
 	void on_hovered_change(unsigned pointer_id) override
@@ -127,7 +127,7 @@ public:
 		}
 	}
 
-	void render(const ruis::matrix4& matrix) const override
+	void render(const ruis::mat4& matrix) const override
 	{
 		if (this->is_hovered() || this->grabbed) {
 			this->ruis::rectangle::render(matrix);
@@ -175,7 +175,7 @@ void tiling_area::on_lay_out()
 
 	// arrange tiles
 	if (content_dims[long_index] >= tiles_length) {
-		ruis::vector2 pos{0, 0};
+		ruis::vec2 pos{0, 0};
 		for (auto& t : this->content_container.get()) {
 			ruis::real tile_length = max( //
 				t.get().rect().d[long_index],
@@ -184,7 +184,7 @@ void tiling_area::on_lay_out()
 
 			ASSERT(tiles_length > 0)
 
-			ruis::vector2 dims;
+			ruis::vec2 dims;
 			dims[trans_index] = content_dims[trans_index];
 			dims[long_index] = content_dims[long_index] * (tile_length / tiles_length);
 			dims = round(dims);
@@ -195,14 +195,14 @@ void tiling_area::on_lay_out()
 	} else {
 		ruis::real left_length = content_dims[long_index];
 
-		ruis::vector2 pos{0, 0};
+		ruis::vec2 pos{0, 0};
 
 		for (auto& t : this->content_container.get()) {
 			ruis::real tile_length = max(t.get().rect().d[long_index], this->min_tile_size);
 
 			ASSERT(tiles_length > 0)
 
-			ruis::vector2 dims;
+			ruis::vec2 dims;
 			dims[trans_index] = content_dims[trans_index];
 			dims[long_index] = left_length * (tile_length / tiles_length);
 			if (dims[long_index] <= this->min_tile_size) {
@@ -237,7 +237,7 @@ void tiling_area::on_lay_out()
 		this->push_back(utki::make_shared<dragger>(this->context, *this));
 	}
 
-	ruis::vector2 dragger_dims;
+	ruis::vec2 dragger_dims;
 	dragger_dims[long_index] = this->dragger_size;
 	dragger_dims[trans_index] = this->rect().d[trans_index];
 
@@ -253,18 +253,18 @@ void tiling_area::on_lay_out()
 
 		dragger.resize(dragger_dims);
 
-		ruis::vector2 dragger_pos;
+		ruis::vec2 dragger_pos;
 		dragger_pos[trans_index] = ruis::real(0);
 		dragger_pos[long_index] = round(dragger.next_widget->rect().p[long_index] - this->dragger_size / 2);
 		dragger.move_to(dragger_pos);
 	}
 }
 
-ruis::vector2 tiling_area::measure(const ruis::vector2& quotum) const
+ruis::vec2 tiling_area::measure(const ruis::vec2& quotum) const
 {
 	auto long_index = this->get_long_index();
 
-	ruis::vector2 ret;
+	ruis::vec2 ret;
 
 	for (size_t i = 0; i != quotum.size(); ++i) {
 		if (quotum[i] < 0) {

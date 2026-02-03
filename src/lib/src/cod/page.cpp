@@ -30,30 +30,30 @@ page::page(utki::shared_ref<ruis::context> context) :
 	ruis::page(this->context, {})
 {}
 
-bool page::on_key(const ruis::key_event& e)
+ruis::event_status page::on_key(const ruis::key_event& e)
 {
-	if (!e.is_down) {
-		return false;
+	if (e.action == ruis::button_action::release) {
+		return ruis::event_status::propagate;
 	}
 
 	if (context::inst().shortcuts.get("cod.page.move_left").combo == e.combo) {
 		std::cout << "move page left" << std::endl;
-		return true;
+		return ruis::event_status::consumed;
 	} else if (context::inst().shortcuts.get("cod.page.move_right").combo == e.combo) {
 		std::cout << "move page right" << std::endl;
 		this->context.get().post_to_ui_thread([p = utki::make_shared_from(*this)] {
 			p.get().move_right();
 		});
-		return true;
+		return ruis::event_status::consumed;
 	} else if (context::inst().shortcuts.get("cod.page.move_up").combo == e.combo) {
 		std::cout << "move page up" << std::endl;
-		return true;
+		return ruis::event_status::consumed;
 	} else if (context::inst().shortcuts.get("cod.page.move_down").combo == e.combo) {
 		std::cout << "move page down" << std::endl;
-		return true;
+		return ruis::event_status::consumed;
 	}
 
-	return false;
+	return ruis::event_status::propagate;
 }
 
 void page::move_right()

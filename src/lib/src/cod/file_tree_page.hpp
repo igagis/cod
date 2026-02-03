@@ -97,7 +97,7 @@ public:
 
 	std::function<void(std::string)> file_select_handler;
 
-	void render(const ruis::matrix4& matrix) const override
+	void render(const ruis::mat4& matrix) const override
 	{
 		this->ruis::container::render(matrix);
 		this->page::render(matrix);

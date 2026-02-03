@@ -31,7 +31,7 @@ class page : public ruis::page
 public:
 	page(utki::shared_ref<ruis::context> context);
 
-	bool on_key(const ruis::key_event& e) override;
+	ruis::event_status on_key(const ruis::key_event& e) override;
 
 	virtual utki::shared_ref<ruis::widget> create_tab_content() = 0;
 

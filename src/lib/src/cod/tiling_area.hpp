@@ -61,7 +61,7 @@ public:
 
 	void on_lay_out() override;
 
-	ruis::vector2 measure(const ruis::vector2& quotum) const override;
+	ruis::vec2 measure(const ruis::vec2& quotum) const override;
 
 	// override in order to avoid invalidation of layout when children list changes,
 	// because default implementation of this method invalidates layout
@@ -70,7 +70,7 @@ public:
 		// do nothing
 	}
 
-	void render(const ruis::matrix4& matrix) const override
+	void render(const ruis::mat4& matrix) const override
 	{
 		this->ruis::container::render(matrix);
 		this->tile::render(matrix);

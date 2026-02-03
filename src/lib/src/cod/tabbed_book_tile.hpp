@@ -43,7 +43,7 @@ public:
 		all_parameters params
 	);
 
-	void render(const ruis::matrix4& matrix) const override
+	void render(const ruis::mat4& matrix) const override
 	{
 		this->ruis::tabbed_book::render(matrix);
 		this->tile::render(matrix);
