@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "gui.hpp"
 
+#include <ruis/standard_widgets.hpp>
 #include <ruis/widget/group/tabbed_book.hpp>
 
 #include "context.hpp"
@@ -77,7 +78,10 @@ gui::gui(
 ) :
 	ruis_context(window.gui.context)
 {
-	window.gui.init_standard_widgets(app.get_res_file());
+	ruis::init_standard_widgets(
+		window.gui.context, //
+		app.get_res_file()
+	);
 
 	window.gui.context.get().loader().mount_res_pack(app.get_res_file("res/"));
 
