@@ -59,13 +59,10 @@ myci_declare_application(${PROJECT_NAME}-opengl
         ruisapp::ruisapp-opengl
         ${PROJECT_NAME}::${PROJECT_NAME}
         ${PROJECT_NAME}::text-editor-plugin
-    # RUN_ARGUMENTS
-    #     --res-path=res
-    #     --window
 )
 
 # myci builds libraries as static libraries, so to avoid built-in plugins to be stripped away by linker,
 # we need to link them with WHOLE_ARCHIVE.
-# Otherwise the static plugin object will not be created by the linker.
-# Because the app doesn't use any functions from the static lib, the linker just drops the whole library.
+# Otherwise the static plugin object will not be created by the linker
+# because the app doesn't use any functions from the static lib and the linker just drops the whole library.
 target_link_libraries(${PROJECT_NAME}-opengl PRIVATE $<LINK_LIBRARY:WHOLE_ARCHIVE,${PROJECT_NAME}::text-editor-plugin>)
