@@ -40,8 +40,19 @@ using namespace cod;
 // }
 
 namespace {
-// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-std::vector<plugin*> plugins_to_register;
+
+// The plugins_to_register variable is accessed from plugin::plugin() constructor.
+// When there are built-in plugins, the plugin::plugin() constructor is called during static objects construction,
+// and the plugins_to_register variable is accessed before main() starts.
+// Static objects order of construction is undefined, so to workaround that we can
+// wrap the static object to be a local static variable of a function,
+// so it will be constructed on first call to the function.
+std::vector<plugin*>& get_plugins_to_register()
+{
+	static std::vector<plugin*> plugins_to_register;
+	return plugins_to_register;
+}
+
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 std::string_view plugin_being_loaded_file_name;
 
@@ -66,32 +77,32 @@ void plugin_manager::register_plugin(plugin& p)
 		// If there are some plugins to register, it means the shared library tries to create more
 		// than one plugin instance.
 		// Check for this situation and throw an exception if it is the case.
-		if (!plugins_to_register.empty()) {
+		if (!get_plugins_to_register().empty()) {
 			throw std::logic_error(utki::cat(
 				"tried creating more than one plugin instance while loading plugin shared library: ",
 				plugin_being_loaded_file_name
 			));
 		}
 	}
-	plugins_to_register.push_back(&p);
+	get_plugins_to_register().push_back(&p);
 }
 
 namespace {
 void register_pending_plugins(void* handle = nullptr)
 {
-	utki::assert((handle && plugins_to_register.size() == 1) || !handle, [&](auto& o) {
+	utki::assert((handle && get_plugins_to_register().size() == 1) || !handle, [&](auto& o) {
 		o << "invalid state: handle is " << (handle ? "not null" : "null")
-		  << ", plugins_to_register.size() = " << plugins_to_register.size();
+		  << ", plugins_to_register.size() = " << get_plugins_to_register().size();
 	});
 
-	for (auto& p : plugins_to_register) {
+	for (auto& p : get_plugins_to_register()) {
 		plugin_list.push_back(plugin_info{
 			.instance = *p, //
 			.dl_handle = handle
 		});
 	}
 
-	plugins_to_register.clear();
+	get_plugins_to_register().clear();
 }
 } // namespace
 
@@ -100,7 +111,7 @@ void load_plugin(const std::string& file_name)
 {
 	// std::cout << "loading plugin " << file_name << std::endl;
 
-	utki::assert(plugins_to_register.empty());
+	utki::assert(get_plugins_to_register().empty());
 
 	// When loading shared library file it will construct static objects, but in case those constructors
 	// throw exception, the exception is not thrown by dlopen(), instead it is considered uncaught and terminate() is
@@ -118,8 +129,8 @@ void load_plugin(const std::string& file_name)
 	if (handle == nullptr) {
 		throw std::runtime_error("could not load plugin: "s + file_name + "\n    " + dlerror());
 	}
-	utki::assert(plugins_to_register.size() == 1);
-	utki::assert(plugins_to_register.front() != nullptr);
+	utki::assert(get_plugins_to_register().size() == 1);
+	utki::assert(get_plugins_to_register().front() != nullptr);
 
 	plugin_being_loaded_file_name = {};
 
