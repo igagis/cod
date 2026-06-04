@@ -43,10 +43,10 @@ text_editor_page::text_editor_page(
 	//       later need to implement proper system
 	this->text_change_handler =
 		[this,
-		 hl = std::make_shared<synhi::regex_highlighter>(
+		 hl = std::make_shared<synhi::regex_highlighter>( //
 			 std::make_shared<synhi::regex_highlighter_model>(
-				this->context.get().loader().load<ruis::res::tml>("tml_highlight_xml").get().forest
-			)
+				 this->context.get().loader().load<ruis::res::tml>("tml_highlight_xml").get().forest
+			 )
 		 )](ruis::text_widget& w) {
 			hl->reset();
 			const auto& lines = this->get_lines();
