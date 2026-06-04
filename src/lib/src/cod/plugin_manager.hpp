@@ -37,6 +37,8 @@ class plugin_manager : public utki::singleton<plugin_manager>
 
 	// called by plugin during loading the plugin
 	static void register_plugin(plugin& p);
+
+	// TODO: implement and take into use?
 	static void unregister_plugin(plugin& p);
 
 public:

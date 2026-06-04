@@ -41,9 +41,9 @@ using namespace cod;
 
 namespace {
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-plugin* just_loaded_plugin = nullptr;
+std::vector<plugin*> plugins_to_register;
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-std::string_view just_loaded_plugin_file_name;
+std::string_view plugin_being_loaded_file_name;
 
 struct plugin_info {
 	plugin& instance;
@@ -59,22 +59,48 @@ plugin_list_type plugin_list;
 
 void plugin_manager::register_plugin(plugin& p)
 {
-	if (just_loaded_plugin) {
-		// TODO: use utki::cat()
-		std::stringstream ss;
-		ss << "tried creating more than one plugin instance while loading plugin shared library: "
-		   << just_loaded_plugin_file_name;
-		throw std::logic_error(ss.str());
+	if (!plugin_being_loaded_file_name.empty()) {
+		// Plugin filename is not empty means that we are loading a plugin as shared library.
+		// In this case, all the built-in plugins should have been already registered, so
+		// there should be no plugins to register.
+		// If there are some plugins to register, it means the shared library tries to create more
+		// than one plugin instance.
+		// Check for this situation and throw an exception if it is the case.
+		if (!plugins_to_register.empty()) {
+			throw std::logic_error(utki::cat(
+				"tried creating more than one plugin instance while loading plugin shared library: ",
+				plugin_being_loaded_file_name
+			));
+		}
 	}
-	just_loaded_plugin = &p;
+	plugins_to_register.push_back(&p);
 }
+
+namespace {
+void register_pending_plugins(void* handle = nullptr)
+{
+	utki::assert((handle && plugins_to_register.size() == 1) || !handle, [&](auto& o) {
+		o << "invalid state: handle is " << (handle ? "not null" : "null")
+		  << ", plugins_to_register.size() = " << plugins_to_register.size();
+	});
+
+	for (auto& p : plugins_to_register) {
+		plugin_list.push_back(plugin_info{
+			.instance = *p, //
+			.dl_handle = handle
+		});
+	}
+
+	plugins_to_register.clear();
+}
+} // namespace
 
 namespace {
 void load_plugin(const std::string& file_name)
 {
 	// std::cout << "loading plugin " << file_name << std::endl;
 
-	utki::assert(!just_loaded_plugin);
+	utki::assert(plugins_to_register.empty());
 
 	// When loading shared library file it will construct static objects, but in case those constructors
 	// throw exception, the exception is not thrown by dlopen(), instead it is considered uncaught and terminate() is
@@ -83,7 +109,7 @@ void load_plugin(const std::string& file_name)
 	// variables.
 
 	// save plugin file name for informative error reporting
-	just_loaded_plugin_file_name = file_name;
+	plugin_being_loaded_file_name = file_name;
 
 	auto handle = dlopen(
 		file_name.c_str(),
@@ -92,11 +118,12 @@ void load_plugin(const std::string& file_name)
 	if (handle == nullptr) {
 		throw std::runtime_error("could not load plugin: "s + file_name + "\n    " + dlerror());
 	}
-	utki::assert(just_loaded_plugin);
+	utki::assert(plugins_to_register.size() == 1);
+	utki::assert(plugins_to_register.front() != nullptr);
 
-	plugin_list.push_back(plugin_info{.instance = *just_loaded_plugin, .dl_handle = handle});
+	plugin_being_loaded_file_name = {};
 
-	just_loaded_plugin = nullptr;
+	register_pending_plugins(handle);
 
 	// std::cout << "plugin loaded" << std::endl;
 }
@@ -104,6 +131,11 @@ void load_plugin(const std::string& file_name)
 
 plugin_manager::plugin_manager(utki::span<const std::string> plugins)
 {
+	// At this point built-in plugin static objects should be already constructed and pending registration,
+	// so we can register them now.
+	register_pending_plugins();
+
+	// register plugins from shared libraries
 	for (const auto& plugin_file_name : plugins) {
 		load_plugin(plugin_file_name);
 	}
@@ -112,10 +144,12 @@ plugin_manager::plugin_manager(utki::span<const std::string> plugins)
 plugin_manager::~plugin_manager()
 {
 	while (!plugin_list.empty()) {
-		if (dlclose(plugin_list.back().dl_handle) != 0) {
-			ASSERT(false, [](auto& o) {
-				o << "dlclose() failed: " << dlerror();
-			})
+		if (plugin_list.back().dl_handle) {
+			if (dlclose(plugin_list.back().dl_handle) != 0) {
+				utki::assert(false, [](auto& o) {
+					o << "dlclose() failed: " << dlerror();
+				});
+			}
 		}
 		plugin_list.pop_back();
 	}
