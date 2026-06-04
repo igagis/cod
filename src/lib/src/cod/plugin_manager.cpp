@@ -60,6 +60,7 @@ plugin_list_type plugin_list;
 void plugin_manager::register_plugin(plugin& p)
 {
 	if (just_loaded_plugin) {
+		// TODO: use utki::cat()
 		std::stringstream ss;
 		ss << "tried creating more than one plugin instance while loading plugin shared library: "
 		   << just_loaded_plugin_file_name;
@@ -73,7 +74,7 @@ void load_plugin(const std::string& file_name)
 {
 	// std::cout << "loading plugin " << file_name << std::endl;
 
-	ASSERT(!just_loaded_plugin)
+	utki::assert(!just_loaded_plugin);
 
 	// When loading shared library file it will construct static objects, but in case those constructors
 	// throw exception, the exception is not thrown by dlopen(), instead it is considered uncaught and terminate() is
@@ -91,7 +92,7 @@ void load_plugin(const std::string& file_name)
 	if (handle == nullptr) {
 		throw std::runtime_error("could not load plugin: "s + file_name + "\n    " + dlerror());
 	}
-	ASSERT(just_loaded_plugin)
+	utki::assert(just_loaded_plugin);
 
 	plugin_list.push_back(plugin_info{.instance = *just_loaded_plugin, .dl_handle = handle});
 
