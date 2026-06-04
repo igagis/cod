@@ -26,8 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 page::page(utki::shared_ref<ruis::context> context) :
-	ruis::widget(std::move(context), {}, {}),
-	ruis::page(this->context, {})
+	ruis::widget(context, {}, {}),
+	ruis::page(context, {})
 {}
 
 ruis::event_status page::on_key(const ruis::key_event& e)
