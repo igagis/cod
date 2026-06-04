@@ -25,16 +25,16 @@ myci_declare_library(${PROJECT_NAME}
 # ==================================
 # === declare text_editor plugin ===
 
-set(text_editor_srcs)
-myci_add_source_files(text_editor_srcs
+set(text_editor_plugin_srcs)
+myci_add_source_files(text_editor_plugin_srcs
     DIRECTORY
         ../../src/plugins/text_editor
     RECURSIVE
 )
 
-myci_declare_library(text-editor
+myci_declare_library(text-editor-plugin
     SOURCES
-        ${text_editor_srcs}
+        ${text_editor_plugin_srcs}
     DEPENDENCIES
         ${PROJECT_NAME}::${PROJECT_NAME}
 )
@@ -58,8 +58,14 @@ myci_declare_application(${PROJECT_NAME}-opengl
         clargs
         ruisapp::ruisapp-opengl
         ${PROJECT_NAME}::${PROJECT_NAME}
-        ${PROJECT_NAME}::text-editor
+        ${PROJECT_NAME}::text-editor-plugin
     # RUN_ARGUMENTS
     #     --res-path=res
     #     --window
 )
+
+# myci builds libraries as static libraries, so to avoid built-in plugins to be stripped away by linker,
+# we need to link them with WHOLE_ARCHIVE.
+# Otherwise the static plugin object will not be created by the linker.
+# Because the app doesn't use any functions from the static lib, the linker just drops the whole library.
+target_link_libraries(${PROJECT_NAME}-opengl PRIVATE $<LINK_LIBRARY:WHOLE_ARCHIVE,${PROJECT_NAME}::text-editor-plugin>)

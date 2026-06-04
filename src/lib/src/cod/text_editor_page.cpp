@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "text_editor_page.hpp"
 
 #include <fsif/native_file.hpp>
+#include <ruis/res/tml.hpp>
 
 #include "synhi/regex_highlighter.hpp"
 
@@ -43,7 +44,9 @@ text_editor_page::text_editor_page(
 	this->text_change_handler =
 		[this,
 		 hl = std::make_shared<synhi::regex_highlighter>(
-			 std::make_shared<synhi::regex_highlighter_model>(tml::read(fsif::native_file("highlight/xml.tml")))
+			 std::make_shared<synhi::regex_highlighter_model>(
+				this->context.get().loader().load<ruis::res::tml>("tml_highlight_xml").get().forest
+			)
 		 )](ruis::text_widget& w) {
 			hl->reset();
 			const auto& lines = this->get_lines();

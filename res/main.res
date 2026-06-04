@@ -1,3 +1,5 @@
+include_subdirs
+
 fnt_monospace{
     normal{DejaVuSansMono.ttf}
 	bold{DejaVuSansMono-Bold.ttf}
