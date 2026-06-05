@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <unordered_map>
+#include <map>
 
 #include <fsif/file.hpp>
 #include <ruis/util/key.hpp>
@@ -38,7 +38,7 @@ public:
 	};
 
 private:
-	mutable std::unordered_map<std::string_view, shortcut> shortcuts;
+	mutable std::map<std::string, shortcut, std::less<>> shortcuts;
 
 public:
 	shortcut_resolver(const fsif::file& f);

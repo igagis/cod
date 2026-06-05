@@ -89,11 +89,20 @@ const shortcut_resolver::shortcut& shortcut_resolver::get(std::string_view name)
 	auto i = this->shortcuts.find(name);
 
 	// if shortcut does not exist, then create an empty one
-	if (i == this->shortcuts.end()) {
-		shortcut sc;
-		sc.name = name;
-		auto j = this->shortcuts.insert(std::make_pair(std::string_view(sc.name), std::move(sc)));
-		ASSERT(j.second)
+	if (i == this->shortcuts.cend()) {
+		// Making pair.first to be string_view pointing to a member of pair.second
+		// doesn't work on macos, perhaps std::map/std::unordered_map implementation copies the elements at some point.
+		auto pair = std::make_pair(
+			std::string(name), //
+			shortcut{
+				.name = std::string(name)
+			});
+		utki::assert(pair.second.name == name);
+		utki::assert(pair.first == name);
+
+		utki::assert(!utki::contains(this->shortcuts, name));
+		auto j = this->shortcuts.insert(pair);
+		utki::assert(j.second);
 		i = j.first;
 	}
 
