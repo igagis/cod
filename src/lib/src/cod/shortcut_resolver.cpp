@@ -94,9 +94,8 @@ const shortcut_resolver::shortcut& shortcut_resolver::get(std::string_view name)
 		// doesn't work on macos, perhaps std::map/std::unordered_map implementation copies the elements at some point.
 		auto pair = std::make_pair(
 			std::string(name), //
-			shortcut{
-				.name = std::string(name)
-			});
+			shortcut{.name = std::string(name)}
+		);
 		utki::assert(pair.second.name == name);
 		utki::assert(pair.first == name);
 
