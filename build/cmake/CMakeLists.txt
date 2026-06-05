@@ -20,6 +20,9 @@ myci_declare_library(${PROJECT_NAME}
         ${lib_srcs}
     PUBLIC_INCLUDE_DIRECTORIES
         ../../src/lib/src
+    DEPENDENCIES
+        ruis::ruis
+        ruisapp::ruisapp-opengl # TODO: lib should not depend on ruisapp? and should be opengl agnostic
 )
 
 # ==================================
