@@ -259,6 +259,8 @@ public:
 	ruis::event_status on_key(const ruis::key_event& e) override;
 	void on_character_input(const ruis::character_input_event& e) override;
 
+	void on_reload() override;
+
 	using ruis::text_widget::set_text;
 
 	void set_text(std::u32string text) override;
