@@ -29,7 +29,9 @@ using namespace cod;
 
 tile::tile(utki::shared_ref<ruis::context> context) :
 	ruis::widget(std::move(context), {}, {}),
-	selection_vao(this->context.get().renderer)
+	selection_vao(this->context.get().renderer, {
+		.stroke_width = 2, // TODO: take from style?
+	})
 {}
 
 void tile::render(const ruis::mat4& matrix) const
@@ -37,30 +39,11 @@ void tile::render(const ruis::mat4& matrix) const
 	// draw selection
 	if (this->is_focused()) {
 		constexpr auto selection_color = 0xffff8080;
-		this->selection_vao.render(matrix, selection_color);
-	}
-}
-
-void tile::set_selection_vao()
-{
-	this->selection_vao.set(this->rect().d, 2);
-}
-
-void tile::on_focus_change()
-{
-	if (this->is_focused()) {
-		this->set_selection_vao();
-	} else {
-		// TODO: reset selection_vao to save resources
-	}
-}
-
-void tile::on_resize()
-{
-	this->ruis::widget::on_resize();
-
-	if (this->is_focused()) {
-		this->set_selection_vao();
+		this->selection_vao.render(
+			matrix, //
+			this->rect().d,
+			selection_color
+		);
 	}
 }
 

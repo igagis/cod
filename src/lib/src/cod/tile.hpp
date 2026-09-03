@@ -21,14 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <ruis/paint/frame_vao.hpp>
+#include <ruis/paint/rectangle_vao.hpp>
 #include <ruis/widget/widget.hpp>
 
 namespace cod {
 
 class tile : virtual public ruis::widget
 {
-	mutable ruis::paint::frame_vao selection_vao;
+	mutable ruis::paint::rectangle_vao selection_vao;
 
 	// only these 2 tiles are supposed to exist, so declare those as friends and make tile constructor private
 	friend class tabbed_book_tile;
@@ -42,10 +42,6 @@ public:
 	void render(const ruis::mat4& matrix) const override;
 
 	ruis::event_status on_key(const ruis::key_event& e) override;
-
-	void on_focus_change() override;
-
-	void on_resize() override;
 };
 
 } // namespace cod
