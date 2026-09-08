@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <ruis/widget/base/text_widget.hpp>
 #include <ruis/widget/group/list.hpp>
 #include <ruis/widget/group/scroll_area.hpp>
-#include <ruis/widget/input/character_input_widget.hpp>
+#include <ruis/widget/input/base/character_input_widget.hpp>
 #include <utki/flags.hpp>
 
 #include "synhi/highlighter.hpp"
