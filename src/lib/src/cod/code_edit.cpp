@@ -128,21 +128,21 @@ code_edit::code_edit(
 		std::move(params.layout_params),
 		std::move(params.widget_params)
 	),
-	character_input_widget(this->context),
+	character_input_widget(context),
 	text_widget(
-		this->context, //
+		context, //
 		std::move(params.text_params)
 	),
 	// clang-format off
 	container(
-		this->context, //
+		context, //
 		{
 			.container_params{
 				.layout = ruis::layout::column
 			}
 		},
 		make_root_widgets(
-			this->context, //
+			context, //
 			utki::make_shared<provider>(*this)
 		)
 	),

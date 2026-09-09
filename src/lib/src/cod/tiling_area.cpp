@@ -46,9 +46,10 @@ public:
 	std::shared_ptr<ruis::widget> prev_widget;
 	std::shared_ptr<ruis::widget> next_widget;
 
-	dragger(const utki::shared_ref<ruis::context>& c, tiling_area& owner) :
-		ruis::widget(c, {}, {}),
-		ruis::rectangle(this->context, {}, {}),
+	dragger(const utki::shared_ref<ruis::context>& context,//
+		 tiling_area& owner) :
+		ruis::widget(context, {}, {}),
+		ruis::rectangle(context, {}, {}),
 		owner(owner)
 	{
 		this->set_fill_color(dragger_color);
@@ -143,10 +144,10 @@ tiling_area::tiling_area(
 	ruis::widget(context, {}, {}),
 	tile(this->context),
 	ruis::oriented({.vertical = false}),
-	ruis::container(this->context, {}, {}),
-	content_container(ruis::make::container(this->context, {}, std::move(children))),
-	min_tile_size(this->context.get().units.pp_to_px(minimal_tile_size_pp)),
-	dragger_size(this->context.get().units.pp_to_px(dragger_size_pp))
+	ruis::container(context, {}, {}),
+	content_container(ruis::make::container(context, {}, std::move(children))),
+	min_tile_size(context.get().units.pp_to_px(minimal_tile_size_pp)),
+	dragger_size(context.get().units.pp_to_px(dragger_size_pp))
 {
 	this->ruis::container::push_back(this->content_container);
 	this->content_container.get().move_to({0, 0});

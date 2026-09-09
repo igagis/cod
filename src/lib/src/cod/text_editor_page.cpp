@@ -34,10 +34,10 @@ text_editor_page::text_editor_page(
 ) :
 	ruis::widget(context, {}, {}),
 	file_page(
-		this->context, //
+		context, //
 		std::move(file_name)
 	),
-	code_edit(this->context, {})
+	code_edit(context, {})
 {
 	// TODO: for now we set XML syntax highlighter for each code edit page,
 	//       later need to implement proper system

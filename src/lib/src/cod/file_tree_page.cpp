@@ -319,19 +319,19 @@ file_tree_page::file_tree_page(
 	utki::shared_ref<file_tree_model> model
 ) :
 	ruis::widget(context, {}, {}),
-	page(this->context),
+	page(context),
 	// clang-format off
 	ruis::container(
-		this->context,
+		context,
 		{
 			.container_params{
 				.layout = ruis::layout::column
 			}
 		},
 		make_page_widgets(
-			this->context, //
+			context, //
 			utki::make_shared<file_tree_provider>(
-				this->context,
+				context,
 				model,
 				*this
 			)

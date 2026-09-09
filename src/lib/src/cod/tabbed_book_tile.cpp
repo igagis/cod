@@ -42,8 +42,8 @@ tabbed_book_tile::tabbed_book_tile(
 		std::move(params.layout_params),
 		std::move(params.widget_params)
 	),
-	tile(this->context),
-	tabbed_book(this->context, {}, {})
+	tile(context),
+	tabbed_book(context, {}, {})
 {}
 
 namespace {
@@ -97,10 +97,10 @@ void tabbed_book_tile::add(utki::shared_ref<page> p)
 	tab.get().get_widget_as<ruis::push_button>("close_button").click_handler =
 		[tabbed_book_wp = utki::make_weak_from(*this), tab_wp = utki::make_weak(tab)](ruis::push_button& btn) {
 			auto tb = tabbed_book_wp.lock();
-			ASSERT(tb)
+			utki::assert(tb);
 
 			auto t = tab_wp.lock();
-			ASSERT(t)
+			utki::assert(t);
 
 			btn.context.get().post_to_ui_thread([tb, t] {
 				tb->tear_out(*t);
