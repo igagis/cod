@@ -184,8 +184,8 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(ut
 						.id = "bg"s,
 						.visible = false
 					},
-					.color_params = {
-						.color = 0xffff8080 // NOLINT(cppcoreguidelines-avoid-magic-numbers, "TODO: fix")
+					.rectangle_params = {
+						.fill_color = 0xffff8080 // NOLINT(cppcoreguidelines-avoid-magic-numbers, "TODO: fix")
 					}
 				}
 			),

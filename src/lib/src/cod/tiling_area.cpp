@@ -51,7 +51,7 @@ public:
 		ruis::rectangle(this->context, {}, {}),
 		owner(owner)
 	{
-		this->set_color(dragger_color);
+		this->set_fill_color(dragger_color);
 	}
 
 	ruis::event_status on_mouse_button(const ruis::mouse_button_event& e) override
