@@ -27,8 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-tile::tile(utki::shared_ref<ruis::context> context) :
-	ruis::widget(std::move(context), {}, {}),
+tile::tile(const utki::shared_ref<ruis::context>& context) :
+	ruis::widget(context, {}, {}),
 	selection_vao(this->context.get().renderer, {
 		.stroke_width = 2, // TODO: take from style?
 	})

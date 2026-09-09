@@ -98,11 +98,11 @@ class code_edit :
 
 	public:
 		line_widget(
-			utki::shared_ref<ruis::context> context, //
+			const utki::shared_ref<ruis::context>& context, //
 			code_edit& owner,
 			size_t line_num
 		) :
-			widget(std::move(context), {}, {}),
+			widget(context, {}, {}),
 			owner(owner),
 			line_num(line_num)
 		{}
@@ -241,7 +241,7 @@ public:
 	};
 
 	code_edit(
-		utki::shared_ref<ruis::context> context, //
+		const utki::shared_ref<ruis::context>& context, //
 		all_parameters params
 	);
 

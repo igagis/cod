@@ -32,7 +32,7 @@ class text_editor_page : public file_page, private code_edit
 {
 public:
 	text_editor_page(
-		utki::shared_ref<ruis::context> context, //
+		const utki::shared_ref<ruis::context>& context, //
 		std::string file_name
 	);
 

@@ -34,7 +34,7 @@ class tile : virtual public ruis::widget
 	friend class tabbed_book_tile;
 	friend class tiling_area;
 
-	tile(utki::shared_ref<ruis::context> context);
+	tile(const utki::shared_ref<ruis::context>& context);
 
 	void set_selection_vao();
 

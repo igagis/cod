@@ -39,7 +39,7 @@ using namespace cod::make;
 } // namespace m
 
 namespace {
-utki::shared_ref<ruis::widget> make_root_widget(const utki::shared_ref<ruis::context> c)
+utki::shared_ref<ruis::widget> make_root_widget(const utki::shared_ref<ruis::context>& c)
 {
 	// clang-format off
 	return m::tiling_area(c,

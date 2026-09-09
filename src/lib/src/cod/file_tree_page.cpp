@@ -111,11 +111,11 @@ std::string file_tree_page::file_tree_model::get_path(utki::span<const size_t> i
 }
 
 file_tree_page::file_tree_provider::file_tree_provider(
-	utki::shared_ref<ruis::context> context,
+	const utki::shared_ref<ruis::context>& context,
 	utki::shared_ref<file_tree_model> model,
 	file_tree_page& owner
 ) :
-	provider(std::move(context)),
+	provider(context),
 	owner(owner),
 	model(std::move(model))
 {}
@@ -307,7 +307,7 @@ std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(
 }
 } // namespace
 
-file_tree_page::file_tree_page(utki::shared_ref<ruis::context> context) :
+file_tree_page::file_tree_page(const utki::shared_ref<ruis::context>& context) :
 	file_tree_page(
 		context, //
 		utki::make_shared<file_tree_model>()
@@ -315,10 +315,10 @@ file_tree_page::file_tree_page(utki::shared_ref<ruis::context> context) :
 {}
 
 file_tree_page::file_tree_page(
-	utki::shared_ref<ruis::context> context, //
+	const utki::shared_ref<ruis::context>& context, //
 	utki::shared_ref<file_tree_model> model
 ) :
-	ruis::widget(std::move(context), {}, {}),
+	ruis::widget(context, {}, {}),
 	page(this->context),
 	// clang-format off
 	ruis::container(

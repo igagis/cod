@@ -29,7 +29,7 @@ namespace cod {
 class page : public ruis::page
 {
 public:
-	page(utki::shared_ref<ruis::context> context);
+	page(const utki::shared_ref<ruis::context>& context);
 
 	ruis::event_status on_key(const ruis::key_event& e) override;
 

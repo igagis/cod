@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
-page::page(utki::shared_ref<ruis::context> context) :
+page::page(const utki::shared_ref<ruis::context>& context) :
 	ruis::widget(context, {}, {}),
 	ruis::page(context, {})
 {}

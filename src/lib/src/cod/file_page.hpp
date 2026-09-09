@@ -31,7 +31,7 @@ class file_page : public page
 
 public:
 	file_page(
-		utki::shared_ref<ruis::context> context, //
+		const utki::shared_ref<ruis::context>& context, //
 		std::string file_name
 	);
 

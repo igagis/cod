@@ -39,7 +39,7 @@ public:
 	};
 
 	tabbed_book_tile(
-		utki::shared_ref<ruis::context> context, //
+		const utki::shared_ref<ruis::context>& context, //
 		all_parameters params
 	);
 
@@ -59,12 +59,12 @@ public:
 
 namespace make {
 inline utki::shared_ref<cod::tabbed_book_tile> tabbed_book_tile(
-	utki::shared_ref<ruis::context> context,
+	const utki::shared_ref<ruis::context>& context,
 	cod::tabbed_book_tile::all_parameters params
 )
 {
 	return utki::make_shared<cod::tabbed_book_tile>(
-		std::move(context), //
+		context, //
 		std::move(params)
 	);
 }

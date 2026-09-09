@@ -41,7 +41,7 @@ constexpr ruis::real cursor_thickness_pp = 2.0f;
 
 namespace {
 std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(
-	utki::shared_ref<ruis::context> c, //
+	const utki::shared_ref<ruis::context>& c, //
 	utki::shared_ref<ruis::list_provider> p
 )
 {
@@ -120,11 +120,11 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(
 // TODO: refactor to fix this lint issue
 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 code_edit::code_edit(
-	utki::shared_ref<ruis::context> context, //
+	const utki::shared_ref<ruis::context>& context, //
 	all_parameters params
 ) :
 	widget(
-		std::move(context), //
+		context, //
 		std::move(params.layout_params),
 		std::move(params.widget_params)
 	),

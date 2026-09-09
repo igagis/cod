@@ -29,10 +29,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace cod;
 
 text_editor_page::text_editor_page(
-	utki::shared_ref<ruis::context> context, //
+	const utki::shared_ref<ruis::context>& context, //
 	std::string file_name
 ) :
-	ruis::widget(std::move(context), {}, {}),
+	ruis::widget(context, {}, {}),
 	file_page(
 		this->context, //
 		std::move(file_name)
