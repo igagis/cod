@@ -29,7 +29,7 @@ using namespace cod;
 
 tile::tile(const utki::shared_ref<ruis::context>& context) :
 	ruis::widget(context, {}, {}),
-	selection_vao(this->context.get().renderer, {
+	selection_vao(context.get().renderer, {
 		.stroke_width = 2, // TODO: take from style?
 	})
 {}

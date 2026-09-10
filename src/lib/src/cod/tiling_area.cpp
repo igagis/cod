@@ -142,7 +142,7 @@ tiling_area::tiling_area(
 	ruis::widget_list children
 ) :
 	ruis::widget(context, {}, {}),
-	tile(this->context),
+	tile(context),
 	ruis::oriented({.vertical = false}),
 	ruis::container(context, {}, {}),
 	content_container(ruis::make::container(context, {}, std::move(children))),

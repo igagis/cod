@@ -33,7 +33,7 @@ file_page::file_page(
 	std::string file_name
 ) :
 	ruis::widget(context, {}, {}),
-	page(this->context),
+	page(context),
 	file_name(std::move(file_name))
 {}
 
