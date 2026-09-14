@@ -74,7 +74,7 @@ utki::shared_ref<ruis::tab> make_tab(
 							.layout_params{
 								.dims = {8_pp, 8_pp} // NOLINT(cppcoreguidelines-avoid-magic-numbers)
 							},
-							.image_params{
+							.params{
 								.img = c.get().loader().load<ruis::res::image>("ruis_img_close"sv)
 							}
 						}
