@@ -167,31 +167,33 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(ut
 		{
 			m::click_proxy(c,
 				{
-					.layout_params = {
+					.layout_params{
 						.dims = {ruis::dim::fill, ruis::dim::fill}
 					},
-					.widget_params = {
+					.widget_params{
 						.id = "cp"s
 					}
 				}
 			),
 			m::rectangle(c,
 				{
-					.layout_params = {
+					.layout{
 						.dims = {ruis::dim::fill, ruis::dim::fill}
 					},
-					.widget_params = {
+					.widget{
 						.id = "bg"s,
 						.visible = false
 					},
-					.rectangle_params = {
-						.fill_color = 0xffff8080 // NOLINT(cppcoreguidelines-avoid-magic-numbers, "TODO: fix")
+					.params{
+						.specific{
+							.fill_color = 0xffff8080 // NOLINT(cppcoreguidelines-avoid-magic-numbers, "TODO: fix")
+						}
 					}
 				}
 			),
 			m::text(c,
 				{
-					.widget_params = {
+					.widget_params{
 						.id = "tx"s
 					}
 				},
