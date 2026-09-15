@@ -193,7 +193,7 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(ut
 			),
 			m::text(c,
 				{
-					.widget_params{
+					.widget{
 						.id = "tx"s
 					}
 				},
