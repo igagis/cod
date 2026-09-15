@@ -81,11 +81,13 @@ utki::shared_ref<ruis::tab> make_tab(
 				{
 					m::image(c,
 						{
-							.layout_params{
+							.layout{
 								.dims = {8_pp, 8_pp} // NOLINT(cppcoreguidelines-avoid-magic-numbers)
 							},
 							.params{
-								.img = c.get().loader().load<ruis::res::image>("ruis_img_close"sv)
+								.specific{
+									.img = c.get().loader().load<ruis::res::image>("ruis_img_close"sv)
+								}
 							}
 						}
 					)
