@@ -326,7 +326,7 @@ file_tree_page::file_tree_page(
 	ruis::container(
 		context,
 		{
-			.container_params{
+			.params{
 				.layout = ruis::layout::column
 			}
 		},

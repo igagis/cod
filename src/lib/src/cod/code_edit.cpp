@@ -137,7 +137,7 @@ code_edit::code_edit(
 	container(
 		context, //
 		{
-			.container_params{
+			.params{
 				.layout = ruis::layout::column
 			}
 		},
