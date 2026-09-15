@@ -64,7 +64,7 @@ utki::shared_ref<ruis::tab> make_tab(
 			std::move(content),
 			m::push_button(c,
 				{
-					.widget_params{
+					.widget{
 						.id = "close_button"s
 					}
 				},
