@@ -86,7 +86,7 @@ utki::shared_ref<ruis::tab> make_tab(
 							},
 							.params{
 								.specific{
-									.img = c.get().loader().load<ruis::res::image>("ruis_img_close"sv)
+									.source = c.get().loader().load<ruis::res::image>("ruis_img_close"sv)
 								}
 							}
 						}
