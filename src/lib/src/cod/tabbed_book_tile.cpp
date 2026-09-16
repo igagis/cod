@@ -39,7 +39,7 @@ tabbed_book_tile::tabbed_book_tile(
 ) :
 	ruis::widget(
 		context, //
-		std::move(params.layout),
+		std::move(params.layout_params),
 		std::move(params.widget)
 	),
 	tile(context),
@@ -81,7 +81,7 @@ utki::shared_ref<ruis::tab> make_tab(
 				{
 					m::image(c,
 						{
-							.layout{
+							.layout_params{
 								.dims = {8_pp, 8_pp} // NOLINT(cppcoreguidelines-avoid-magic-numbers)
 							},
 							.params{

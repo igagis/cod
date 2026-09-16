@@ -51,7 +51,7 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(
 	return {
 		m::row(c,
 			{
-				.layout = {
+				.layout_params = {
 					.dims = {ruis::dim::fill, ruis::dim::fill},
 					.weight = 1
 				}
@@ -59,7 +59,7 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(
 			{
 				m::scroll_area(c,
 					{
-						.layout = {
+						.layout_params = {
 							.dims = {ruis::dim::fill, ruis::dim::fill},
 							.weight = 1
 						},
@@ -71,7 +71,7 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(
 					{
 						m::list(c,
 							{
-								.layout{
+								.layout_params{
 									.dims = {ruis::dim::min, ruis::dim::fill}
 								},
 								.widget{
@@ -86,7 +86,7 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(
 				),
 				m::scroll_bar(c,
 					{
-						.layout = {
+						.layout_params = {
 							.dims = {ruis::dim::min, ruis::dim::max}
 						},
 						.widget = {
@@ -101,7 +101,7 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(
 		),
 		m::scroll_bar(c,
 			{
-				.layout = {
+				.layout_params = {
 					.dims = {ruis::dim::fill, ruis::dim::min}
 				},
 				.widget = {
@@ -125,7 +125,7 @@ code_edit::code_edit(
 ) :
 	widget(
 		context, //
-		std::move(params.layout),
+		std::move(params.layout_params),
 		std::move(params.widget)
 	),
 	character_input_widget(context),
