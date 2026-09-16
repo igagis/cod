@@ -46,7 +46,7 @@ utki::shared_ref<ruis::widget> make_root_widget(const utki::shared_ref<ruis::con
 		{
 			m::tabbed_book_tile(c,
 				{
-					.widget_params{
+					.widget{
 						.id = "left_panel"s,
 						.rectangle = {
 							{0, 0},
@@ -57,7 +57,7 @@ utki::shared_ref<ruis::widget> make_root_widget(const utki::shared_ref<ruis::con
 			),
 			m::tabbed_book_tile(c,
 				{
-					.widget_params{
+					.widget{
 						.id = "tabbed_book"s,
 						.rectangle = {
 							{0, 0},

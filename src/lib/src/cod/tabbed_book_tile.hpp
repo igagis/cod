@@ -34,8 +34,8 @@ class tabbed_book_tile :
 {
 public:
 	struct all_parameters {
-		ruis::layout::parameters layout_params;
-		ruis::widget::parameters widget_params;
+		ruis::layout::parameters layout;
+		ruis::widget::parameters widget;
 	};
 
 	tabbed_book_tile(

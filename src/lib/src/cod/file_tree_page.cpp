@@ -167,10 +167,10 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(ut
 		{
 			m::click_proxy(c,
 				{
-					.layout_params{
+					.layout{
 						.dims = {ruis::dim::fill, ruis::dim::fill}
 					},
-					.widget_params{
+					.widget{
 						.id = "cp"s
 					}
 				}
@@ -243,7 +243,7 @@ std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(
 	return {
 		m::row(c,
 			{
-				.layout_params{
+				.layout{
 					.dims = {ruis::dim::fill, ruis::dim::fill},
 					.weight = 1
 				}
@@ -251,11 +251,11 @@ std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(
 			{
 				m::scroll_area(c,
 					{
-						.layout_params{
+						.layout{
 							.dims = {ruis::dim::fill, ruis::dim::fill},
 							.weight = 1
 						},
-						.widget_params{
+						.widget{
 							.id = "scroll_area"s,
 							.clip = true
 						}
@@ -263,10 +263,10 @@ std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(
 					{
 						m::tree_view(c,
 							{
-								.layout_params{
+								.layout{
 									.dims = {ruis::dim::min, ruis::dim::fill}
 								},
-								.widget_params{
+								.widget{
 									.id = "tree_view"s
 								},
 								.tree_view_params{
@@ -278,10 +278,10 @@ std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(
 				),
 				m::scroll_bar(c,
 					{
-						.layout_params{
+						.layout{
 							.dims = {ruis::dim::min, ruis::dim::max}
 						},
-						.widget_params = {
+						.widget = {
 							.id = "vertical_scroll"s
 						},
 						.oriented_params = {
@@ -293,10 +293,10 @@ std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(
 		),
 		m::scroll_bar(c,
 			{
-				.layout_params{
+				.layout{
 					.dims = {ruis::dim::max, ruis::dim::min}
 				},
-				.widget_params = {
+				.widget = {
 					.id = "horizontal_scroll"s
 				},
 				.oriented_params = {

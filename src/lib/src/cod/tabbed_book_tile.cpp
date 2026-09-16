@@ -39,8 +39,8 @@ tabbed_book_tile::tabbed_book_tile(
 ) :
 	ruis::widget(
 		context, //
-		std::move(params.layout_params),
-		std::move(params.widget_params)
+		std::move(params.layout),
+		std::move(params.widget)
 	),
 	tile(context),
 	tabbed_book(context, {}, {})
