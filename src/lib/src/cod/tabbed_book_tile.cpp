@@ -57,13 +57,11 @@ utki::shared_ref<ruis::tab> make_tab(
 	return m::tab(c,
 		{
 			.params{
-				.nine_patch_toggle{
-					.nine_patch_button{
-						.nine_patch{
-							.padding{
-								.container{
-									.layout = ruis::layout::row
-								}
+				.nine_patch_button{
+					.nine_patch{
+						.padding{
+							.container{
+								.layout = ruis::layout::row
 							}
 						}
 					}
