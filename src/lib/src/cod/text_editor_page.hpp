@@ -28,7 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace cod {
 
-class text_editor_page : public file_page, private code_edit
+class text_editor_page :
+	public file_page, //
+	private code_edit
 {
 public:
 	text_editor_page(
@@ -36,10 +38,8 @@ public:
 		std::string file_name
 	);
 
-	void set_text(std::u32string text) override
-	{
-		this->code_edit::set_text(std::move(text));
-	}
+	// expose set_text() function of a private base class
+	using code_edit::set_text;
 
 	void on_show() override
 	{

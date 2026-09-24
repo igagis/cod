@@ -25,6 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace cod {
 
+/**
+ * @brief A page showing some file contents.
+ * E.g. text editor showing contents of a text file.
+ */
 class file_page : public page
 {
 	std::string file_name;

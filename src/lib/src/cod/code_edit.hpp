@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <r4/segment2.hpp>
 #include <ruis/updateable.hpp>
-#include <ruis/widget/base/text_widget.hpp>
+#include <ruis/widget/base/font_widget.hpp>
 #include <ruis/widget/group/list.hpp>
 #include <ruis/widget/group/scroll_area.hpp>
 #include <ruis/widget/input/base/character_input_widget.hpp>
@@ -37,7 +37,7 @@ namespace cod {
 
 class code_edit :
 	public ruis::character_input_widget,
-	public ruis::text_widget,
+	public ruis::font_widget,
 	private ruis::container,
 	private ruis::updateable
 {
@@ -234,10 +234,14 @@ class code_edit :
 	void scroll_to(r4::vector2<size_t> pos_glyphs);
 
 public:
+	struct parameters {
+		ruis::font_widget::parameters font;
+	};
+
 	struct all_parameters {
 		ruis::layout_parameters layout_params;
 		ruis::widget::parameters widget;
-		ruis::text_widget::parameters text_params;
+		parameters params;
 	};
 
 	code_edit(
@@ -261,10 +265,8 @@ public:
 
 	void on_reload() override;
 
-	using ruis::text_widget::set_text;
-
-	void set_text(std::u32string text) override;
-	std::u32string get_text() const override;
+	void set_text(std::u32string text);
+	std::u32string get_text() const;
 
 	void set_line_spans(decltype(line::spans)&& spans, size_t line_index);
 
@@ -277,6 +279,8 @@ public:
 	{
 		return this->lines;
 	}
+
+	std::function<void(code_edit&)> text_change_handler;
 };
 
 } // namespace cod

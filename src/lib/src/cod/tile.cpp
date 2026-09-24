@@ -29,9 +29,12 @@ using namespace cod;
 
 tile::tile(const utki::shared_ref<ruis::context>& context) :
 	ruis::widget(context, {}, {}),
-	selection_vao(context.get().renderer, {
-		.stroke_width = 2, // TODO: take from style?
-	})
+	selection_vao(
+		context.get().renderer,
+		{
+			.stroke_width = 2, // TODO: take from style?
+		}
+	)
 {}
 
 void tile::render(const ruis::mat4& matrix) const

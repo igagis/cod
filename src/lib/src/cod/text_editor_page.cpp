@@ -47,7 +47,7 @@ text_editor_page::text_editor_page(
 			 std::make_shared<synhi::regex_highlighter_model>(
 				 this->context.get().loader().load<ruis::res::tml>("tml_highlight_xml").get().forest
 			 )
-		 )](ruis::text_widget& w) {
+		 )](auto& w) {
 			hl->reset();
 			const auto& lines = this->get_lines();
 			for (auto i = lines.begin(); i != lines.end(); ++i) {

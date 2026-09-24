@@ -46,8 +46,10 @@ public:
 	std::shared_ptr<ruis::widget> prev_widget;
 	std::shared_ptr<ruis::widget> next_widget;
 
-	dragger(const utki::shared_ref<ruis::context>& context,//
-		 tiling_area& owner) :
+	dragger(
+		const utki::shared_ref<ruis::context>& context, //
+		tiling_area& owner
+	) :
 		ruis::widget(context, {}, {}),
 		ruis::rectangle(context, {}, {}),
 		owner(owner)

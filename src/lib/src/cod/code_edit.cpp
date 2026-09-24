@@ -131,9 +131,9 @@ code_edit::code_edit(
 		std::move(params.widget)
 	),
 	character_input_widget(context),
-	text_widget(
+	font_widget(
 		context, //
-		std::move(params.text_params)
+		std::move(params.params.font)
 	),
 	// clang-format off
 	container(
@@ -198,7 +198,7 @@ void code_edit::set_text(std::u32string text)
 						  };
 					  })
 					  .get();
-	this->on_text_change();
+	this->notify_text_change();
 }
 
 std::u32string code_edit::get_text() const
@@ -382,7 +382,7 @@ void code_edit::start_cursor_blinking()
 
 void code_edit::for_each_cursor(const std::function<void(cursor&)>& func)
 {
-	ASSERT(func)
+	utki::assert(func);
 	for (auto& c : this->cursors) {
 		func(c);
 		// TODO: check if cursors do not intersect
@@ -1144,8 +1144,10 @@ void code_edit::on_character_input(const ruis::character_input_event& e)
 
 void code_edit::notify_text_change()
 {
-	this->on_text_change();
 	this->list.get().get_provider().notify_model_change();
+	if (this->text_change_handler) {
+		this->text_change_handler(*this);
+	}
 }
 
 void code_edit::set_line_spans(decltype(line::spans)&& spans, size_t line_index)
@@ -1166,7 +1168,8 @@ void code_edit::on_font_change()
 	this->font_info.baseline = round((font.get_height() + font.get_ascender() - font.get_descender()) / 2);
 }
 
-void code_edit::on_reload(){
+void code_edit::on_reload()
+{
 	this->container::on_reload();
-	this->text_widget::on_reload();
+	this->font_widget::on_reload();
 }
