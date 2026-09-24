@@ -77,8 +77,10 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(
 								.widget{
 									.id = "lines"s
 								},
-								.list_params{
-									.provider = std::move(p)
+								.params{
+									.specific{
+										.provider = std::move(p)
+									}
 								}
 							}
 						)
