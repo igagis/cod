@@ -42,7 +42,7 @@ constexpr ruis::real cursor_thickness_pp = 2.0f;
 namespace {
 std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(
 	const utki::shared_ref<ruis::context>& c, //
-	utki::shared_ref<ruis::list_provider> p
+	utki::unique_ref<ruis::list_provider> p
 )
 {
 	namespace m = ruis::make;
@@ -145,7 +145,7 @@ code_edit::code_edit(
 		},
 		make_root_widgets(
 			context, //
-			utki::make_shared<provider>(*this)
+			utki::make_unique<provider>(*this)
 		)
 	),
 	// clang-format on
