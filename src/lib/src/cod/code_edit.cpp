@@ -212,7 +212,7 @@ std::u32string code_edit::get_text() const
 	return ret;
 }
 
-utki::shared_ref<ruis::widget> code_edit::provider::get_widget(size_t index)
+utki::shared_ref<ruis::widget> code_edit::provider::get_widget(size_t index) const
 {
 	return utki::make_shared<code_edit::line_widget>(this->owner.context, this->owner, index);
 }
@@ -1144,7 +1144,7 @@ void code_edit::on_character_input(const ruis::character_input_event& e)
 
 void code_edit::notify_text_change()
 {
-	this->list.get().get_provider().notify_model_change();
+	this->list.get().notify_model_change();
 	if (this->text_change_handler) {
 		this->text_change_handler(*this);
 	}

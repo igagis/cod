@@ -217,7 +217,7 @@ utki::shared_ref<ruis::widget> file_tree_page::file_tree_provider::get_widget(ut
 			return;
 		}
 		this->owner.cursor_index = index;
-		this->notify_item_changed();
+		this->owner.notify_item_changed();
 		this->owner.notify_file_select(this->owner.model.get().get_path(index));
 	};
 
@@ -231,10 +231,15 @@ void file_tree_page::notify_file_select(std::string file_path)
 	}
 }
 
+void file_tree_page::notify_item_changed()
+{
+	this->get_widget_as<ruis::tree_view>("tree_view"sv).notify_item_changed();
+}
+
 namespace {
 std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(
 	const utki::shared_ref<ruis::context>& c, //
-	utki::shared_ref<ruis::tree_view::provider> p
+	utki::unique_ref<ruis::tree_view::provider> p
 )
 {
 	namespace m = ruis::make;
@@ -332,7 +337,7 @@ file_tree_page::file_tree_page(
 		},
 		make_page_widgets(
 			context, //
-			utki::make_shared<file_tree_provider>(
+			utki::make_unique<file_tree_provider>(
 				context,
 				model,
 				*this

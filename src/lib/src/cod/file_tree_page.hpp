@@ -87,6 +87,8 @@ class file_tree_page :
 
 	void notify_file_select(std::string file_path);
 
+	void notify_item_changed();
+
 	file_tree_page(
 		const utki::shared_ref<ruis::context>& context, //
 		utki::shared_ref<file_tree_model> model

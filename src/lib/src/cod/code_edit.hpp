@@ -125,7 +125,7 @@ class code_edit :
 			return this->owner.lines.size();
 		}
 
-		utki::shared_ref<ruis::widget> get_widget(size_t index) override;
+		utki::shared_ref<ruis::widget> get_widget(size_t index) const override;
 	};
 
 	class cursor
