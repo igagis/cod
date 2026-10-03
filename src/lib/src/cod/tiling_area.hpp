@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "tile.hpp"
 
 namespace cod {
+using ruis::measure_mode;
 
 /*
 The tile_area arranges tiles either vertially or horizontally.
@@ -61,7 +62,10 @@ public:
 
 	void on_lay_out() override;
 
-	ruis::vec2 measure(const ruis::vec2& quotum) const override;
+	ruis::vec2 measure(
+		const ruis::vec2& quotum, //
+		const r4::vector2<measure_mode>& mode //
+	) const override;
 
 	// override in order to avoid invalidation of layout when children list changes,
 	// because default implementation of this method invalidates layout

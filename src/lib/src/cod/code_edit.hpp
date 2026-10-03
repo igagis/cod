@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "synhi/highlighter.hpp"
 
 namespace cod {
+using ruis::measure_mode;
 
 class code_edit :
 	public ruis::character_input_widget,
@@ -109,7 +110,10 @@ class code_edit :
 
 		void render(const ruis::mat4& matrix) const override;
 
-		ruis::vec2 measure(const ruis::vec2& quotum) const noexcept override;
+		ruis::vec2 measure(
+			const ruis::vec2& quotum, //
+			const r4::vector2<measure_mode>& mode //
+		) const noexcept override;
 	};
 
 	struct provider : public ruis::list_provider {

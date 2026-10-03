@@ -26,6 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace cod;
 
+using ruis::measure_mode;
+
 namespace {
 const ruis::real minimal_tile_size_pp = 100;
 const ruis::real dragger_size_pp = 5;
@@ -263,14 +265,17 @@ void tiling_area::on_lay_out()
 	}
 }
 
-ruis::vec2 tiling_area::measure(const ruis::vec2& quotum) const
+ruis::vec2 tiling_area::measure(
+	const ruis::vec2& quotum, //
+	const r4::vector2<measure_mode>& mode //
+) const
 {
 	auto long_index = this->get_long_index();
 
 	ruis::vec2 ret;
 
 	for (size_t i = 0; i != quotum.size(); ++i) {
-		if (quotum[i] < 0) {
+		if (mode[i] == measure_mode::at_most) {
 			ret[i] = this->min_tile_size;
 
 			if (i == long_index) {

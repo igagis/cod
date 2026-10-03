@@ -34,6 +34,8 @@ using namespace std::string_literals;
 
 using namespace cod;
 
+using ruis::measure_mode;
+
 namespace {
 constexpr uint16_t cursor_blink_period_ms = 500;
 constexpr ruis::real cursor_thickness_pp = 2.0f;
@@ -339,7 +341,10 @@ void code_edit::line_widget::render(const ruis::mat4& matrix) const
 	}
 }
 
-ruis::vec2 code_edit::line_widget::measure(const ruis::vec2& quotum) const noexcept
+ruis::vec2 code_edit::line_widget::measure(
+	const ruis::vec2& quotum, //
+	const r4::vector2<measure_mode>& mode //
+) const noexcept
 {
 	ruis::vec2 ret = this->owner.font_info.glyph_dims;
 	ret.x() *= ruis::real(
@@ -347,7 +352,7 @@ ruis::vec2 code_edit::line_widget::measure(const ruis::vec2& quotum) const noexc
 	); // for empty strings the widget will still have size of one glyph
 
 	for (unsigned i = 0; i != ret.size(); ++i) {
-		if (quotum[i] >= 0) {
+		if (mode[i] == measure_mode::exactly) {
 			ret[i] = quotum[i];
 		}
 	}
