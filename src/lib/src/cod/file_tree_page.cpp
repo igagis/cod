@@ -265,21 +265,19 @@ std::vector<utki::shared_ref<ruis::widget>> make_page_widgets(
 							.clip = true
 						}
 					},
-					{
-						m::tree_view(c,
-							{
-								.layout_params{
-									.dims = {ruis::dim::min, ruis::dim::fill}
-								},
-								.widget{
-									.id = "tree_view"s
-								},
-								.tree_view_params{
-									.provider = std::move(p)
-								}
+					m::tree_view(c,
+						{
+							.layout_params{
+								.dims = {ruis::dim::min, ruis::dim::fill}
+							},
+							.widget{
+								.id = "tree_view"s
+							},
+							.tree_view_params{
+								.provider = std::move(p)
 							}
-						)
-					}
+						}
+					)
 				),
 				m::scroll_bar(c,
 					{

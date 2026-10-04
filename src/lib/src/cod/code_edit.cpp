@@ -70,23 +70,21 @@ std::vector<utki::shared_ref<ruis::widget>> make_root_widgets(
 							.clip = true
 						}
 					},
-					{
-						m::list(c,
-							{
-								.layout_params{
-									.dims = {ruis::dim::min, ruis::dim::fill}
-								},
-								.widget{
-									.id = "lines"s
-								},
-								.params{
-									.specific{
-										.provider = std::move(p)
-									}
+					m::list(c,
+						{
+							.layout_params{
+								.dims = {ruis::dim::min, ruis::dim::fill}
+							},
+							.widget{
+								.id = "lines"s
+							},
+							.params{
+								.specific{
+									.provider = std::move(p)
 								}
 							}
-						)
-					}
+						}
+					)
 				),
 				m::scroll_bar(c,
 					{
