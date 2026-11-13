@@ -42,7 +42,7 @@ class dragger : public ruis::rectangle
 
 	tiling_area& owner;
 
-	ruis::render::native_window::cursor_id arrows_cursor_id;
+	ruis::render::native_window::cursor_id arrows_cursor_id = 0; // 0 = no cursor pushed
 
 public:
 	std::shared_ptr<ruis::widget> prev_widget;
