@@ -30,7 +30,8 @@ using namespace cod;
 tile::tile(const utki::shared_ref<ruis::context>& context) :
 	ruis::widget(context, {}, {}),
 	selection_vao(
-		context.get().renderer,
+		context.get().loader().factory, //
+		context.get().loader().common_rendering_objects, //
 		{
 			.stroke_width = 2, // TODO: take from style?
 		}
@@ -42,7 +43,9 @@ void tile::render(const ruis::mat4& matrix) const
 	// draw selection
 	if (this->is_focused()) {
 		constexpr auto selection_color = 0xffff8080;
+		auto& r = this->context.get().renderer.get();
 		this->selection_vao.render(
+			r, //
 			matrix, //
 			this->rect().d,
 			selection_color
